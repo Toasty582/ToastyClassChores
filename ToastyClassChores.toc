@@ -1,0 +1,12 @@
+## Interface: 120001
+## Title: Toasty Class Chores
+## Notes: An addon designed to show class upkeep items such as shadowform and hunter pets.
+## Author: Toasty
+## Version: 0.0.1
+## RequiredDeps:
+## X-Curse-Project-ID: 999999
+## SavedVariables: ToastyClassChoresDB
+## SavedVariablesPerCharacter:
+## OptionalDeps: Ace3
+
+Core.lua
