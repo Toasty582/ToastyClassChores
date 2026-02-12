@@ -3,9 +3,9 @@ A World of Warcraft addon designed to help keep track of important class upkeep 
 
 Currently Implemented:
 - Shadowform
+- Raid buffs (Out of combat)
 
 Planned Features:
-- Raid buffs (Out of combat)
 - Druid forms
 - Warrior stances
 - Hunter pets

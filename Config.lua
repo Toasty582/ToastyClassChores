@@ -11,6 +11,12 @@ local config = {
             name = "Enable Shadowform Tracking",
             get = function() return ToastyClassChores.db.profile.shadowformTracking end,
             set = "SetShadowformTracking",
+        },
+        raidBuffTracking = {
+            type = "toggle",
+            name = "Enable Raid Buff Tracking",
+            get = function() return ToastyClassChores.db.profile.raidBuffTracking end,
+            set = "SetRaidBuffTracking",
         }
     },
 }
@@ -18,6 +24,7 @@ local config = {
 local defaults = {
     profile = {
         shadowformTracking = true,
+        raidBuffTracking = true
     },
 }
 

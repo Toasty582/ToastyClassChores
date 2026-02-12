@@ -22,7 +22,7 @@ function ToastyClassChores:OnInitialize()
     LibStub("AceConfig-3.0"):RegisterOptionsTable("ToastyClassChores", config)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ToastyClassChores", "ToastyClassChores")
 
-    ToastyClassChores.choreFrame = CreateFrame("Frame", "ChoreFrame", UIParent)
+    ToastyClassChores.choreFrame = CreateFrame("Frame", "Chore Frame", UIParent)
     ToastyClassChores.choreFrame:SetPoint("CENTER")
     ToastyClassChores.choreFrame:SetSize(500,500)
 end
@@ -35,7 +35,7 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("UNIT_SPELLCAST_SENT")
     self:RegisterEvent("UNIT_AURA")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
-    print("The class chores shall soon be tracked")
+    self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 
     self:RegisterChatCommand("tcc", "SlashCommand")
 end
@@ -43,6 +43,7 @@ end
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
     _, self.cdb.profile.class, _ = UnitClass("player")
     self.Shadowform.Initialize()
+    self.RaidBuffs.Initialize()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
@@ -66,7 +67,10 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
 end
 
 function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_SHOW(event, spellID)
-    self:Print(spellID)
+    self.RaidBuffs:GlowShow(spellID)
+end
+function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_HIDE(event, spellID)
+    self.RaidBuffs:GlowHide(spellID)
 end
 
 function ToastyClassChores:SlashCommand(msg)
@@ -74,5 +78,6 @@ function ToastyClassChores:SlashCommand(msg)
 		self:Print("pong!")
 	else
 		self:Print("hello there!")
+        
 	end
 end
