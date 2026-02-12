@@ -55,6 +55,9 @@ function RaidBuffs:GlowShow(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class]) then
         return
     end
+    if not raidBuffsFrame then
+        self:Initialize()
+    end
     if raidBuffClassList[spellID] == ToastyClassChores.cdb.profile.class then
         raidBuffsFrame:SetAlpha(0.5)
     end
@@ -63,6 +66,9 @@ end
 function RaidBuffs:GlowHide(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class]) then
         return
+    end
+    if not raidBuffsFrame then
+        self:Initialize()
     end
     if raidBuffClassList[spellID] == ToastyClassChores.cdb.profile.class then
         raidBuffsFrame:SetAlpha(0)

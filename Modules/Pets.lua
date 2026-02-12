@@ -36,12 +36,15 @@ function Pets:Initialize()
     frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])
     frameTexture:SetAllPoints()
     petsFrame:SetAlpha(0)
-    Pets:Update()
+    self:Update()
 end
 
 function Pets:Update()
     if not (ToastyClassChores.db.profile.petTracking and petClasses[ToastyClassChores.cdb.profile.class]) then
         return
+    end
+    if not petsFrame then
+        self:Initialize()
     end
     local hasUI, isHunterPet = HasPetUI()
     if ToastyClassChores.cdb.profile.class == "HUNTER" and not ToastyClassChores.cdb.profile.petMarksman and C_SpecializationInfo.GetSpecialization() == 2 then
@@ -82,5 +85,5 @@ function Pets:CheckAnomaly()
             ToastyClassChores.cdb.profile.sacrificeGrimoire = false
         end
     end
-    Pets:Update()
+    self:Update()
 end
