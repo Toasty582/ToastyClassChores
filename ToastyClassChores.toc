@@ -22,5 +22,5 @@ Libs\AceConfig-3.0\AceConfig-3.0.xml
 Core.lua
 Config.lua
 
-Shadowform.lua
-RaidBuffs.lua
+Modules\Shadowform.lua
+Modules\RaidBuffs.lua
