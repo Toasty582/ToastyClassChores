@@ -34,6 +34,7 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("PLAYER_DEAD")
     self:RegisterEvent("UNIT_SPELLCAST_SENT")
     self:RegisterEvent("UNIT_AURA")
+    self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
     print("The class chores shall soon be tracked")
 
     self:RegisterChatCommand("tcc", "SlashCommand")
@@ -45,7 +46,7 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
-    self.Shadowform.Update()
+    self.Shadowform.UpdateSpec()
 end
 
 function ToastyClassChores:PLAYER_DEAD()
@@ -64,6 +65,9 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     end
 end
 
+function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_SHOW(event, spellID)
+    self:Print(spellID)
+end
 
 function ToastyClassChores:SlashCommand(msg)
 	if msg == "ping" then

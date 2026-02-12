@@ -33,10 +33,14 @@ function Shadowform:Initialize()
     local frameTexture = shadowformFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(136200)
     frameTexture:SetAllPoints()
-    if active == 1 then
-        ToastyClassChores.shadowformFrame:SetAlpha(0)
+    if C_SpecializationInfo.GetSpecialization() == 3 then
+        if active == 1 then
+            ToastyClassChores.shadowformFrame:SetAlpha(0)
+        else
+            ToastyClassChores.shadowformFrame:SetAlpha(1)
+        end
     else
-        ToastyClassChores.shadowformFrame:SetAlpha(1)
+        ToastyClassChores.shadowformFrame:SetAlpha(0)
     end
 end
 
@@ -44,10 +48,30 @@ function Shadowform:Update()
     if ToastyClassChores.db.profile.shadowformTracking == false or ToastyClassChores.cdb.profile.class ~= "PRIEST" then
         return
     end
+    if C_SpecializationInfo.GetSpecialization() ~= 3 then
+        return
+    end
+    if active == GetShapeshiftForm() then
+        return
+    end
+    
     active = GetShapeshiftForm()
+
     if active == 1 then
         ToastyClassChores.shadowformFrame:SetAlpha(0)
     else
         ToastyClassChores.shadowformFrame:SetAlpha(1)
+    end
+end
+
+function Shadowform:UpdateSpec()
+    if ToastyClassChores.db.profile.shadowformTracking == false or ToastyClassChores.cdb.profile.class ~= "PRIEST" then
+        return
+    end
+    active = 0
+    if C_SpecializationInfo.GetSpecialization() == 3 then
+        ToastyClassChores.shadowformFrame:SetAlpha(1)
+    else
+        ToastyClassChores.shadowformFrame:SetAlpha(0)
     end
 end
