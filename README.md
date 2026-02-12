@@ -4,13 +4,14 @@ A World of Warcraft addon designed to help keep track of important class upkeep 
 Currently Implemented:
 - Shadowform
 - Raid buffs (Out of combat)
+- Hunter pets
+- Warlock pets
 
 Planned Features:
 - Raid buffs (Solo)
 - Druid forms
 - Warrior stances
-- Hunter pets
-- Warlock pets
+- Grimoire of Sacrifice reminder
 
 Want to do but don't know how yet:
 - Raid buffs (In combat)

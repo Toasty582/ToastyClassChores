@@ -31,11 +31,14 @@ function ToastyClassChores:SetRaidBuffTracking(info, value)
         RaidBuffs:Initialize()
     else
         self:Print("Disabling Raid Buff Tracking")
+        if raidBuffsFrame then
+            raidBuffsFrame:SetAlpha(0)
+        end
     end
 end
 
 function RaidBuffs:Initialize()
-    if not ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class] then
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class]) then
         return
     end
     raidBuffsFrame = CreateFrame("Frame", "Raid Buffs Reminder", ToastyClassChores.choreFrame)
@@ -49,7 +52,7 @@ function RaidBuffs:Initialize()
 end
 
 function RaidBuffs:GlowShow(spellID)
-    if not ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class] then
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class]) then
         return
     end
     if raidBuffClassList[spellID] == ToastyClassChores.cdb.profile.class then
@@ -58,7 +61,7 @@ function RaidBuffs:GlowShow(spellID)
 end
 
 function RaidBuffs:GlowHide(spellID)
-    if not ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class] then
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class]) then
         return
     end
     if raidBuffClassList[spellID] == ToastyClassChores.cdb.profile.class then

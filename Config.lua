@@ -17,6 +17,12 @@ local config = {
             name = "Enable Raid Buff Tracking",
             get = function() return ToastyClassChores.db.profile.raidBuffTracking end,
             set = "SetRaidBuffTracking",
+        },
+        petTracking = {
+            type = "toggle",
+            name = "Enable Pet Tracking",
+            get = function() return ToastyClassChores.db.profile.petTracking end,
+            set = "SetPetTracking",
         }
     },
 }
@@ -24,13 +30,16 @@ local config = {
 local defaults = {
     profile = {
         shadowformTracking = true,
-        raidBuffTracking = true
+        raidBuffTracking = true,
+        petTracking = true
     },
 }
 
 local characterDefaults = {
     profile = {
         class = "",
+        petMarksman = false,
+        sacrificeGrimoire = false
     },
 }
 

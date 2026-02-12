@@ -24,26 +24,28 @@ function ToastyClassChores:OnInitialize()
 
     ToastyClassChores.choreFrame = CreateFrame("Frame", "Chore Frame", UIParent)
     ToastyClassChores.choreFrame:SetPoint("CENTER")
-    ToastyClassChores.choreFrame:SetSize(500,500)
+    ToastyClassChores.choreFrame:SetSize(500, 500)
 end
 
 function ToastyClassChores:OnEnable()
-    
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
     self:RegisterEvent("PLAYER_DEAD")
-    self:RegisterEvent("UNIT_SPELLCAST_SENT")
     self:RegisterEvent("UNIT_AURA")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
+    self:RegisterEvent("UNIT_PET")
+    self:RegisterEvent("SPELLS_CHANGED")
 
     self:RegisterChatCommand("tcc", "SlashCommand")
+    self:RegisterChatCommand("chores", "SlashCommand")
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
     _, self.cdb.profile.class, _ = UnitClass("player")
     self.Shadowform.Initialize()
     self.RaidBuffs.Initialize()
+    self.Pets:Initialize()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
@@ -52,10 +54,6 @@ end
 
 function ToastyClassChores:PLAYER_DEAD()
     self.Shadowform.Update()
-end
-
-function ToastyClassChores:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
-    --self:Print(spellID)
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
@@ -69,15 +67,29 @@ end
 function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_SHOW(event, spellID)
     self.RaidBuffs:GlowShow(spellID)
 end
+
 function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_HIDE(event, spellID)
     self.RaidBuffs:GlowHide(spellID)
 end
 
+function ToastyClassChores:UNIT_PET()
+    if self.cdb.profile.class == "HUNTER" or self.cdb.profile.class == "WARLOCK" then
+        self.Pets:Update()
+    end
+end
+
+function ToastyClassChores:SPELLS_CHANGED()
+    if not PlayerIsInCombat() then
+        if self.cdb.profile.class == "HUNTER" or self.cdb.profile.class == "WARLOCK" then
+            self.Pets:CheckAnomaly()
+        end
+    end
+end
+
 function ToastyClassChores:SlashCommand(msg)
-	if msg == "ping" then
-		self:Print("pong!")
-	else
-		self:Print("hello there!")
-        
-	end
+    if msg == "ping" then
+        self:Print("pong!")
+    else
+        self:Print("Hi! Please report any bugs you find!")
+    end
 end
