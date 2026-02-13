@@ -31,7 +31,6 @@ end
 
 function Shadowform:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
-    ToastyClassChores:Print(playerClass == "PRIEST")
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
         return
     end

@@ -8,6 +8,8 @@ local petsFrame
 
 local playerClass
 
+local petExistsBeforeMounting
+
 local petClasses = {
     HUNTER = 132161,
     WARLOCK = 136218
@@ -56,6 +58,14 @@ function Pets:Update()
     if not petsFrame then
         self:Initialize()
     end
+    if IsMounted() then
+        petsFrame:SetAlpha(0)
+        return
+    end
+    if petExistsBeforeMounting then
+        petExistsBeforeMounting = false
+        return
+    end
     local hasUI, isHunterPet = HasPetUI()
     if playerClass == "HUNTER" and not ToastyClassChores.cdb.profile.petMarksman and C_SpecializationInfo.GetSpecialization() == 2 then
         petsFrame:SetAlpha(0)
@@ -96,4 +106,16 @@ function Pets:CheckAnomaly()
         end
     end
     self:Update()
+end
+
+function Pets:MountCheck()
+    if not ToastyClassChores.db.profile.petsTracking then
+        return
+    end
+    if IsMounted() then
+        local hasUI, _ = HasPetUI()
+        petExistsBeforeMounting = hasUI
+    else
+        self:Update()
+    end
 end

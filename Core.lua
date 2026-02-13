@@ -30,6 +30,7 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
     self:RegisterEvent("UNIT_PET")
     self:RegisterEvent("SPELLS_CHANGED")
+    self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
 
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
@@ -38,24 +39,31 @@ end
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
-    self.Shadowform.Initialize()
-    self.RaidBuff.Initialize()
+    self.Shadowform:Initialize()
+    self.RaidBuff:Initialize()
     self.Pets:Initialize()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
-    self.Shadowform.UpdateSpec()
+    self.Shadowform:UpdateSpec()
 end
 
 function ToastyClassChores:PLAYER_DEAD()
-    self.Shadowform.Update()
+    self.Shadowform:Update()
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     if playerClass == "PRIEST" then
         if unitTarget == "player" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
-            self.Shadowform.Update()
+            self.Shadowform:Update()
         end
+    end
+
+end
+
+function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" then
+        self.Pets:MountCheck()
     end
 end
 
