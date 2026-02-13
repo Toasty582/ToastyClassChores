@@ -10,6 +10,7 @@ local frameTexture
 local playerClass
 local knowsMoonkinForm
 local knowsTreantForm
+local knowsWildpowerSurge
 
 -- Note that resto druids can use Treant Form as well, which can be in index 4 or 5 depending on if they're also specced into moonkin form.
 local preferredForm = {
@@ -126,6 +127,9 @@ function DruidForms:Update()
         else
             druidFormsFrame:SetAlpha(0)
         end
+        if knowsWildpowerSurge and (formIndex == 1 or formIndex == 2) then
+            druidFormsFrame:SetAlpha(0)
+        end
     else
         local treantIndex = 4 + knowsMoonkinForm
         if formIndex ~= 0 and formIndex ~= treantIndex then
@@ -146,6 +150,11 @@ function DruidForms:CheckForms()
         knowsTreantForm = 1
     else
         knowsTreantForm = 0
+    end
+    if C_SpellBook.IsSpellKnown(441691) then
+        knowsWildpowerSurge = 1
+    else
+        knowsWildpowerSurge = 0
     end
 end
 
