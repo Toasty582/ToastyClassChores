@@ -92,6 +92,7 @@ local config = {
                     desc = "Stop the frame from hiding while in the 'correct' form",
                     get = function() return ToastyClassChores.db.profile.druidFormsAlwaysShow end,
                     set = "SetDruidFormsAlwaysShow",
+                    order = -1,
                 },
             }
         }
