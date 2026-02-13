@@ -7,6 +7,7 @@ local Shadowform = ToastyClassChores.Shadowform
 local active
 local shadowformFrame
 local playerClass
+local alphaBeforeUnlock
 
 
 function ToastyClassChores:SetShadowformTracking(info, value)
@@ -36,11 +37,25 @@ function Shadowform:Initialize()
     end
     active = GetShapeshiftForm()
     shadowformFrame = CreateFrame("Frame", "Shadowform Reminder", UIParent)
-    shadowformFrame:SetPoint("CENTER")
-    shadowformFrame:SetSize(ToastyClassChores.db.profile.shadowformIconSize, ToastyClassChores.db.profile.shadowformIconSize)
+    shadowformFrame:SetPoint(ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, UIParent,
+        ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint,
+        ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos)
+    shadowformFrame:SetSize(ToastyClassChores.db.profile.shadowformIconSize,
+        ToastyClassChores.db.profile.shadowformIconSize)
     local frameTexture = shadowformFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(136200)
     frameTexture:SetAllPoints()
+
+    shadowformFrame:RegisterForDrag("LeftButton")
+    shadowformFrame:SetScript("OnDragStart", function(self)
+        self:StartMoving()
+    end)
+    shadowformFrame:SetScript("OnDragStop", function(self)
+        self:StopMovingOrSizing()
+        ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint, ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos =
+        shadowformFrame:GetPoint()
+    end)
+
     if C_SpecializationInfo.GetSpecialization() == 3 then
         if active == 1 then
             shadowformFrame:SetAlpha(0)
@@ -62,13 +77,8 @@ function Shadowform:Update()
     if C_SpecializationInfo.GetSpecialization() ~= 3 then
         return
     end
-    if active == GetShapeshiftForm() then
-        return
-    end
-    
-    active = GetShapeshiftForm()
 
-    if active == 1 then
+    if GetShapeshiftForm() == 1 then
         shadowformFrame:SetAlpha(0)
     else
         shadowformFrame:SetAlpha(1)
@@ -82,10 +92,22 @@ function Shadowform:UpdateSpec()
     if not shadowformFrame then
         self:Initialize()
     end
-    active = 0
     if C_SpecializationInfo.GetSpecialization() == 3 then
         shadowformFrame:SetAlpha(1)
     else
         shadowformFrame:SetAlpha(0)
+    end
+end
+
+function Shadowform:ToggleFrameLock(value)
+    if shadowformFrame then
+        shadowformFrame:SetMovable(not value)
+        shadowformFrame:EnableMouse(not value)
+
+        if not value then
+            shadowformFrame:SetAlpha(1)
+        else
+            self:Update()
+        end
     end
 end

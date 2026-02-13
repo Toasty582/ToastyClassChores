@@ -6,6 +6,7 @@ local RaidBuff = ToastyClassChores.RaidBuff
 
 local raidBuffFrame
 local playerClass
+local alphaBeforeUnlock
 
 local raidBuffClassList = {
     [1126] = "DRUID",
@@ -51,12 +52,23 @@ function RaidBuff:Initialize()
         return
     end
     raidBuffFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
-    raidBuffFrame:SetPoint("CENTER")
+    raidBuffFrame:SetPoint(ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, UIParent, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos)
     raidBuffFrame:SetSize(ToastyClassChores.db.profile.raidBuffIconSize, ToastyClassChores.db.profile.raidBuffIconSize)
     ToastyClassChores.raidBuffFrame = raidBuffFrame
     local frameTexture = raidBuffFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(raidBuffIconList[playerClass])
     frameTexture:SetAllPoints()
+
+    raidBuffFrame:RegisterForDrag("LeftButton")
+    raidBuffFrame:SetScript("OnDragStart", function(self)
+        self:StartMoving()
+    end)
+    raidBuffFrame:SetScript("OnDragStop", function(self)
+        self:StopMovingOrSizing()
+        ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos =
+        raidBuffFrame:GetPoint()
+    end)
+
     raidBuffFrame:SetAlpha(0)
 end
 
@@ -81,5 +93,19 @@ function RaidBuff:GlowHide(spellID)
     end
     if raidBuffClassList[spellID] == playerClass then
         raidBuffFrame:SetAlpha(0)
+    end
+end
+
+function RaidBuff:ToggleFrameLock(value)
+    if raidBuffFrame then
+        raidBuffFrame:SetMovable(not value)
+        raidBuffFrame:EnableMouse(not value)
+
+        if not value then
+            alphaBeforeUnlock = raidBuffFrame:GetAlpha()
+            raidBuffFrame:SetAlpha(1)
+        else
+            raidBuffFrame:SetAlpha(alphaBeforeUnlock)
+        end
     end
 end

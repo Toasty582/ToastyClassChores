@@ -41,12 +41,23 @@ function Pets:Initialize()
         return
     end
     petsFrame = CreateFrame("Frame", "Pet Reminder", UIParent)
-    petsFrame:SetPoint("CENTER")
+    petsFrame:SetPoint(ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, UIParent, ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos, ToastyClassChores.db.profile.petsLocation.yPos)
     petsFrame:SetSize(ToastyClassChores.db.profile.petsIconSize, ToastyClassChores.db.profile.petsIconSize)
     ToastyClassChores.petsFrame = petsFrame
     local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])
     frameTexture:SetAllPoints()
+
+    petsFrame:RegisterForDrag("LeftButton")
+    petsFrame:SetScript("OnDragStart", function(self)
+        self:StartMoving()
+    end)
+    petsFrame:SetScript("OnDragStop", function(self)
+        self:StopMovingOrSizing()
+        ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos, ToastyClassChores.db.profile.petsLocation.yPos =
+        petsFrame:GetPoint()
+    end)
+
     petsFrame:SetAlpha(0)
     self:Update()
 end
@@ -117,5 +128,18 @@ function Pets:MountCheck()
         petExistsBeforeMounting = hasUI
     else
         self:Update()
+    end
+end
+
+function Pets:ToggleFrameLock(value)
+    if petsFrame then
+        petsFrame:SetMovable(not value)
+        petsFrame:EnableMouse(not value)
+
+        if not value then
+            petsFrame:SetAlpha(1)
+        else
+            petsFrame:Update()
+        end
     end
 end

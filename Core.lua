@@ -19,6 +19,10 @@ function ToastyClassChores:OnInitialize()
 
     LibStub("AceConfig-3.0"):RegisterOptionsTable("ToastyClassChores", config)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ToastyClassChores", "ToastyClassChores")
+
+    if not ToastyClassChores.db.profile.frameLock then
+        self:ToggleFrameLock()
+    end
 end
 
 function ToastyClassChores:OnEnable()
@@ -87,6 +91,19 @@ function ToastyClassChores:SPELLS_CHANGED()
             self.Pets:CheckAnomaly()
         end
     end
+end
+
+function ToastyClassChores:ToggleFrameLock()
+    ToastyClassChores.db.profile.frameLock = not ToastyClassChores.db.profile.frameLock
+    local value = ToastyClassChores.db.profile.frameLock
+    if value then
+        self:Print("Locking Frames")
+    else
+        self:Print("Unlocking Frames")
+    end
+    self.Shadowform:ToggleFrameLock(value)
+    self.RaidBuff:ToggleFrameLock(value)
+    self.Pets:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)
