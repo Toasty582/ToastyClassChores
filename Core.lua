@@ -46,14 +46,15 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     self.Shadowform:Initialize()
     self.RaidBuff:Initialize()
     self.Pets:Initialize()
+    self.DruidForms:Initialize()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
-    self.Shadowform:UpdateSpec()
+    --self.Shadowform:UpdateSpec()
+    self.Shadowform:Update()
 end
 
 function ToastyClassChores:PLAYER_DEAD()
-    self.Shadowform:Update()
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
@@ -62,7 +63,11 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
             self.Shadowform:Update()
         end
     end
-
+    if playerClass == "DRUID" then
+        if unitTarget == "player" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+            self.DruidForms:Update()
+        end
+    end
 end
 
 function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
@@ -87,8 +92,11 @@ end
 
 function ToastyClassChores:SPELLS_CHANGED()
     if not PlayerIsInCombat() then
-        if self.cdb.profile.class == "HUNTER" or self.cdb.profile.class == "WARLOCK" then
+        if playerClass == "HUNTER" or playerClass == "WARLOCK" then
             self.Pets:CheckAnomaly()
+        end
+        if playerClass == "DRUID" then
+            self.DruidForms:CheckForms()
         end
     end
 end
@@ -104,6 +112,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.Shadowform:ToggleFrameLock(value)
     self.RaidBuff:ToggleFrameLock(value)
     self.Pets:ToggleFrameLock(value)
+    self.DruidForms:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)

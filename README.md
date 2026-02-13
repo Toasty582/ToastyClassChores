@@ -6,10 +6,10 @@ Currently Implemented:
 - Raid buffs (Out of combat)
 - Hunter pets
 - Warlock pets
+- Druid forms
 
 Planned Features:
 - Raid buffs (Solo)
-- Druid forms
 - Warrior stances
 - Grimoire of Sacrifice reminder
 

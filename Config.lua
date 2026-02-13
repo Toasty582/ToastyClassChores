@@ -54,7 +54,6 @@ local config = {
             type = "group",
             name = "Pets",
             args = {
-
                 petsTracking = {
                     type = "toggle",
                     name = "Enable Tracking",
@@ -67,6 +66,32 @@ local config = {
                     softMax = 200,
                     get = function() return ToastyClassChores.db.profile.petsIconSize end,
                     set = "SetPetsIconSize",
+                },
+            }
+        },
+        druidforms = {
+            type = "group",
+            name = "Druid Forms",
+            args = {
+                druidFormsTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.druidFormsTracking end,
+                    set = "SetDruidFormsTracking",
+                },
+                druidFormsIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    get = function() return ToastyClassChores.db.profile.druidFormsIconSize end,
+                    set = "SetDruidFormsIconSize",
+                },
+                druidFormsAlwaysShow = {
+                    type = "toggle",
+                    name = "Always Show Form",
+                    desc = "Stop the frame from hiding while in the 'correct' form",
+                    get = function() return ToastyClassChores.db.profile.druidFormsAlwaysShow end,
+                    set = "SetDruidFormsAlwaysShow",
                 },
             }
         }
@@ -96,18 +121,27 @@ local defaults = {
         petsIconSize = 100,
         petsLocation = {
             xPos = 0,
-            yPos = 0,
+            yPos = 55,
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },
+        druidFormsTracking = true,
+        druidFormsIconSize = 100,
+        druidFormsLocation = {
+            xPos = 0,
+            yPos = 55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        },
+        druidFormsAlwaysShow = false,
     },
 }
 
 local characterDefaults = {
     profile = {
         class = "",
-        petMarksman = false,
-        sacrificeGrimoire = false,
+        --petMarksman = false,
+        --sacrificeGrimoire = false,
     },
 }
 
