@@ -54,7 +54,6 @@ local config = {
             type = "group",
             name = "Pets",
             args = {
-
                 petsTracking = {
                     type = "toggle",
                     name = "Enable Tracking",
@@ -68,6 +67,18 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.petsIconSize end,
                     set = "SetPetsIconSize",
                 },
+            }
+        },
+        druidforms = {
+            type = "group",
+            name = "Druid Forms",
+            args = {
+                druidFormsTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.druidFormsTracking end,
+                    set = "SetDruidFormsTracking",
+                }
             }
         }
     },
@@ -96,10 +107,18 @@ local defaults = {
         petsIconSize = 100,
         petsLocation = {
             xPos = 0,
-            yPos = 0,
+            yPos = 55,
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },
+        druidFormsTracking = true,
+        druidFormsIconSize = 100,
+        druidFormsLocation = {
+            xPos = 0,
+            yPos = 55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        }
     },
 }
 

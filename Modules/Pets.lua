@@ -45,7 +45,6 @@ function Pets:Initialize()
         ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos,
         ToastyClassChores.db.profile.petsLocation.yPos)
     petsFrame:SetSize(ToastyClassChores.db.profile.petsIconSize, ToastyClassChores.db.profile.petsIconSize)
-    ToastyClassChores.petsFrame = petsFrame
     local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])
     frameTexture:SetAllPoints()

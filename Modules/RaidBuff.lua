@@ -54,7 +54,6 @@ function RaidBuff:Initialize()
     raidBuffFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
     raidBuffFrame:SetPoint(ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, UIParent, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos)
     raidBuffFrame:SetSize(ToastyClassChores.db.profile.raidBuffIconSize, ToastyClassChores.db.profile.raidBuffIconSize)
-    ToastyClassChores.raidBuffFrame = raidBuffFrame
     local frameTexture = raidBuffFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(raidBuffIconList[playerClass])
     frameTexture:SetAllPoints()
