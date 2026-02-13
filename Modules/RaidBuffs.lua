@@ -5,6 +5,7 @@ ToastyClassChores.RaidBuffs = ToastyClassChores.RaidBuffs or {}
 local RaidBuffs = ToastyClassChores.RaidBuffs
 
 local raidBuffsFrame
+local playerClass
 
 local raidBuffClassList = {
     [1126] = "DRUID",
@@ -38,39 +39,40 @@ function ToastyClassChores:SetRaidBuffTracking(info, value)
 end
 
 function RaidBuffs:Initialize()
-    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class]) then
+    playerClass = ToastyClassChores.cdb.profile.class
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    raidBuffsFrame = CreateFrame("Frame", "Raid Buffs Reminder", ToastyClassChores.choreFrame)
+    raidBuffsFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
     raidBuffsFrame:SetPoint("CENTER")
     raidBuffsFrame:SetSize(100, 100)
     ToastyClassChores.raidBuffsFrame = raidBuffsFrame
     local frameTexture = raidBuffsFrame:CreateTexture(nil, "BACKGROUND")
-    frameTexture:SetTexture(raidBuffIconList[ToastyClassChores.cdb.profile.class])
+    frameTexture:SetTexture(raidBuffIconList[playerClass])
     frameTexture:SetAllPoints()
     raidBuffsFrame:SetAlpha(0)
 end
 
 function RaidBuffs:GlowShow(spellID)
-    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class]) then
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
     if not raidBuffsFrame then
         self:Initialize()
     end
-    if raidBuffClassList[spellID] == ToastyClassChores.cdb.profile.class then
+    if raidBuffClassList[spellID] == playerClass then
         raidBuffsFrame:SetAlpha(0.5)
     end
 end
 
 function RaidBuffs:GlowHide(spellID)
-    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[ToastyClassChores.cdb.profile.class]) then
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
     if not raidBuffsFrame then
         self:Initialize()
     end
-    if raidBuffClassList[spellID] == ToastyClassChores.cdb.profile.class then
+    if raidBuffClassList[spellID] == playerClass then
         raidBuffsFrame:SetAlpha(0)
     end
 end

@@ -6,6 +6,8 @@ local Pets = ToastyClassChores.Pets
 
 local petsFrame
 
+local playerClass
+
 local petClasses = {
     HUNTER = 132161,
     WARLOCK = 136218
@@ -25,10 +27,11 @@ function ToastyClassChores:SetPetTracking(info, value)
 end
 
 function Pets:Initialize()
-    if not (ToastyClassChores.db.profile.petTracking and petClasses[ToastyClassChores.cdb.profile.class]) then
+    playerClass = ToastyClassChores.cdb.profile.class
+    if not (ToastyClassChores.db.profile.petTracking and petClasses[playerClass]) then
         return
     end
-    petsFrame = CreateFrame("Frame", "Pet Reminder", ToastyClassChores.choreFrame)
+    petsFrame = CreateFrame("Frame", "Pet Reminder", UIParent)
     petsFrame:SetPoint("CENTER")
     petsFrame:SetSize(100, 100)
     ToastyClassChores.petsFrame = petsFrame
@@ -40,18 +43,18 @@ function Pets:Initialize()
 end
 
 function Pets:Update()
-    if not (ToastyClassChores.db.profile.petTracking and petClasses[ToastyClassChores.cdb.profile.class]) then
+    if not (ToastyClassChores.db.profile.petTracking and petClasses[playerClass]) then
         return
     end
     if not petsFrame then
         self:Initialize()
     end
     local hasUI, isHunterPet = HasPetUI()
-    if ToastyClassChores.cdb.profile.class == "HUNTER" and not ToastyClassChores.cdb.profile.petMarksman and C_SpecializationInfo.GetSpecialization() == 2 then
+    if playerClass == "HUNTER" and not ToastyClassChores.cdb.profile.petMarksman and C_SpecializationInfo.GetSpecialization() == 2 then
         petsFrame:SetAlpha(0)
         return
     end
-    if ToastyClassChores.cdb.profile.class == "WARLOCK" and ToastyClassChores.cdb.profile.sacrificeGrimoire and C_SpecializationInfo.GetSpecialization() ~= 2 then
+    if playerClass == "WARLOCK" and ToastyClassChores.cdb.profile.sacrificeGrimoire and C_SpecializationInfo.GetSpecialization() ~= 2 then
         petsFrame:SetAlpha(0)
         return
     end
@@ -59,10 +62,10 @@ function Pets:Update()
         petsFrame:SetAlpha(1)
         return
     else
-        if ToastyClassChores.cdb.profile.class == "HUNTER" and isHunterPet then
+        if playerClass == "HUNTER" and isHunterPet then
             petsFrame:SetAlpha(0)
             return
-        elseif ToastyClassChores.cdb.profile.class == "WARLOCK" and not isHunterPet then
+        elseif playerClass == "WARLOCK" and not isHunterPet then
             petsFrame:SetAlpha(0)
             return
         end
@@ -72,13 +75,13 @@ function Pets:Update()
 end
 
 function Pets:CheckAnomaly()
-    if ToastyClassChores.cdb.profile.class == "HUNTER" and C_SpecializationInfo.GetSpecialization() == 2 then
+    if playerClass == "HUNTER" and C_SpecializationInfo.GetSpecialization() == 2 then
         if C_SpellBook.IsSpellKnown(1223323) then
             ToastyClassChores.cdb.profile.petMarksman = true
         else
             ToastyClassChores.cdb.profile.petMarksman = false
         end
-    elseif ToastyClassChores.cdb.profile.class == "WARLOCK" and C_SpecializationInfo.GetSpecialization() ~= 2 then
+    elseif playerClass == "WARLOCK" and C_SpecializationInfo.GetSpecialization() ~= 2 then
         if C_SpellBook.IsSpellKnown(108503) then
             ToastyClassChores.cdb.profile.sacrificeGrimoire = true
         else

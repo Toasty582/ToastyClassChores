@@ -6,6 +6,7 @@ local Shadowform = ToastyClassChores.Shadowform
 
 local active
 local shadowformFrame
+local playerClass
 
 
 function ToastyClassChores:SetShadowformTracking(info, value)
@@ -22,11 +23,12 @@ function ToastyClassChores:SetShadowformTracking(info, value)
 end
 
 function Shadowform:Initialize()
-    if not (ToastyClassChores.db.profile.shadowformTracking and ToastyClassChores.cdb.profile.class == "PRIEST") then
+    playerClass = ToastyClassChores.cdb.profile.class
+    if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
         return
     end
     active = GetShapeshiftForm()
-    shadowformFrame = CreateFrame("Frame", "Shadowform Reminder", ToastyClassChores.choreFrame)
+    shadowformFrame = CreateFrame("Frame", "Shadowform Reminder", UIParent)
     shadowformFrame:SetPoint("CENTER")
     shadowformFrame:SetSize(100,100)
     local frameTexture = shadowformFrame:CreateTexture(nil, "BACKGROUND")
@@ -44,7 +46,7 @@ function Shadowform:Initialize()
 end
 
 function Shadowform:Update()
-    if not (ToastyClassChores.db.profile.shadowformTracking and ToastyClassChores.cdb.profile.class == "PRIEST") then
+    if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
         return
     end
     if not shadowformFrame then
@@ -67,7 +69,7 @@ function Shadowform:Update()
 end
 
 function Shadowform:UpdateSpec()
-    if not (ToastyClassChores.db.profile.shadowformTracking and ToastyClassChores.cdb.profile.class == "PRIEST") then
+    if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
         return
     end
     if not shadowformFrame then
