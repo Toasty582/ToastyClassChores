@@ -69,12 +69,16 @@ end
 
 function Shadowform:Update()
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
+        if shadowformFrame then
+            shadowformFrame:SetAlpha(0)
+        end
         return
     end
     if not shadowformFrame then
         self:Initialize()
     end
     if C_SpecializationInfo.GetSpecialization() ~= 3 then
+        shadowformFrame:SetAlpha(0)
         return
     end
 
@@ -87,6 +91,9 @@ end
 
 function Shadowform:UpdateSpec()
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
+        if shadowformFrame then
+            shadowformFrame:SetAlpha(0)
+        end
         return
     end
     if not shadowformFrame then

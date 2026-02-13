@@ -66,6 +66,9 @@ end
 
 function Pets:Update()
     if not (ToastyClassChores.db.profile.petsTracking and petClasses[playerClass]) then
+        if petsFrame then
+            petsFrame:SetAlpha(0)
+        end
         return
     end
     if not petsFrame then
@@ -123,6 +126,9 @@ end
 
 function Pets:MountCheck()
     if not ToastyClassChores.db.profile.petsTracking then
+        if petsFrame then
+            petsFrame:SetAlpha(0)
+        end
         return
     end
     if IsMounted() then

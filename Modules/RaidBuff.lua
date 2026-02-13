@@ -74,6 +74,9 @@ end
 
 function RaidBuff:GlowShow(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        if raidBuffFrame then
+            raidBuffFrame:SetAlpha(0)
+        end
         return
     end
     if not raidBuffFrame then
@@ -86,6 +89,9 @@ end
 
 function RaidBuff:GlowHide(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        if raidBuffFrame then
+            raidBuffFrame:SetAlpha(0)
+        end
         return
     end
     if not raidBuffFrame then
