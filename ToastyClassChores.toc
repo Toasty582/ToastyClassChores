@@ -3,6 +3,7 @@
 ## Notes: An addon designed to show class upkeep items such as shadowform and hunter pets.
 ## Author: Toasty
 ## Version: @project-version@
+## IconTexture: Interface\Addons\ToastyClassChores\logo.tga
 ## RequiredDeps:
 ## X-Curse-Project-ID: 1460843
 ## SavedVariables: ToastyClassChoresDB
