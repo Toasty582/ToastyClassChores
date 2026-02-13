@@ -57,7 +57,7 @@ local config = {
 
                 petsTracking = {
                     type = "toggle",
-                    name = "Enable Pet Tracking",
+                    name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.petsTracking end,
                     set = "SetPetsTracking",
                 },
