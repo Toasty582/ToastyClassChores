@@ -122,11 +122,8 @@ function DruidForms:Update()
     end
     if specIndex ~= 4 then -- Resto is slightly weird
         if formIndex ~= preferredForm[specIndex] then
-            ToastyClassChores:Print("Wrong form")
-            ToastyClassChores:Print(formIndex)
             druidFormsFrame:SetAlpha(1)
         else
-            ToastyClassChores:Print("Right form")
             druidFormsFrame:SetAlpha(0)
         end
     else

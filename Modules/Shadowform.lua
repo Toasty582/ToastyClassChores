@@ -36,15 +36,17 @@ function Shadowform:Initialize()
         return
     end
     active = GetShapeshiftForm()
-    shadowformFrame = CreateFrame("Frame", "Shadowform Reminder", UIParent)
-    shadowformFrame:SetPoint(ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, UIParent,
-        ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint,
-        ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos)
-    shadowformFrame:SetSize(ToastyClassChores.db.profile.shadowformIconSize,
-        ToastyClassChores.db.profile.shadowformIconSize)
-    local frameTexture = shadowformFrame:CreateTexture(nil, "BACKGROUND")
-    frameTexture:SetTexture(136200)
-    frameTexture:SetAllPoints()
+    if not shadowformFrame then
+        shadowformFrame = CreateFrame("Frame", "Shadowform Reminder", UIParent)
+        shadowformFrame:SetPoint(ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, UIParent,
+            ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint,
+            ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos)
+        shadowformFrame:SetSize(ToastyClassChores.db.profile.shadowformIconSize,
+            ToastyClassChores.db.profile.shadowformIconSize)
+        local frameTexture = shadowformFrame:CreateTexture(nil, "BACKGROUND")
+        frameTexture:SetTexture(136200)
+        frameTexture:SetAllPoints()
+    end
 
     shadowformFrame:RegisterForDrag("LeftButton")
     shadowformFrame:SetScript("OnDragStart", function(self)
@@ -53,7 +55,7 @@ function Shadowform:Initialize()
     shadowformFrame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
         ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint, ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos =
-        shadowformFrame:GetPoint()
+            shadowformFrame:GetPoint()
     end)
 
     if C_SpecializationInfo.GetSpecialization() == 3 then
@@ -88,6 +90,7 @@ function Shadowform:Update()
         shadowformFrame:SetAlpha(1)
     end
 end
+
 --[[
 function Shadowform:UpdateSpec()
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then

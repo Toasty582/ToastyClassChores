@@ -51,12 +51,17 @@ function RaidBuff:Initialize()
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    raidBuffFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
-    raidBuffFrame:SetPoint(ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, UIParent, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos)
-    raidBuffFrame:SetSize(ToastyClassChores.db.profile.raidBuffIconSize, ToastyClassChores.db.profile.raidBuffIconSize)
-    local frameTexture = raidBuffFrame:CreateTexture(nil, "BACKGROUND")
-    frameTexture:SetTexture(raidBuffIconList[playerClass])
-    frameTexture:SetAllPoints()
+    if not raidBuffFrame then
+        raidBuffFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
+        raidBuffFrame:SetPoint(ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, UIParent,
+            ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint,
+            ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos)
+        raidBuffFrame:SetSize(ToastyClassChores.db.profile.raidBuffIconSize,
+            ToastyClassChores.db.profile.raidBuffIconSize)
+        local frameTexture = raidBuffFrame:CreateTexture(nil, "BACKGROUND")
+        frameTexture:SetTexture(raidBuffIconList[playerClass])
+        frameTexture:SetAllPoints()
+    end
 
     raidBuffFrame:RegisterForDrag("LeftButton")
     raidBuffFrame:SetScript("OnDragStart", function(self)
@@ -65,7 +70,7 @@ function RaidBuff:Initialize()
     raidBuffFrame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
         ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos =
-        raidBuffFrame:GetPoint()
+            raidBuffFrame:GetPoint()
     end)
 
     raidBuffFrame:SetAlpha(0)

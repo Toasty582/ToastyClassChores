@@ -42,14 +42,16 @@ function Pets:Initialize()
     if not (ToastyClassChores.db.profile.petsTracking and petClasses[playerClass]) then
         return
     end
-    petsFrame = CreateFrame("Frame", "Pet Reminder", UIParent)
-    petsFrame:SetPoint(ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, UIParent,
-        ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos,
-        ToastyClassChores.db.profile.petsLocation.yPos)
-    petsFrame:SetSize(ToastyClassChores.db.profile.petsIconSize, ToastyClassChores.db.profile.petsIconSize)
-    local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
-    frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])
-    frameTexture:SetAllPoints()
+    if not petsFrame then
+        petsFrame = CreateFrame("Frame", "Pet Reminder", UIParent)
+        petsFrame:SetPoint(ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, UIParent,
+            ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos,
+            ToastyClassChores.db.profile.petsLocation.yPos)
+        petsFrame:SetSize(ToastyClassChores.db.profile.petsIconSize, ToastyClassChores.db.profile.petsIconSize)
+        local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
+        frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])
+        frameTexture:SetAllPoints()
+    end
 
     petsFrame:RegisterForDrag("LeftButton")
     petsFrame:SetScript("OnDragStart", function(self)
