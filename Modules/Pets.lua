@@ -7,6 +7,8 @@ local Pets = ToastyClassChores.Pets
 local petsFrame
 
 local playerClass
+local isPetMarksman
+local isSacrificeGrimoire
 
 local petExistsBeforeMounting
 
@@ -60,6 +62,7 @@ function Pets:Initialize()
     end)
 
     petsFrame:SetAlpha(0)
+    self:CheckAnomaly()
     self:Update()
 end
 
@@ -82,11 +85,11 @@ function Pets:Update()
         return
     end
     local hasUI, isHunterPet = HasPetUI()
-    if playerClass == "HUNTER" and not ToastyClassChores.cdb.profile.petMarksman and C_SpecializationInfo.GetSpecialization() == 2 then
+    if playerClass == "HUNTER" and not isPetMarksman and C_SpecializationInfo.GetSpecialization() == 2 then
         petsFrame:SetAlpha(0)
         return
     end
-    if playerClass == "WARLOCK" and ToastyClassChores.cdb.profile.sacrificeGrimoire and C_SpecializationInfo.GetSpecialization() ~= 2 then
+    if playerClass == "WARLOCK" and isSacrificeGrimoire and C_SpecializationInfo.GetSpecialization() ~= 2 then
         petsFrame:SetAlpha(0)
         return
     end
@@ -109,15 +112,15 @@ end
 function Pets:CheckAnomaly()
     if playerClass == "HUNTER" and C_SpecializationInfo.GetSpecialization() == 2 then
         if C_SpellBook.IsSpellKnown(1223323) then
-            ToastyClassChores.cdb.profile.petMarksman = true
+            isPetMarksman = true
         else
-            ToastyClassChores.cdb.profile.petMarksman = false
+            isPetMarksman = false
         end
     elseif playerClass == "WARLOCK" and C_SpecializationInfo.GetSpecialization() ~= 2 then
         if C_SpellBook.IsSpellKnown(108503) then
-            ToastyClassChores.cdb.profile.sacrificeGrimoire = true
+            isSacrificeGrimoire = true
         else
-            ToastyClassChores.cdb.profile.sacrificeGrimoire = false
+            isSacrificeGrimoire = false
         end
     end
     self:Update()

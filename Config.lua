@@ -78,7 +78,21 @@ local config = {
                     name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.druidFormsTracking end,
                     set = "SetDruidFormsTracking",
-                }
+                },
+                druidFormsIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    get = function() return ToastyClassChores.db.profile.druidFormsIconSize end,
+                    set = "SetDruidFormsIconSize",
+                },
+                druidFormsAlwaysShow = {
+                    type = "toggle",
+                    name = "Always Show Form",
+                    desc = "Stop the frame from hiding while in the 'correct' form",
+                    get = function() return ToastyClassChores.db.profile.druidFormsAlwaysShow end,
+                    set = "SetDruidFormsAlwaysShow",
+                },
             }
         }
     },
@@ -118,15 +132,16 @@ local defaults = {
             yPos = 55,
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
-        }
+        },
+        druidFormsAlwaysShow = false,
     },
 }
 
 local characterDefaults = {
     profile = {
         class = "",
-        petMarksman = false,
-        sacrificeGrimoire = false,
+        --petMarksman = false,
+        --sacrificeGrimoire = false,
     },
 }
 

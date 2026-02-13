@@ -26,3 +26,4 @@ Config.lua
 Modules\Shadowform.lua
 Modules\RaidBuff.lua
 Modules\Pets.lua
+Modules\DruidForms.lua

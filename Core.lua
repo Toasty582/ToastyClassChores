@@ -46,6 +46,7 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     self.Shadowform:Initialize()
     self.RaidBuff:Initialize()
     self.Pets:Initialize()
+    self.DruidForms:Initialize()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
@@ -91,8 +92,11 @@ end
 
 function ToastyClassChores:SPELLS_CHANGED()
     if not PlayerIsInCombat() then
-        if self.cdb.profile.class == "HUNTER" or self.cdb.profile.class == "WARLOCK" then
+        if playerClass == "HUNTER" or playerClass == "WARLOCK" then
             self.Pets:CheckAnomaly()
+        end
+        if playerClass == "DRUID" then
+            self.DruidForms:CheckForms()
         end
     end
 end
