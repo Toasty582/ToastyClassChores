@@ -8,7 +8,9 @@ local playerClass
 function ToastyClassChores:OnInitialize()
     local defaults = ToastyClassChores.defaults
     local characterDefaults = ToastyClassChores.characterDefaults
+    if not defaults or not characterDefaults then self:Print("Defaults not found") end
     local config = ToastyClassChores.config
+    if not config then self:Print("Config not found") end
 
     self.db = LibStub("AceDB-3.0"):New("ToastyClassChoresDB", defaults, true)
     self.cdb = LibStub("AceDB-3.0"):New("ToastyClassChoresCharacterDB", characterDefaults, true)

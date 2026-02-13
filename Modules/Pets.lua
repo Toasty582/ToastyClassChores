@@ -26,7 +26,7 @@ function ToastyClassChores:SetPetTracking(info, value)
     end
 end
 
-function ToastyClassChores:SetRaidBuffIconSize(info, value)
+function ToastyClassChores:SetPetsIconSize(info, value)
     self.db.profile.petsIconSize = value
     if petsFrame then
         petsFrame:SetSize(value, value)
@@ -40,7 +40,7 @@ function Pets:Initialize()
     end
     petsFrame = CreateFrame("Frame", "Pet Reminder", UIParent)
     petsFrame:SetPoint("CENTER")
-    petsFrame:SetSize(self.db.profile.petsIconSize, self.db.profile.petsIconSize)
+    petsFrame:SetSize(ToastyClassChores.db.profile.petsIconSize, ToastyClassChores.db.profile.petsIconSize)
     ToastyClassChores.petsFrame = petsFrame
     local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])

@@ -52,7 +52,7 @@ function RaidBuff:Initialize()
     end
     raidBuffFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
     raidBuffFrame:SetPoint("CENTER")
-    raidBuffFrame:SetSize(self.db.profile.raidBuffIconSize, self.db.profile.raidBuffIconSize)
+    raidBuffFrame:SetSize(ToastyClassChores.db.profile.raidBuffIconSize, ToastyClassChores.db.profile.raidBuffIconSize)
     ToastyClassChores.raidBuffFrame = raidBuffFrame
     local frameTexture = raidBuffFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(raidBuffIconList[playerClass])

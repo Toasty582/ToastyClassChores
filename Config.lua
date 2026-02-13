@@ -6,33 +6,62 @@ local config = {
     handler = ToastyClassChores,
     type = "group",
     args = {
-        shadowformTracking = {
-            type = "toggle",
-            name = "Enable Shadowform Tracking",
-            get = function() return ToastyClassChores.db.profile.shadowformTracking end,
-            set = "SetShadowformTracking",
+        shadowform = {
+            type = "group",
+            name = "Shadowform",
+            args = {
+                shadowformTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    desc = nil,
+                    get = function() return ToastyClassChores.db.profile.shadowformTracking end,
+                    set = "SetShadowformTracking",
+                },
+                shadowformIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    get = function() return ToastyClassChores.db.profile.shadowformIconSize end,
+                    set = "SetShadowformIconSize",
+                },
+            }
         },
-        shadowformIconSize = {
-            type = "range",
-            name = "Shadowform Icon Size",
-            min = 0,
-            max = 1000,
-            softmax = 100,
-            get = function() return ToastyClassChores.db.profile.shadowformIconSize end,
-            set = "SetShadowformIconSize"
+        raidBuff = {
+            type = "group",
+            name = "Raid Buffs",
+            args = {
+                raidBuffTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.raidBuffTracking end,
+                    set = "SetRaidBuffTracking",
+                },
+                raidBuffIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    get = function() return ToastyClassChores.db.profile.raidBuffIconSize end,
+                    set = "SetRaidBuffIconSize",
+                },
+            }
         },
-        raidBuffTracking = {
-            type = "toggle",
-            name = "Enable Raid Buff Tracking",
-            get = function() return ToastyClassChores.db.profile.raidBuffTracking end,
-            set = "SetRaidBuffTracking",
-        },
-        petsTracking = {
-            type = "toggle",
-            name = "Enable Pet Tracking",
-            get = function() return ToastyClassChores.db.profile.petsTracking end,
-            set = "SetPetsTracking",
-        },
+        pets = {
+            type = "group",
+            name = "Pets",
+            args = {
+
+                petsTracking = {
+                    type = "toggle",
+                    name = "Enable Pet Tracking",
+                    get = function() return ToastyClassChores.db.profile.petsTracking end,
+                    set = "SetPetsTracking",
+                },
+                petsIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    get = function() return ToastyClassChores.db.profile.petsIconSize end,
+                    set = "SetPetsIconSize",
+                },
+            }
+        }
     },
 }
 
