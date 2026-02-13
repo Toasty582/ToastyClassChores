@@ -41,7 +41,9 @@ function Pets:Initialize()
         return
     end
     petsFrame = CreateFrame("Frame", "Pet Reminder", UIParent)
-    petsFrame:SetPoint(ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, UIParent, ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos, ToastyClassChores.db.profile.petsLocation.yPos)
+    petsFrame:SetPoint(ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, UIParent,
+        ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos,
+        ToastyClassChores.db.profile.petsLocation.yPos)
     petsFrame:SetSize(ToastyClassChores.db.profile.petsIconSize, ToastyClassChores.db.profile.petsIconSize)
     ToastyClassChores.petsFrame = petsFrame
     local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
@@ -55,7 +57,7 @@ function Pets:Initialize()
     petsFrame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
         ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos, ToastyClassChores.db.profile.petsLocation.yPos =
-        petsFrame:GetPoint()
+            petsFrame:GetPoint()
     end)
 
     petsFrame:SetAlpha(0)
@@ -139,7 +141,7 @@ function Pets:ToggleFrameLock(value)
         if not value then
             petsFrame:SetAlpha(1)
         else
-            petsFrame:Update()
+            self:Update()
         end
     end
 end
