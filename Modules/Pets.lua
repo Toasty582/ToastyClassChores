@@ -14,7 +14,7 @@ local petClasses = {
 }
 
 function ToastyClassChores:SetPetTracking(info, value)
-    self.db.profile.petTracking = value
+    self.db.profile.petsTracking = value
     if value then
         self:Print("Enabling Pet Tracking")
         Pets:Initialize()
@@ -26,14 +26,21 @@ function ToastyClassChores:SetPetTracking(info, value)
     end
 end
 
+function ToastyClassChores:SetRaidBuffIconSize(info, value)
+    self.db.profile.petsIconSize = value
+    if petsFrame then
+        petsFrame:SetSize(value, value)
+    end
+end
+
 function Pets:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.petTracking and petClasses[playerClass]) then
+    if not (ToastyClassChores.db.profile.petsTracking and petClasses[playerClass]) then
         return
     end
     petsFrame = CreateFrame("Frame", "Pet Reminder", UIParent)
     petsFrame:SetPoint("CENTER")
-    petsFrame:SetSize(100, 100)
+    petsFrame:SetSize(self.db.profile.petsIconSize, self.db.profile.petsIconSize)
     ToastyClassChores.petsFrame = petsFrame
     local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])
@@ -43,7 +50,7 @@ function Pets:Initialize()
 end
 
 function Pets:Update()
-    if not (ToastyClassChores.db.profile.petTracking and petClasses[playerClass]) then
+    if not (ToastyClassChores.db.profile.petsTracking and petClasses[playerClass]) then
         return
     end
     if not petsFrame then

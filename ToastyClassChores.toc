@@ -23,5 +23,5 @@ Core.lua
 Config.lua
 
 Modules\Shadowform.lua
-Modules\RaidBuffs.lua
+Modules\RaidBuff.lua
 Modules\Pets.lua

@@ -22,6 +22,13 @@ function ToastyClassChores:SetShadowformTracking(info, value)
     end
 end
 
+function ToastyClassChores:SetShadowformIconSize(info, value)
+    self.db.profile.shadowformIconSize = value
+    if shadowformFrame then
+        shadowformFrame:SetSize(value, value)
+    end
+end
+
 function Shadowform:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
@@ -30,7 +37,7 @@ function Shadowform:Initialize()
     active = GetShapeshiftForm()
     shadowformFrame = CreateFrame("Frame", "Shadowform Reminder", UIParent)
     shadowformFrame:SetPoint("CENTER")
-    shadowformFrame:SetSize(100,100)
+    shadowformFrame:SetSize(self.db.profile.shadowformIconSize, self.db.profile.shadowformIconSize)
     local frameTexture = shadowformFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(136200)
     frameTexture:SetAllPoints()

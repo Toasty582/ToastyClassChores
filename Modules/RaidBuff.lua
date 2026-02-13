@@ -1,10 +1,10 @@
 local ADDON_NAME, ns = ...
 local ToastyClassChores = ns.Addon
 
-ToastyClassChores.RaidBuffs = ToastyClassChores.RaidBuffs or {}
-local RaidBuffs = ToastyClassChores.RaidBuffs
+ToastyClassChores.RaidBuff = ToastyClassChores.RaidBuff or {}
+local RaidBuff = ToastyClassChores.RaidBuff
 
-local raidBuffsFrame
+local raidBuffFrame
 local playerClass
 
 local raidBuffClassList = {
@@ -29,50 +29,57 @@ function ToastyClassChores:SetRaidBuffTracking(info, value)
     self.db.profile.raidBuffTracking = value
     if value then
         self:Print("Enabling Raid Buff Tracking")
-        RaidBuffs:Initialize()
+        RaidBuff:Initialize()
     else
         self:Print("Disabling Raid Buff Tracking")
-        if raidBuffsFrame then
-            raidBuffsFrame:SetAlpha(0)
+        if raidBuffFrame then
+            raidBuffFrame:SetAlpha(0)
         end
     end
 end
 
-function RaidBuffs:Initialize()
+function ToastyClassChores:SetRaidBuffIconSize(info, value)
+    self.db.profile.raidBuffIconSize = value
+    if raidBuffFrame then
+        raidBuffFrame:SetSize(value, value)
+    end
+end
+
+function RaidBuff:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    raidBuffsFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
-    raidBuffsFrame:SetPoint("CENTER")
-    raidBuffsFrame:SetSize(100, 100)
-    ToastyClassChores.raidBuffsFrame = raidBuffsFrame
-    local frameTexture = raidBuffsFrame:CreateTexture(nil, "BACKGROUND")
+    raidBuffFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
+    raidBuffFrame:SetPoint("CENTER")
+    raidBuffFrame:SetSize(self.db.profile.raidBuffIconSize, self.db.profile.raidBuffIconSize)
+    ToastyClassChores.raidBuffFrame = raidBuffFrame
+    local frameTexture = raidBuffFrame:CreateTexture(nil, "BACKGROUND")
     frameTexture:SetTexture(raidBuffIconList[playerClass])
     frameTexture:SetAllPoints()
-    raidBuffsFrame:SetAlpha(0)
+    raidBuffFrame:SetAlpha(0)
 end
 
-function RaidBuffs:GlowShow(spellID)
+function RaidBuff:GlowShow(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    if not raidBuffsFrame then
+    if not raidBuffFrame then
         self:Initialize()
     end
     if raidBuffClassList[spellID] == playerClass then
-        raidBuffsFrame:SetAlpha(0.5)
+        raidBuffFrame:SetAlpha(0.5)
     end
 end
 
-function RaidBuffs:GlowHide(spellID)
+function RaidBuff:GlowHide(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    if not raidBuffsFrame then
+    if not raidBuffFrame then
         self:Initialize()
     end
     if raidBuffClassList[spellID] == playerClass then
-        raidBuffsFrame:SetAlpha(0)
+        raidBuffFrame:SetAlpha(0)
     end
 end

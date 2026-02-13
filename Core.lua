@@ -37,7 +37,7 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
     self.Shadowform.Initialize()
-    self.RaidBuffs.Initialize()
+    self.RaidBuff.Initialize()
     self.Pets:Initialize()
 end
 
@@ -58,11 +58,11 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
 end
 
 function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_SHOW(event, spellID)
-    self.RaidBuffs:GlowShow(spellID)
+    self.RaidBuff:GlowShow(spellID)
 end
 
 function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_HIDE(event, spellID)
-    self.RaidBuffs:GlowHide(spellID)
+    self.RaidBuff:GlowHide(spellID)
 end
 
 function ToastyClassChores:UNIT_PET()
