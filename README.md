@@ -13,10 +13,10 @@ Planned Features:
 - Raid buffs (Solo)
 - Grimoire of Sacrifice reminder
 - In combat rebuff reminder
+- Paladin auras
 
 Want to do but don't know how yet:
 - Source of Magic
 - Earth Shield
 - DK pets
 - Rogue poisons
-- Paladin auras
