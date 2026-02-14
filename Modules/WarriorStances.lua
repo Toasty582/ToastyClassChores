@@ -17,11 +17,11 @@ local preferredStance = {
 }
 
 local stanceIcons = {
-    [1] = 132341,
-    [2] = 132349,
+    [1] = 132341, -- Defensive
+    [2] = 132349, -- Battle
     -- Fury adds 10 to the index
-    [11] = 132341,
-    [12] = 132275,
+    [11] = 132341, -- Defensive
+    [12] = 132275, -- Berserker
 }
 
 function ToastyClassChores:SetWarriorStancesTracking(info, value)

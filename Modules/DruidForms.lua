@@ -22,22 +22,22 @@ local preferredForm = {
 }
 
 local formIcons = {
-    [0] = 625999,
-    [1] = 132276,
-    [2] = 132115,
-    [3] = 132144,
+    [0] = 625999, -- Humanoid
+    [1] = 132276, -- Cat
+    [2] = 132115, -- Bear
+    [3] = 132144, -- Travel
     -- 3 or less can be treated normally, the same regardless of known spells
-    [4] = 1394966,
+    [4] = 1394966, -- Stag
     -- Add 10 if treant form is known
-    [14] = 132145,
-    [15] = 1394966,
+    [14] = 132145, -- Treant
+    [15] = 1394966, -- Stag
     -- Add 20 if moonkin form is known
-    [24] = 136036,
-    [25] = 1394966,
+    [24] = 136036, -- Moonkin
+    [25] = 1394966, -- Stag
     -- Add 30 if both extra forms are known
-    [34] = 136036,
-    [35] = 132145,
-    [36] = 1394966,
+    [34] = 136036, -- Moonkin
+    [35] = 132145, -- Treant
+    [36] = 1394966, -- Stag
 }
 
 function ToastyClassChores:SetDruidFormsTracking(info, value)
