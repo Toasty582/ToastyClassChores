@@ -69,7 +69,7 @@ local config = {
                 },
             }
         },
-        druidforms = {
+        druidForms = {
             type = "group",
             name = "Druid Forms",
             args = {
@@ -92,6 +92,41 @@ local config = {
                     desc = "Stop the frame from hiding while in the 'correct' form",
                     get = function() return ToastyClassChores.db.profile.druidFormsAlwaysShow end,
                     set = "SetDruidFormsAlwaysShow",
+                    order = -1,
+                },
+            }
+        },
+        warriorStances = {
+            type = "group",
+            name = "Warrior Stances",
+            args = {
+                druidFormsTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.warriorStancesTracking end,
+                    set = "SetWarriorStancesTracking",
+                },
+                druidFormsIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    get = function() return ToastyClassChores.db.profile.warriorStancesIconSize end,
+                    set = "SetWarriorStancesIconSize",
+                },
+                warriorStancesProtShowsBattle = {
+                    type = "toggle",
+                    name = "Show Battle Stance for Prot",
+                    width = "full",
+                    get = function() return ToastyClassChores.db.profile.warriorStancesProtShowsBattle end,
+                    set = "SetProtShowsBattle",
+                    order = -2,
+                },
+                warriorStancesProtShowsDef = {
+                    type = "toggle",
+                    name = "Show Defensive Stance for Prot",
+                    width = "full",
+                    get = function() return ToastyClassChores.db.profile.warriorStancesProtShowsDef end,
+                    set = "SetProtShowsDef",
                     order = -1,
                 },
             }
@@ -134,7 +169,17 @@ local defaults = {
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },
-        druidFormsAlwaysShow = false,
+        warriorStancesAlwaysShow = false,
+        warriorStancesTracking = true,
+        warriorStancesIconSize = 100,
+        warriorStancesLocation = {
+            xPos = 0,
+            yPos = 55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        },
+        warriorStancesProtShowsBattle = false,
+        warriorStancesProtShowsDef = true,
     },
 }
 

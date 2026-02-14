@@ -27,3 +27,4 @@ Modules\Shadowform.lua
 Modules\RaidBuff.lua
 Modules\Pets.lua
 Modules\DruidForms.lua
+Modules\WarriorStances.lua

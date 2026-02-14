@@ -35,6 +35,7 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("UNIT_PET")
     self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+    self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
@@ -47,11 +48,13 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     self.RaidBuff:Initialize()
     self.Pets:Initialize()
     self.DruidForms:Initialize()
+    self.WarriorStances:Initialize()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
     --self.Shadowform:UpdateSpec()
     self.Shadowform:Update()
+    self.WarriorStances:Update()
 end
 
 function ToastyClassChores:PLAYER_DEAD()
@@ -101,6 +104,14 @@ function ToastyClassChores:SPELLS_CHANGED()
     end
 end
 
+function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
+    if playerClass == "WARRIOR" and unitTarget == "player" then
+        if spellID == 386196 or spellID == 386208 or spellID == 386164 then
+            self.WarriorStances:Update()
+        end
+    end
+end
+
 function ToastyClassChores:ToggleFrameLock()
     ToastyClassChores.db.profile.frameLock = not ToastyClassChores.db.profile.frameLock
     local value = ToastyClassChores.db.profile.frameLock
@@ -113,6 +124,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.RaidBuff:ToggleFrameLock(value)
     self.Pets:ToggleFrameLock(value)
     self.DruidForms:ToggleFrameLock(value)
+    self.WarriorStances:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)
