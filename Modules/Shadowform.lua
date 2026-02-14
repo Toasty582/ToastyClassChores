@@ -64,7 +64,6 @@ function Shadowform:Initialize()
 end
 
 function Shadowform:Update()
-    ToastyClassChores:Print(GetShapeshiftForm())
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
         if shadowformFrame and not framesUnlocked then
             shadowformFrame:SetAlpha(0)

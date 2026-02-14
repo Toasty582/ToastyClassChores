@@ -100,7 +100,6 @@ function DruidForms:Initialize()
 end
 
 function DruidForms:Update()
-    ToastyClassChores:Print(GetShapeshiftForm())
     if not (ToastyClassChores.db.profile.druidFormsTracking and playerClass == "DRUID") then
         return
     end
