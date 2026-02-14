@@ -59,17 +59,8 @@ function Shadowform:Initialize()
             shadowformFrame:GetPoint()
     end)
 
-    if C_SpecializationInfo.GetSpecialization() == 3 then
-        if active == 1 and not framesUnlocked then
-            shadowformFrame:SetAlpha(0)
-        else
-            shadowformFrame:SetAlpha(1)
-        end
-    else
-        if not framesUnlocked then
-            shadowformFrame:SetAlpha(0)
-        end
-    end
+    shadowformFrame:SetAlpha(0)
+    self:Update()
 end
 
 function Shadowform:Update()
@@ -83,34 +74,16 @@ function Shadowform:Update()
         self:Initialize()
     end
     if C_SpecializationInfo.GetSpecialization() ~= 3 then
-        shadowformFrame:SetAlpha(1)
+        shadowformFrame:SetAlpha(0)
         return
     end
-
+    ToastyClassChores:Print(GetShapeshiftForm() == 1 and not framesUnlocked)
     if GetShapeshiftForm() == 1 and not framesUnlocked then
         shadowformFrame:SetAlpha(0)
     else
         shadowformFrame:SetAlpha(1)
     end
 end
-
---[[
-function Shadowform:UpdateSpec()
-    if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
-        if shadowformFrame then
-            shadowformFrame:SetAlpha(0)
-        end
-        return
-    end
-    if not shadowformFrame then
-        self:Initialize()
-    end
-    if C_SpecializationInfo.GetSpecialization() == 3 then
-        shadowformFrame:SetAlpha(1)
-    else
-        shadowformFrame:SetAlpha(0)
-    end
-end]]
 
 function Shadowform:ToggleFrameLock(value)
     if shadowformFrame then
