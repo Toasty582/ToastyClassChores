@@ -77,7 +77,6 @@ function Shadowform:Update()
         shadowformFrame:SetAlpha(0)
         return
     end
-    ToastyClassChores:Print(GetShapeshiftForm() == 1 and not framesUnlocked)
     if GetShapeshiftForm() == 1 and not framesUnlocked then
         shadowformFrame:SetAlpha(0)
     else
