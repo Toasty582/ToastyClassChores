@@ -7,14 +7,14 @@ Currently Implemented:
 - Hunter pets
 - Warlock pets
 - Druid forms
+- Warrior stances
 
 Planned Features:
 - Raid buffs (Solo)
-- Warrior stances
 - Grimoire of Sacrifice reminder
+- In combat rebuff reminder
 
 Want to do but don't know how yet:
-- Raid buffs (In combat)
 - Source of Magic
 - Earth Shield
 - DK pets
