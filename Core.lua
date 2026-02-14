@@ -18,7 +18,7 @@ function ToastyClassChores:OnInitialize()
     ns.cdb = self.cdb
 
     LibStub("AceConfig-3.0"):RegisterOptionsTable("ToastyClassChores", config)
-    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ToastyClassChores", "ToastyClassChores")
+    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ToastyClassChores", "Toasty Class Chores")
 
     if not ToastyClassChores.db.profile.frameLock then
         self:ToggleFrameLock()
