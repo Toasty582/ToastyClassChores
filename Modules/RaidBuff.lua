@@ -7,6 +7,8 @@ local RaidBuff = ToastyClassChores.RaidBuff
 local raidBuffFrame
 local playerClass
 local alphaBeforeUnlock
+local glowHidWhileFramesUnlocked = false
+local framesUnlocked = false
 
 local raidBuffClassList = {
     [1126] = "DRUID",
@@ -72,13 +74,14 @@ function RaidBuff:Initialize()
         ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos =
             raidBuffFrame:GetPoint()
     end)
-
-    raidBuffFrame:SetAlpha(0)
+    if not framesUnlocked then
+        raidBuffFrame:SetAlpha(0)
+    end
 end
 
 function RaidBuff:GlowShow(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
-        if raidBuffFrame then
+        if raidBuffFrame and not framesUnlocked then
             raidBuffFrame:SetAlpha(0)
         end
         return
@@ -93,15 +96,18 @@ end
 
 function RaidBuff:GlowHide(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
-        if raidBuffFrame then
+        if raidBuffFrame and not framesUnlocked then
             raidBuffFrame:SetAlpha(0)
         end
         return
     end
+    if framesUnlocked then
+        glowHidWhileFramesUnlocked = true
+    end
     if not raidBuffFrame then
         self:Initialize()
     end
-    if raidBuffClassList[spellID] == playerClass then
+    if raidBuffClassList[spellID] == playerClass and not framesUnlocked then
         raidBuffFrame:SetAlpha(0)
     end
 end
@@ -112,10 +118,16 @@ function RaidBuff:ToggleFrameLock(value)
         raidBuffFrame:EnableMouse(not value)
 
         if not value then
+            framesUnlocked = true
             alphaBeforeUnlock = raidBuffFrame:GetAlpha()
             raidBuffFrame:SetAlpha(1)
         else
-            raidBuffFrame:SetAlpha(alphaBeforeUnlock)
+            framesUnlocked = false
+            if glowHidWhileFramesUnlocked then
+                raidBuffFrame:SetAlpha(0)
+            else
+                raidBuffFrame:SetAlpha(alphaBeforeUnlock)
+            end
         end
     end
 end

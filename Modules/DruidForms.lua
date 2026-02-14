@@ -6,6 +6,7 @@ local DruidForms = ToastyClassChores.DruidForms
 
 local druidFormsFrame
 local frameTexture
+local framesUnlocked = false
 
 local playerClass
 local knowsMoonkinForm
@@ -46,7 +47,7 @@ function ToastyClassChores:SetDruidFormsTracking(info, value)
         DruidForms:Initialize()
     else
         self:Print("Disabling Druid Form Tracking")
-        if druidFormsFrame then
+        if druidFormsFrame and not framesUnlocked then
             druidFormsFrame:SetAlpha(0)
         end
     end
@@ -91,8 +92,9 @@ function DruidForms:Initialize()
         ToastyClassChores.db.profile.druidFormsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.druidFormsLocation.parentAnchorPoint, ToastyClassChores.db.profile.druidFormsLocation.xPos, ToastyClassChores.db.profile.druidFormsLocation.yPos =
             druidFormsFrame:GetPoint()
     end)
-
-    druidFormsFrame:SetAlpha(0)
+    if not framesUnlocked then
+        druidFormsFrame:SetAlpha(0)
+    end
     self:CheckForms()
     self:Update()
 end
@@ -117,7 +119,7 @@ function DruidForms:Update()
         druidFormsFrame:SetAlpha(1)
         return
     end
-    if IsMounted() then
+    if IsMounted() and not framesUnlocked then
         druidFormsFrame:SetAlpha(0)
         return
     end
@@ -125,9 +127,11 @@ function DruidForms:Update()
         if formIndex ~= preferredForm[specIndex] then
             druidFormsFrame:SetAlpha(1)
         else
-            druidFormsFrame:SetAlpha(0)
+            if not framesUnlocked then
+                druidFormsFrame:SetAlpha(0)
+            end
         end
-        if knowsWildpowerSurge and (formIndex == 1 or formIndex == 2) then
+        if knowsWildpowerSurge and (formIndex == 1 or formIndex == 2) and not framesUnlocked then
             druidFormsFrame:SetAlpha(0)
         end
     else
@@ -135,7 +139,9 @@ function DruidForms:Update()
         if formIndex ~= 0 and formIndex ~= treantIndex then
             druidFormsFrame:SetAlpha(1)
         else
-            druidFormsFrame:SetAlpha(0)
+            if not framesUnlocked then
+                druidFormsFrame:SetAlpha(0)
+            end
         end
     end
 end
@@ -164,8 +170,10 @@ function DruidForms:ToggleFrameLock(value)
         druidFormsFrame:EnableMouse(not value)
 
         if not value then
+            framesUnlocked = true
             druidFormsFrame:SetAlpha(1)
         else
+            framesUnlocked = false
             self:Update()
         end
     end

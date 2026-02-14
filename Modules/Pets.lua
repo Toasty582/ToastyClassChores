@@ -6,6 +6,7 @@ local Pets = ToastyClassChores.Pets
 
 local petsFrame
 
+local framesUnlocked = false
 local playerClass
 local isPetMarksman
 local isSacrificeGrimoire
@@ -24,7 +25,7 @@ function ToastyClassChores:SetPetTracking(info, value)
         Pets:Initialize()
     else
         self:Print("Disabling Pet Tracking")
-        if petsFrame then
+        if petsFrame and not framesUnlocked then
             petsFrame:SetAlpha(0)
         end
     end
@@ -70,7 +71,7 @@ end
 
 function Pets:Update()
     if not (ToastyClassChores.db.profile.petsTracking and petClasses[playerClass]) then
-        if petsFrame then
+        if petsFrame and not framesUnlocked then
             petsFrame:SetAlpha(0)
         end
         return
@@ -78,7 +79,7 @@ function Pets:Update()
     if not petsFrame then
         self:Initialize()
     end
-    if IsMounted() then
+    if IsMounted() and not framesUnlocked then
         petsFrame:SetAlpha(0)
         return
     end
@@ -87,11 +88,11 @@ function Pets:Update()
         return
     end
     local hasUI, isHunterPet = HasPetUI()
-    if playerClass == "HUNTER" and not isPetMarksman and C_SpecializationInfo.GetSpecialization() == 2 then
+    if playerClass == "HUNTER" and not isPetMarksman and C_SpecializationInfo.GetSpecialization() == 2 and not framesUnlocked then
         petsFrame:SetAlpha(0)
         return
     end
-    if playerClass == "WARLOCK" and isSacrificeGrimoire and C_SpecializationInfo.GetSpecialization() ~= 2 then
+    if playerClass == "WARLOCK" and isSacrificeGrimoire and C_SpecializationInfo.GetSpecialization() ~= 2 and not framesUnlocked then
         petsFrame:SetAlpha(0)
         return
     end
@@ -99,16 +100,18 @@ function Pets:Update()
         petsFrame:SetAlpha(1)
         return
     else
-        if playerClass == "HUNTER" and isHunterPet then
+        if playerClass == "HUNTER" and isHunterPet and not framesUnlocked then
             petsFrame:SetAlpha(0)
             return
-        elseif playerClass == "WARLOCK" and not isHunterPet then
+        elseif playerClass == "WARLOCK" and not isHunterPet and not framesUnlocked then
             petsFrame:SetAlpha(0)
             return
         end
     end
     ToastyClassChores:Print("Invalid pet detected, hiding pet reminder")
-    petsFrame:SetAlpha(0)
+    if not framesUnlocked then
+        petsFrame:SetAlpha(0)
+    end
 end
 
 function Pets:CheckAnomaly()
@@ -130,7 +133,7 @@ end
 
 function Pets:MountCheck()
     if not ToastyClassChores.db.profile.petsTracking then
-        if petsFrame then
+        if petsFrame and not framesUnlocked then
             petsFrame:SetAlpha(0)
         end
         return
@@ -149,8 +152,10 @@ function Pets:ToggleFrameLock(value)
         petsFrame:EnableMouse(not value)
 
         if not value then
+            framesUnlocked = true
             petsFrame:SetAlpha(1)
         else
+            framesUnlocked = false
             self:Update()
         end
     end

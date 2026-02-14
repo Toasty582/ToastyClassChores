@@ -8,6 +8,7 @@ local active
 local shadowformFrame
 local playerClass
 local alphaBeforeUnlock
+local framesUnlocked = false
 
 
 function ToastyClassChores:SetShadowformTracking(info, value)
@@ -17,7 +18,7 @@ function ToastyClassChores:SetShadowformTracking(info, value)
         Shadowform:Initialize()
     else
         self:Print("Disabling Shadowform Tracking")
-        if shadowformFrame then
+        if shadowformFrame and not framesUnlocked then
             shadowformFrame.SetAlpha(0)
         end
     end
@@ -59,19 +60,21 @@ function Shadowform:Initialize()
     end)
 
     if C_SpecializationInfo.GetSpecialization() == 3 then
-        if active == 1 then
+        if active == 1 and not framesUnlocked then
             shadowformFrame:SetAlpha(0)
         else
             shadowformFrame:SetAlpha(1)
         end
     else
-        shadowformFrame:SetAlpha(0)
+        if not framesUnlocked then
+            shadowformFrame:SetAlpha(0)
+        end
     end
 end
 
 function Shadowform:Update()
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
-        if shadowformFrame then
+        if shadowformFrame and not framesUnlocked then
             shadowformFrame:SetAlpha(0)
         end
         return
@@ -84,7 +87,7 @@ function Shadowform:Update()
         return
     end
 
-    if GetShapeshiftForm() == 1 then
+    if GetShapeshiftForm() == 1 and not framesUnlocked then
         shadowformFrame:SetAlpha(0)
     else
         shadowformFrame:SetAlpha(1)
@@ -115,8 +118,10 @@ function Shadowform:ToggleFrameLock(value)
         shadowformFrame:EnableMouse(not value)
 
         if not value then
+            framesUnlocked = true
             shadowformFrame:SetAlpha(1)
         else
+            framesUnlocked = false
             self:Update()
         end
     end

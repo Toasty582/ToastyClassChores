@@ -53,7 +53,7 @@ end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
     --self.Shadowform:UpdateSpec()
-    self.Shadowform:Update()
+    --self.Shadowform:Update()
     self.WarriorStances:Update()
 end
 

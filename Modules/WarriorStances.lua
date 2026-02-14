@@ -6,6 +6,7 @@ local WarriorStances = ToastyClassChores.WarriorStances
 
 local warriorStancesFrame
 local frameTexture
+local framesUnlocked = false
 
 local playerClass
 
@@ -106,7 +107,9 @@ function WarriorStances:Update()
         if stanceIndex ~= 2 then
             warriorStancesFrame:SetAlpha(1)
         else
-            warriorStancesFrame:SetAlpha(0)
+            if not framesUnlocked then
+                warriorStancesFrame:SetAlpha(0)
+            end
         end
     else
         if stanceIndex == 1 and ToastyClassChores.db.profile.warriorStancesProtShowsDef then
@@ -114,7 +117,9 @@ function WarriorStances:Update()
         elseif stanceIndex == 2 and ToastyClassChores.db.profile.warriorStancesProtShowsBattle then
             warriorStancesFrame:SetAlpha(1)
         else
-            warriorStancesFrame:SetAlpha(0)
+            if not framesUnlocked then
+                warriorStancesFrame:SetAlpha(0)
+            end
         end
     end
 end
@@ -125,8 +130,10 @@ function WarriorStances:ToggleFrameLock(value)
         warriorStancesFrame:EnableMouse(not value)
 
         if not value then
+            framesUnlocked = true
             warriorStancesFrame:SetAlpha(1)
         else
+            framesUnlocked = false
             self:Update()
         end
     end
