@@ -52,17 +52,17 @@ function Pets:Initialize()
         local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])
         frameTexture:SetAllPoints()
-    end
 
-    petsFrame:RegisterForDrag("LeftButton")
-    petsFrame:SetScript("OnDragStart", function(self)
-        self:StartMoving()
-    end)
-    petsFrame:SetScript("OnDragStop", function(self)
-        self:StopMovingOrSizing()
-        ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos, ToastyClassChores.db.profile.petsLocation.yPos =
-            petsFrame:GetPoint()
-    end)
+        petsFrame:RegisterForDrag("LeftButton")
+        petsFrame:SetScript("OnDragStart", function(self)
+            self:StartMoving()
+        end)
+        petsFrame:SetScript("OnDragStop", function(self)
+            self:StopMovingOrSizing()
+            ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos, ToastyClassChores.db.profile.petsLocation.yPos =
+                petsFrame:GetPoint()
+        end)
+    end
 
     petsFrame:SetAlpha(0)
     self:CheckAnomaly()

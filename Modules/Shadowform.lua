@@ -47,23 +47,24 @@ function Shadowform:Initialize()
         local frameTexture = shadowformFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(136200)
         frameTexture:SetAllPoints()
-    end
 
-    shadowformFrame:RegisterForDrag("LeftButton")
-    shadowformFrame:SetScript("OnDragStart", function(self)
-        self:StartMoving()
-    end)
-    shadowformFrame:SetScript("OnDragStop", function(self)
-        self:StopMovingOrSizing()
-        ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint, ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos =
-            shadowformFrame:GetPoint()
-    end)
+        shadowformFrame:RegisterForDrag("LeftButton")
+        shadowformFrame:SetScript("OnDragStart", function(self)
+            self:StartMoving()
+        end)
+        shadowformFrame:SetScript("OnDragStop", function(self)
+            self:StopMovingOrSizing()
+            ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint, ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos =
+                shadowformFrame:GetPoint()
+        end)
+    end
 
     shadowformFrame:SetAlpha(0)
     self:Update()
 end
 
 function Shadowform:Update()
+    ToastyClassChores:Print(GetShapeshiftForm())
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
         if shadowformFrame and not framesUnlocked then
             shadowformFrame:SetAlpha(0)
@@ -77,6 +78,7 @@ function Shadowform:Update()
         shadowformFrame:SetAlpha(0)
         return
     end
+
     if GetShapeshiftForm() == 1 and not framesUnlocked then
         shadowformFrame:SetAlpha(0)
     else

@@ -22,21 +22,21 @@ local preferredForm = {
 }
 
 local formIcons = {
-    [0] = 625999, -- Humanoid
-    [1] = 132276, -- Cat
-    [2] = 132115, -- Bear
-    [3] = 132144, -- Travel
+    [0] = 625999,   -- Humanoid
+    [1] = 132276,   -- Cat
+    [2] = 132115,   -- Bear
+    [3] = 132144,   -- Travel
     -- 3 or less can be treated normally, the same regardless of known spells
-    [4] = 1394966, -- Stag
+    [4] = 1394966,  -- Stag
     -- Add 10 if treant form is known
-    [14] = 132145, -- Treant
+    [14] = 132145,  -- Treant
     [15] = 1394966, -- Stag
     -- Add 20 if moonkin form is known
-    [24] = 136036, -- Moonkin
+    [24] = 136036,  -- Moonkin
     [25] = 1394966, -- Stag
     -- Add 30 if both extra forms are known
-    [34] = 136036, -- Moonkin
-    [35] = 132145, -- Treant
+    [34] = 136036,  -- Moonkin
+    [35] = 132145,  -- Treant
     [36] = 1394966, -- Stag
 }
 
@@ -81,17 +81,17 @@ function DruidForms:Initialize()
         frameTexture = druidFormsFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(134400) -- Question mark as default, if you see this something went wrong
         frameTexture:SetAllPoints()
-    end
 
-    druidFormsFrame:RegisterForDrag("LeftButton")
-    druidFormsFrame:SetScript("OnDragStart", function(self)
-        self:StartMoving()
-    end)
-    druidFormsFrame:SetScript("OnDragStop", function(self)
-        self:StopMovingOrSizing()
-        ToastyClassChores.db.profile.druidFormsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.druidFormsLocation.parentAnchorPoint, ToastyClassChores.db.profile.druidFormsLocation.xPos, ToastyClassChores.db.profile.druidFormsLocation.yPos =
-            druidFormsFrame:GetPoint()
-    end)
+        druidFormsFrame:RegisterForDrag("LeftButton")
+        druidFormsFrame:SetScript("OnDragStart", function(self)
+            self:StartMoving()
+        end)
+        druidFormsFrame:SetScript("OnDragStop", function(self)
+            self:StopMovingOrSizing()
+            ToastyClassChores.db.profile.druidFormsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.druidFormsLocation.parentAnchorPoint, ToastyClassChores.db.profile.druidFormsLocation.xPos, ToastyClassChores.db.profile.druidFormsLocation.yPos =
+                druidFormsFrame:GetPoint()
+        end)
+    end
     if not framesUnlocked then
         druidFormsFrame:SetAlpha(0)
     end
@@ -100,6 +100,7 @@ function DruidForms:Initialize()
 end
 
 function DruidForms:Update()
+    ToastyClassChores:Print(GetShapeshiftForm())
     if not (ToastyClassChores.db.profile.druidFormsTracking and playerClass == "DRUID") then
         return
     end

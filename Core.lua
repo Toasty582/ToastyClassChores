@@ -36,12 +36,14 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
     self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+    self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
+    self:Print("Entering World")
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
     self.Shadowform:Initialize()
@@ -49,6 +51,12 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     self.Pets:Initialize()
     self.DruidForms:Initialize()
     self.WarriorStances:Initialize()
+end
+
+function ToastyClassChores:UPDATE_SHAPESHIFT_FORM()
+    self.Shadowform:Update()
+    self.DruidForms:Update()
+    self.WarriorStances:Update()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
@@ -60,16 +68,16 @@ function ToastyClassChores:PLAYER_DEAD()
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
-    if playerClass == "PRIEST" then
-        if unitTarget == "player" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
-            self.Shadowform:Update()
-        end
-    end
-    if playerClass == "DRUID" then
-        if unitTarget == "player" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
-            self.DruidForms:Update()
-        end
-    end
+--    if playerClass == "PRIEST" then
+--        if unitTarget == "player" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+--            self.Shadowform:Update()
+--        end
+--    end
+--    if playerClass == "DRUID" then
+--        if unitTarget == "player" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+--            self.DruidForms:Update()
+--        end
+--    end
 end
 
 function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
@@ -104,11 +112,11 @@ function ToastyClassChores:SPELLS_CHANGED()
 end
 
 function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
-    if playerClass == "WARRIOR" and unitTarget == "player" then
-        if spellID == 386196 or spellID == 386208 or spellID == 386164 then
-            self.WarriorStances:Update()
-        end
-    end
+--    if playerClass == "WARRIOR" and unitTarget == "player" then
+--        if spellID == 386196 or spellID == 386208 or spellID == 386164 then
+--            self.WarriorStances:Update()
+--        end
+--    end
 end
 
 function ToastyClassChores:ToggleFrameLock()

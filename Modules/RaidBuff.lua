@@ -63,17 +63,17 @@ function RaidBuff:Initialize()
         local frameTexture = raidBuffFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(raidBuffIconList[playerClass])
         frameTexture:SetAllPoints()
-    end
 
-    raidBuffFrame:RegisterForDrag("LeftButton")
-    raidBuffFrame:SetScript("OnDragStart", function(self)
-        self:StartMoving()
-    end)
-    raidBuffFrame:SetScript("OnDragStop", function(self)
-        self:StopMovingOrSizing()
-        ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos =
-            raidBuffFrame:GetPoint()
-    end)
+        raidBuffFrame:RegisterForDrag("LeftButton")
+        raidBuffFrame:SetScript("OnDragStart", function(self)
+            self:StartMoving()
+        end)
+        raidBuffFrame:SetScript("OnDragStop", function(self)
+            self:StopMovingOrSizing()
+            ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos =
+                raidBuffFrame:GetPoint()
+        end)
+    end
     if not framesUnlocked then
         raidBuffFrame:SetAlpha(0)
     end
