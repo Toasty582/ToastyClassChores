@@ -71,6 +71,13 @@ function ToastyClassChores:OnEnable()
 
     end
 
+    self.Shadowform:Initialize()
+    self.RaidBuff:Initialize()
+    self.Pets:Initialize()
+    self.DruidForms:Initialize()
+    self.WarriorStances:Initialize()
+    self.PaladinAuras:Initialize()
+
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
 end
@@ -82,12 +89,7 @@ function ToastyClassChores:SPELL_UPDATE_USABLE()
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
-    self.Shadowform:Initialize()
-    self.RaidBuff:Initialize()
-    self.Pets:Initialize()
-    self.DruidForms:Initialize()
-    self.WarriorStances:Initialize()
-    self.PaladinAuras:Initialize()
+
 end
 
 function ToastyClassChores:UPDATE_SHAPESHIFT_FORM()
