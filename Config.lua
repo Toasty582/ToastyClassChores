@@ -130,13 +130,40 @@ local config = {
                     order = -1,
                 },
             }
-        }
+        },
+        paladinAuras = {
+            type = "group",
+            name = "Paladin Auras",
+            args = {
+                paladinAurasTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.paladinAurasTracking end,
+                    set = "SetPaladinAurasTracking",
+                },
+                paladinAurasIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    get = function() return ToastyClassChores.db.profile.paladinAurasIconSize end,
+                    set = "SetPaladinAurasIconSize",
+                },
+                paladinAurasAlwaysShow = {
+                    type = "toggle",
+                    name = "Show Devotion Aura",
+                    get = function() return ToastyClassChores.db.profile.paladinAurasAlwaysShow end,
+                    set = "SetPaladinAurasAlwaysShow",
+                    order = -1,
+                },
+            }
+        },
     },
 }
 
 local defaults = {
     profile = {
         frameLock = true,
+        debug = false,
         shadowformTracking = true,
         shadowformIconSize = 100,
         shadowformLocation = {
@@ -180,6 +207,14 @@ local defaults = {
         },
         warriorStancesProtShowsBattle = false,
         warriorStancesProtShowsDef = true,
+        paladinAurasTracking = true,
+        paladinAurasIconSize = 100,
+        paladinAurasLocation = {
+            xPos = 0,
+            yPos = 55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        },
     },
 }
 

@@ -43,7 +43,6 @@ function ToastyClassChores:OnEnable()
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
-    self:Print("Entering World")
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
     self.Shadowform:Initialize()
@@ -51,12 +50,14 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     self.Pets:Initialize()
     self.DruidForms:Initialize()
     self.WarriorStances:Initialize()
+    self.PaladinAuras:Initialize()
 end
 
 function ToastyClassChores:UPDATE_SHAPESHIFT_FORM()
     self.Shadowform:Update()
     self.DruidForms:Update()
     self.WarriorStances:Update()
+    self.PaladinAuras:Update()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
@@ -132,12 +133,29 @@ function ToastyClassChores:ToggleFrameLock()
     self.Pets:ToggleFrameLock(value)
     self.DruidForms:ToggleFrameLock(value)
     self.WarriorStances:ToggleFrameLock(value)
+    self.PaladinAuras:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)
+    if msg == "debug" then
+        self.db.profile.debug = not self.db.profile.debug
+        if self.db.profile.debug then
+            self:Print("Debug Mode on!")
+        else
+            self:Print("Debug Mode off!")
+        end
+        return
+    end
     if msg == "ping" then
         self:Print("pong!")
     else
         self:Print("Hi! Please report any bugs you find!")
+    end
+end
+
+-- debug function because I keep leaving debug messages in releases
+function ToastyClassChores:Debug(msg)
+    if self.db.profile.debug then
+        self:Print(msg)
     end
 end
