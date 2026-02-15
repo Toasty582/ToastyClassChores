@@ -4,10 +4,8 @@ local ToastyClassChores = ns.Addon
 ToastyClassChores.Shadowform = ToastyClassChores.Shadowform or {}
 local Shadowform = ToastyClassChores.Shadowform
 
-local active
 local shadowformFrame
 local playerClass
-local alphaBeforeUnlock
 local framesUnlocked = false
 
 
@@ -36,7 +34,6 @@ function Shadowform:Initialize()
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
         return
     end
-    active = GetShapeshiftForm()
     if not shadowformFrame then
         shadowformFrame = CreateFrame("Frame", "Shadowform Reminder", UIParent)
         shadowformFrame:SetPoint(ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, UIParent,

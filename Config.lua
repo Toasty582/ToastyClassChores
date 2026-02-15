@@ -220,9 +220,7 @@ local defaults = {
 
 local characterDefaults = {
     profile = {
-        class = "",
-        --petMarksman = false,
-        --sacrificeGrimoire = false,
+        class = ""
     },
 }
 

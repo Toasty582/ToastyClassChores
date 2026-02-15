@@ -28,14 +28,11 @@ end
 function ToastyClassChores:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-    self:RegisterEvent("PLAYER_DEAD")
-    self:RegisterEvent("UNIT_AURA")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
     self:RegisterEvent("UNIT_PET")
     self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-    self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 
     self:RegisterChatCommand("tcc", "SlashCommand")
@@ -63,22 +60,6 @@ end
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
     self.Shadowform:Update()
     self.WarriorStances:Update()
-end
-
-function ToastyClassChores:PLAYER_DEAD()
-end
-
-function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
---    if playerClass == "PRIEST" then
---        if unitTarget == "player" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
---            self.Shadowform:Update()
---        end
---    end
---    if playerClass == "DRUID" then
---        if unitTarget == "player" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
---            self.DruidForms:Update()
---        end
---    end
 end
 
 function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
@@ -112,14 +93,6 @@ function ToastyClassChores:SPELLS_CHANGED()
     end
 end
 
-function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
---    if playerClass == "WARRIOR" and unitTarget == "player" then
---        if spellID == 386196 or spellID == 386208 or spellID == 386164 then
---            self.WarriorStances:Update()
---        end
---    end
-end
-
 function ToastyClassChores:ToggleFrameLock()
     ToastyClassChores.db.profile.frameLock = not ToastyClassChores.db.profile.frameLock
     local value = ToastyClassChores.db.profile.frameLock
@@ -144,9 +117,7 @@ function ToastyClassChores:SlashCommand(msg)
         else
             self:Print("Debug Mode off!")
         end
-        return
-    end
-    if msg == "ping" then
+    elseif msg == "ping" then
         self:Print("pong!")
     else
         self:Print("Hi! Please report any bugs you find!")
