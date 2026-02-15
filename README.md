@@ -11,12 +11,12 @@ Currently Implemented:
 - Paladin auras
 
 Planned Features:
-- Raid buffs (Solo)
-- Grimoire of Sacrifice reminder
-- In combat rebuff reminder
-
-Want to do but don't know how yet:
-- Source of Magic
-- Earth Shield
 - DK pets
 - Rogue poisons
+- Raid buffs (Solo)
+- Grimoire of Sacrifice reminder
+
+Am looking into:
+- Source of Magic
+- Earth Shield
+- In combat rebuff reminder
