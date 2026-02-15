@@ -15,7 +15,8 @@ local petExistsBeforeMounting
 
 local petClasses = {
     HUNTER = 132161,
-    WARLOCK = 136218
+    WARLOCK = 136218,
+    DEATHKNIGHT = 1100170,
 }
 
 function ToastyClassChores:SetPetTracking(info, value)
@@ -88,11 +89,17 @@ function Pets:Update()
         return
     end
     local hasUI, isHunterPet = HasPetUI()
+    ToastyClassChores:Debug(hasUI)
+    ToastyClassChores:Debug(isHunterPet)
     if playerClass == "HUNTER" and not isPetMarksman and C_SpecializationInfo.GetSpecialization() == 2 and not framesUnlocked then
         petsFrame:SetAlpha(0)
         return
     end
     if playerClass == "WARLOCK" and isSacrificeGrimoire and C_SpecializationInfo.GetSpecialization() ~= 2 and not framesUnlocked then
+        petsFrame:SetAlpha(0)
+        return
+    end
+    if playerClass == "DEATHKNIGHT" and C_SpecializationInfo.GetSpecialization() ~= 3 and not framesUnlocked then
         petsFrame:SetAlpha(0)
         return
     end
@@ -103,7 +110,7 @@ function Pets:Update()
         if playerClass == "HUNTER" and isHunterPet and not framesUnlocked then
             petsFrame:SetAlpha(0)
             return
-        elseif playerClass == "WARLOCK" and not isHunterPet and not framesUnlocked then
+        elseif (playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and not isHunterPet and not framesUnlocked then
             petsFrame:SetAlpha(0)
             return
         end
@@ -115,6 +122,7 @@ function Pets:Update()
 end
 
 function Pets:CheckAnomaly()
+    ToastyClassChores:Debug("Anomaly Checking")
     if playerClass == "HUNTER" and C_SpecializationInfo.GetSpecialization() == 2 then
         if C_SpellBook.IsSpellKnown(1223323) then
             isPetMarksman = true

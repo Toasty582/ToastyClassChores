@@ -34,9 +34,17 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("SPELLS_CHANGED")
     self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
     self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+    self:RegisterEvent("SPELL_UPDATE_USABLE")
+    self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
+end
+
+function ToastyClassChores:SPELL_UPDATE_USABLE()
+    if playerClass == "DEATHKNIGHT" then
+        self.Pets:Update()
+    end
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
@@ -60,6 +68,7 @@ end
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
     self.Shadowform:Update()
     self.WarriorStances:Update()
+    self.Pets:CheckAnomaly()
 end
 
 function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
@@ -89,6 +98,14 @@ function ToastyClassChores:SPELLS_CHANGED()
         end
         if playerClass == "DRUID" then
             self.DruidForms:CheckForms()
+        end
+    end
+end
+
+function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
+    if unitTarget == "player" and spellID == 1247378 then
+        if playerClass == "DEATHKNIGHT" then
+            self.Pets:Update()
         end
     end
 end
