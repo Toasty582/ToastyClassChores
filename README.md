@@ -6,12 +6,12 @@ Currently Implemented:
 - Raid buffs (Out of combat)
 - Hunter pets
 - Warlock pets
+- DK pets
 - Druid forms
 - Warrior stances
 - Paladin auras
 
 Planned Features:
-- DK pets
 - Rogue poisons
 - Raid buffs (Solo)
 - Grimoire of Sacrifice reminder

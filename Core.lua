@@ -26,16 +26,50 @@ function ToastyClassChores:OnInitialize()
 end
 
 function ToastyClassChores:OnEnable()
+    _, self.cdb.profile.class, _ = UnitClass("player")
+    playerClass = self.cdb.profile.class
+
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
-    self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
-    self:RegisterEvent("UNIT_PET")
-    self:RegisterEvent("SPELLS_CHANGED")
-    self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-    self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-    self:RegisterEvent("SPELL_UPDATE_USABLE")
-    self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+
+    if playerClass == "WARRIOR" then
+        self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+        self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+    elseif playerClass == "HUNTER" then
+        self:RegisterEvent("UNIT_PET")
+        self:RegisterEvent("SPELLS_CHANGED")
+        self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+    elseif playerClass == "MAGE" then
+
+    elseif playerClass == "ROGUE" then
+
+    elseif playerClass == "PRIEST" then
+        self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+        self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+    elseif playerClass == "WARLOCK" then
+        self:RegisterEvent("UNIT_PET")
+        self:RegisterEvent("SPELLS_CHANGED")
+        self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+    elseif playerClass == "PALADIN" then
+        self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+    elseif playerClass == "DRUID" then
+        self:RegisterEvent("SPELLS_CHANGED")
+        self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+    elseif playerClass == "SHAMAN" then
+
+    elseif playerClass == "MONK" then
+
+    elseif playerClass == "DEMONHUNTER" then
+
+    elseif playerClass == "DEATHKNIGHT" then
+        self:RegisterEvent("UNIT_PET")
+        self:RegisterEvent("SPELLS_CHANGED")
+        self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+        self:RegisterEvent("SPELL_UPDATE_USABLE")
+    elseif playerClass == "EVOKER" then
+
+    end
 
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
@@ -48,8 +82,6 @@ function ToastyClassChores:SPELL_UPDATE_USABLE()
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
-    _, self.cdb.profile.class, _ = UnitClass("player")
-    playerClass = self.cdb.profile.class
     self.Shadowform:Initialize()
     self.RaidBuff:Initialize()
     self.Pets:Initialize()
@@ -68,11 +100,10 @@ end
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
     self.Shadowform:Update()
     self.WarriorStances:Update()
-    self.Pets:CheckAnomaly()
 end
 
 function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
-    if playerClass == "HUNTER" or playerClass == "WARLOCK" then
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
         self.Pets:MountCheck()
     end
 end
@@ -93,19 +124,11 @@ end
 
 function ToastyClassChores:SPELLS_CHANGED()
     if not PlayerIsInCombat() then
-        if playerClass == "HUNTER" or playerClass == "WARLOCK" then
+        if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
             self.Pets:CheckAnomaly()
         end
         if playerClass == "DRUID" then
             self.DruidForms:CheckForms()
-        end
-    end
-end
-
-function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
-    if unitTarget == "player" and spellID == 1247378 then
-        if playerClass == "DEATHKNIGHT" then
-            self.Pets:Update()
         end
     end
 end

@@ -89,8 +89,6 @@ function Pets:Update()
         return
     end
     local hasUI, isHunterPet = HasPetUI()
-    ToastyClassChores:Debug(hasUI)
-    ToastyClassChores:Debug(isHunterPet)
     if playerClass == "HUNTER" and not isPetMarksman and C_SpecializationInfo.GetSpecialization() == 2 and not framesUnlocked then
         petsFrame:SetAlpha(0)
         return
@@ -122,7 +120,6 @@ function Pets:Update()
 end
 
 function Pets:CheckAnomaly()
-    ToastyClassChores:Debug("Anomaly Checking")
     if playerClass == "HUNTER" and C_SpecializationInfo.GetSpecialization() == 2 then
         if C_SpellBook.IsSpellKnown(1223323) then
             isPetMarksman = true
