@@ -85,7 +85,6 @@ function Shadowform:Update()
     if not shadowformFrame then
         self:Initialize()
     end
-    
     local _, instanceType = IsInInstance()
     
     if ToastyClassChores.db.profile.shadowformInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid") then
