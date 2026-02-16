@@ -4,6 +4,7 @@ local ToastyClassChores = ns.Addon
 ToastyClassChores.Shadowform = ToastyClassChores.Shadowform or {}
 local Shadowform = ToastyClassChores.Shadowform
 
+local voidformQueued
 local shadowformFrame
 local playerClass
 local framesUnlocked = false
@@ -116,10 +117,26 @@ function Shadowform:Update()
         return
     end
 
+    if voidformQueued then
+        if GetSessionTime() - voidformQueued < 1 then
+            shadowformFrame:Hide()
+            return
+        else
+            voidformQueued = nil
+        end
+    end
+
     if GetShapeshiftForm() == 1 and not framesUnlocked then
         shadowformFrame:Hide()
     else
         shadowformFrame:Show()
+    end
+end
+
+function Shadowform:QueueVoidform()
+    voidformQueued = GetSessionTime()
+    if shadowformFrame then
+        shadowformFrame:Hide()
     end
 end
 

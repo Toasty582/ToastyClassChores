@@ -49,6 +49,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
         self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
+        self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     elseif playerClass == "WARLOCK" then
         self:RegisterEvent("UNIT_PET")
         self:RegisterEvent("SPELLS_CHANGED")
@@ -174,6 +175,12 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
     if playerClass == "PALADIN" and self.db.profile.paladinAurasInCombatOnly then
         self.PaladinAuras:Update()
+    end
+end
+
+function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
+    if playerClass == "PRIEST" and unitTarget == "player" and spellID == 228260 then
+        self.Shadowform:QueueVoidform()
     end
 end
 
