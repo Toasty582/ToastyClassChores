@@ -53,6 +53,8 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_PET")
         self:RegisterEvent("SPELLS_CHANGED")
         self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+        self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+        self:RegisterEvent("PLAYER_ALIVE")
     elseif playerClass == "PALADIN" then
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
@@ -81,6 +83,7 @@ function ToastyClassChores:OnEnable()
     self.DruidForms:Initialize()
     self.WarriorStances:Initialize()
     self.PaladinAuras:Initialize()
+    self.SacrificeGrimoire:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
@@ -149,18 +152,31 @@ function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_HIDE(event, spellID)
 end
 
 function ToastyClassChores:UNIT_PET()
-    if playerClass == "HUNTER" or playerClass == "WARLOCK" then
+    if playerClass == "HUNTER" then
         self.Pets:Update()
+    elseif playerClass == "WARLOCK" then
+        self.Pets:Update()
+        self.SacrificeGrimoire:Update()
+    end
+end
+
+function ToastyClassChores:PLAYER_ALIVE()
+    if playerClass == "WARLOCK" then
+        self.SacrificeGrimoire:Update()
     end
 end
 
 function ToastyClassChores:SPELLS_CHANGED()
     if not PlayerIsInCombat() then
-        if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
+        if playerClass == "HUNTER" or playerClass == "DEATHKNIGHT" then
             self.Pets:CheckAnomaly()
         end
         if playerClass == "DRUID" then
             self.DruidForms:CheckForms()
+        end
+        if playerClass == "WARLOCK" then
+            self.Pets:CheckAnomaly()
+            self.SacrificeGrimoire:Update()
         end
     end
 end
@@ -174,6 +190,14 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
     if playerClass == "PALADIN" and self.db.profile.paladinAurasInCombatOnly then
         self.PaladinAuras:Update()
+    end
+end
+
+function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
+    if unitTarget == "player" then
+        if playerClass == "WARLOCK" and spellID == 108503 then
+            self.SacrificeGrimoire:GrimoireCast()
+        end
     end
 end
 
@@ -192,6 +216,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.DruidForms:ToggleFrameLock(value)
     self.WarriorStances:ToggleFrameLock(value)
     self.PaladinAuras:ToggleFrameLock(value)
+    self.SacrificeGrimoire:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)

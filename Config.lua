@@ -174,6 +174,7 @@ local config = {
                     desc = "Stop the frame from hiding while in the 'correct' form",
                     get = function() return ToastyClassChores.db.profile.druidFormsAlwaysShow end,
                     set = "SetDruidFormsAlwaysShow",
+                    width = "full",
                     order = 101,
                 },
                 druidFormsIgnoreTravel = {
@@ -181,6 +182,7 @@ local config = {
                     name = "Ignore Travel Form",
                     get = function() return ToastyClassChores.db.profile.druidFormsIgnoreTravel end,
                     set = "SetDruidFormsIgnoreTravel",
+                    width = "full",
                     order = 102,
                 },
                 druidFormsInCombatOnly = {
@@ -188,6 +190,7 @@ local config = {
                     name = "In Combat Only",
                     get = function() return ToastyClassChores.db.profile.druidFormsInCombatOnly end,
                     set = "SetDruidFormsInCombatOnly",
+                    width = "full",
                     order = 103,
                 },
                 druidFormsInstanceOnly = {
@@ -286,6 +289,7 @@ local config = {
                     name = "Show Devotion Aura",
                     get = function() return ToastyClassChores.db.profile.paladinAurasAlwaysShow end,
                     set = "SetPaladinAurasAlwaysShow",
+                    width = "full",
                     order = 101,
                 },
                 paladinAurasInCombatOnly = {
@@ -293,6 +297,7 @@ local config = {
                     name = "In Combat Only",
                     get = function() return ToastyClassChores.db.profile.paladinAurasInCombatOnly end,
                     set = "SetPaladinAurasInCombatOnly",
+                    width = "full",
                     order = 102,
                 },
                 paladinAurasInstanceOnly = {
@@ -314,6 +319,35 @@ local config = {
                 },
             }
         },
+        sacrificeGrimoire = {
+            type = "group",
+            name = "Grimoire of Sacrifice",
+            args = {
+                raidBuffTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.sacrificeGrimoireTracking end,
+                    set = "SetSacrificeGrimoireTracking",
+                    width = "full"
+                },
+                raidBuffIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    desc = "Input number for larger icons",
+                    get = function() return ToastyClassChores.db.profile.sacrificeGrimoireIconSize end,
+                    set = "SetSacrificeGrimoireIconSize",
+                },
+                raidBuffOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.sacrificeGrimoireOpacity end,
+                    set = "SetSacrificeGrimoireOpacity",
+                },
+            }
+        }
     },
 }
 
@@ -387,6 +421,15 @@ local defaults = {
         paladinAurasLocation = {
             xPos = 0,
             yPos = 55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        },
+        sacrificeGrimoireTracking = true,
+        sacrificeGrimoireIconSize = 100,
+        sacrificeGrimoireOpacity = 1,
+        sacrificeGrimoireLocation = {
+            xPos = 0,
+            yPos = -55,
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },

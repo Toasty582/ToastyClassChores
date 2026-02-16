@@ -29,3 +29,4 @@ Modules\Pets.lua
 Modules\DruidForms.lua
 Modules\WarriorStances.lua
 Modules\PaladinAuras.lua
+Modules\SacrificeGrimoire.lua

@@ -10,11 +10,11 @@ Currently Implemented:
 - Druid forms
 - Warrior stances
 - Paladin auras
+- Grimoire of Sacrifice reminder
 
 Planned Features:
 - Rogue poisons
 - Raid buffs (Solo)
-- Grimoire of Sacrifice reminder
 
 Am looking into:
 - Source of Magic
