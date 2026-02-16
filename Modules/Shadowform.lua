@@ -117,26 +117,10 @@ function Shadowform:Update()
         return
     end
 
-    if voidformQueued then
-        if GetSessionTime() - voidformQueued < 1 then
-            shadowformFrame:Hide()
-            return
-        else
-            voidformQueued = nil
-        end
-    end
-
     if GetShapeshiftForm() == 1 and not framesUnlocked then
         shadowformFrame:Hide()
-    else
+    elseif GetShapeshiftForm() == 0 then
         shadowformFrame:Show()
-    end
-end
-
-function Shadowform:QueueVoidform()
-    voidformQueued = GetSessionTime()
-    if shadowformFrame then
-        shadowformFrame:Hide()
     end
 end
 
