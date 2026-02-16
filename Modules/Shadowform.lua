@@ -17,7 +17,7 @@ function ToastyClassChores:SetShadowformTracking(info, value)
     else
         self:Print("Disabling Shadowform Tracking")
         if shadowformFrame and not framesUnlocked then
-            shadowformFrame:SetAlpha(0)
+            shadowformFrame:Hide()
         end
     end
 end
@@ -42,6 +42,13 @@ end
 function ToastyClassChores:SetShadowformNoLegacy(info, value)
     self.db.profile.shadowformNoLegacy = value
     Shadowform:Update()
+end
+
+function ToastyClassChores:SetShadowformOpacity(info, value)
+    self.db.profile.shadowformOpacity = value
+    if shadowformFrame then
+        shadowformFrame:SetAlpha(value)
+    end
 end
 
 function Shadowform:Initialize()
@@ -71,14 +78,17 @@ function Shadowform:Initialize()
         end)
     end
 
-    shadowformFrame:SetAlpha(0)
+    shadowformFrame:SetAlpha(ToastyClassChores.db.profile.shadowformOpacity)
+    if not framesUnlocked then
+        shadowformFrame:Hide()
+    end
     self:Update()
 end
 
 function Shadowform:Update()
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
         if shadowformFrame and not framesUnlocked then
-            shadowformFrame:SetAlpha(0)
+            shadowformFrame:Hide()
         end
         return
     end
@@ -86,30 +96,30 @@ function Shadowform:Update()
         self:Initialize()
     end
     local _, instanceType = IsInInstance()
-    
-    if ToastyClassChores.db.profile.shadowformInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid") then
-        shadowformFrame:SetAlpha(0)
+
+    if ToastyClassChores.db.profile.shadowformInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+        shadowformFrame:Hide()
         return
     end
     if ToastyClassChores.db.profile.shadowformNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
-        shadowformFrame:SetAlpha(0)
+        shadowformFrame:Hide()
         return
     end
 
     if ToastyClassChores.db.profile.shadowformInCombatOnly and not PlayerIsInCombat() then
-        shadowformFrame:SetAlpha(0)
+        shadowformFrame:Hide()
         return
     end
 
     if C_SpecializationInfo.GetSpecialization() ~= 3 then
-        shadowformFrame:SetAlpha(0)
+        shadowformFrame:Hide()
         return
     end
 
     if GetShapeshiftForm() == 1 and not framesUnlocked then
-        shadowformFrame:SetAlpha(0)
+        shadowformFrame:Hide()
     else
-        shadowformFrame:SetAlpha(1)
+        shadowformFrame:Show()
     end
 end
 
@@ -120,7 +130,7 @@ function Shadowform:ToggleFrameLock(value)
 
         if not value then
             framesUnlocked = true
-            shadowformFrame:SetAlpha(1)
+            shadowformFrame:Show()
         else
             framesUnlocked = false
             self:Update()

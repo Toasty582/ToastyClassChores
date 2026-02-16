@@ -177,6 +177,7 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
 end
 
+
 function ToastyClassChores:ToggleFrameLock()
     ToastyClassChores.db.profile.frameLock = not ToastyClassChores.db.profile.frameLock
     local value = ToastyClassChores.db.profile.frameLock

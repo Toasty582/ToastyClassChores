@@ -24,7 +24,7 @@ function ToastyClassChores:SetPaladinAurasTracking(info, value)
     else
         self:Print("Disabling Paladin Aura Tracking")
         if paladinAurasFrame and not framesUnlocked then
-            paladinAurasFrame:SetAlpha(0)
+            paladinAurasFrame:Hide()
         end
     end
 end
@@ -56,6 +56,13 @@ function ToastyClassChores:SetPaladinAurasNoLegacy(info, value)
     PaladinAuras:Update()
 end
 
+function ToastyClassChores:SetPaladinAurasOpacity(info, value)
+    self.db.profile.paladinAurasOpacity = value
+    if paladinAurasFrame then
+        paladinAurasFrame:SetAlpha(value)
+    end
+end
+
 function PaladinAuras:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.paladinAurasTracking and playerClass == "PALADIN") then
@@ -83,8 +90,9 @@ function PaladinAuras:Initialize()
                 paladinAurasFrame:GetPoint()
         end)
     end
+    paladinAurasFrame:SetAlpha(ToastyClassChores.db.profile.paladinAurasOpacity)
     if not framesUnlocked then
-        paladinAurasFrame:SetAlpha(0)
+        paladinAurasFrame:Hide()
     end
     self:Update()
 end
@@ -96,19 +104,19 @@ function PaladinAuras:Update()
     if not paladinAurasFrame then
         self:Initialize()
     end
-    
+
     local _, instanceType = IsInInstance()
-    
-    if ToastyClassChores.db.profile.paladinAurasInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid") then
-        paladinAurasFrame:SetAlpha(0)
+
+    if ToastyClassChores.db.profile.paladinAurasInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+        paladinAurasFrame:Hide()
         return
     end
     if ToastyClassChores.db.profile.paladinAurasNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
-        paladinAurasFrame:SetAlpha(0)
+        paladinAurasFrame:Hide()
         return
     end
     if ToastyClassChores.db.profile.paladinAurasInCombatOnly and not PlayerIsInCombat() then
-        paladinAurasFrame:SetAlpha(0)
+        paladinAurasFrame:Hide()
         return
     end
 
@@ -117,15 +125,14 @@ function PaladinAuras:Update()
     frameTexture:SetAllPoints()
 
     if auraIndex ~= 2 then
-        paladinAurasFrame:SetAlpha(1)
+        paladinAurasFrame:Show()
     else
         if framesUnlocked or ToastyClassChores.db.profile.paladinAurasAlwaysShow then
-            paladinAurasFrame:SetAlpha(1)
+            paladinAurasFrame:Show()
         else
-            paladinAurasFrame:SetAlpha(0)
+            paladinAurasFrame:Hide()
         end
     end
-
 end
 
 function PaladinAuras:ToggleFrameLock(value)
@@ -135,7 +142,7 @@ function PaladinAuras:ToggleFrameLock(value)
 
         if not value then
             framesUnlocked = true
-            paladinAurasFrame:SetAlpha(1)
+            paladinAurasFrame:Show()
         else
             framesUnlocked = false
             self:Update()

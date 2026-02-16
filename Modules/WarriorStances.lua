@@ -32,7 +32,7 @@ function ToastyClassChores:SetWarriorStancesTracking(info, value)
     else
         self:Print("Disabling Warrior Stance Tracking")
         if warriorStancesFrame then
-            warriorStancesFrame:SetAlpha(0)
+            warriorStancesFrame:Hide()
         end
     end
 end
@@ -52,6 +52,13 @@ end
 function ToastyClassChores:SetProtShowsBattle(info, value)
     self.db.profile.warriorStancesProtShowsBattle = value
     WarriorStances:Update()
+end
+
+function ToastyClassChores:SetWarriorStancesOpacity(info, value)
+    self.db.profile.warriorStancesOpacity = value
+    if warriorStancesFrame then
+        warriorStancesFrame:SetAlpha(value)
+    end
 end
 
 function WarriorStances:Initialize()
@@ -81,8 +88,10 @@ function WarriorStances:Initialize()
         ToastyClassChores.db.profile.warriorStancesLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.warriorStancesLocation.parentAnchorPoint, ToastyClassChores.db.profile.warriorStancesLocation.xPos, ToastyClassChores.db.profile.warriorStancesLocation.yPos =
             warriorStancesFrame:GetPoint()
     end)
-
-    warriorStancesFrame:SetAlpha(0)
+    warriorStancesFrame:SetAlpha(ToastyClassChores.db.profile.warriorStancesOpacity)
+    if not framesUnlocked then
+        warriorStancesFrame:Hide()
+    end
     self:Update()
 end
 
@@ -105,20 +114,20 @@ function WarriorStances:Update()
 
     if specIndex ~= 3 then
         if stanceIndex ~= 2 then
-            warriorStancesFrame:SetAlpha(1)
+            warriorStancesFrame:Show()
         else
             if not framesUnlocked then
-                warriorStancesFrame:SetAlpha(0)
+                warriorStancesFrame:Hide()
             end
         end
     else
         if stanceIndex == 1 and ToastyClassChores.db.profile.warriorStancesProtShowsDef then
-            warriorStancesFrame:SetAlpha(1)
+            warriorStancesFrame:Show()
         elseif stanceIndex == 2 and ToastyClassChores.db.profile.warriorStancesProtShowsBattle then
-            warriorStancesFrame:SetAlpha(1)
+            warriorStancesFrame:Show()
         else
             if not framesUnlocked then
-                warriorStancesFrame:SetAlpha(0)
+                warriorStancesFrame:Hide()
             end
         end
     end
@@ -131,7 +140,7 @@ function WarriorStances:ToggleFrameLock(value)
 
         if not value then
             framesUnlocked = true
-            warriorStancesFrame:SetAlpha(1)
+            warriorStancesFrame:Show()
         else
             framesUnlocked = false
             self:Update()

@@ -6,7 +6,6 @@ local RaidBuff = ToastyClassChores.RaidBuff
 
 local raidBuffFrame
 local playerClass
-local alphaBeforeUnlock
 local glowHidWhileFramesUnlocked = false
 local framesUnlocked = false
 
@@ -36,7 +35,7 @@ function ToastyClassChores:SetRaidBuffTracking(info, value)
     else
         self:Print("Disabling Raid Buff Tracking")
         if raidBuffFrame then
-            raidBuffFrame:SetAlpha(0)
+            raidBuffFrame:Hide()
         end
     end
 end
@@ -45,6 +44,13 @@ function ToastyClassChores:SetRaidBuffIconSize(info, value)
     self.db.profile.raidBuffIconSize = value
     if raidBuffFrame then
         raidBuffFrame:SetSize(value, value)
+    end
+end
+
+function ToastyClassChores:SetRaidBuffOpacity(info, value)
+    self.db.profile.raidBuffOpacity = value
+    if raidBuffFrame then
+        raidBuffFrame:SetAlpha(value)
     end
 end
 
@@ -74,15 +80,16 @@ function RaidBuff:Initialize()
                 raidBuffFrame:GetPoint()
         end)
     end
+    raidBuffFrame:SetAlpha(ToastyClassChores.db.profile.raidBuffOpacity)
     if not framesUnlocked then
-        raidBuffFrame:SetAlpha(0)
+        raidBuffFrame:Hide()
     end
 end
 
 function RaidBuff:GlowShow(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         if raidBuffFrame and not framesUnlocked then
-            raidBuffFrame:SetAlpha(0)
+            raidBuffFrame:Hide()
         end
         return
     end
@@ -90,14 +97,14 @@ function RaidBuff:GlowShow(spellID)
         self:Initialize()
     end
     if raidBuffClassList[spellID] == playerClass then
-        raidBuffFrame:SetAlpha(0.5)
+        raidBuffFrame:Show()
     end
 end
 
 function RaidBuff:GlowHide(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         if raidBuffFrame and not framesUnlocked then
-            raidBuffFrame:SetAlpha(0)
+            raidBuffFrame:Hide()
         end
         return
     end
@@ -108,7 +115,7 @@ function RaidBuff:GlowHide(spellID)
         self:Initialize()
     end
     if raidBuffClassList[spellID] == playerClass and not framesUnlocked then
-        raidBuffFrame:SetAlpha(0)
+        raidBuffFrame:Hide()
     end
 end
 
@@ -119,14 +126,13 @@ function RaidBuff:ToggleFrameLock(value)
 
         if not value then
             framesUnlocked = true
-            alphaBeforeUnlock = raidBuffFrame:GetAlpha()
-            raidBuffFrame:SetAlpha(1)
+            raidBuffFrame:Show()
         else
             framesUnlocked = false
             if glowHidWhileFramesUnlocked then
-                raidBuffFrame:SetAlpha(0)
+                raidBuffFrame:Hide()
             else
-                raidBuffFrame:SetAlpha(alphaBeforeUnlock)
+                raidBuffFrame:Show()
             end
         end
     end

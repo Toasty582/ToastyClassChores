@@ -21,6 +21,7 @@ local config = {
                     desc = nil,
                     get = function() return ToastyClassChores.db.profile.shadowformTracking end,
                     set = "SetShadowformTracking",
+                    width = "full",
                 },
                 shadowformIconSize = {
                     type = "range",
@@ -30,11 +31,21 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.shadowformIconSize end,
                     set = "SetShadowformIconSize",
                 },
+                shadowformOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.shadowformOpacity end,
+                    set = "SetShadowformOpacity",
+                },
                 shadowformInCombatOnly = {
                     type = "toggle",
                     name = "In Combat Only",
                     get = function() return ToastyClassChores.db.profile.shadowformInCombatOnly end,
                     set = "SetShadowformInCombatOnly",
+                    width = "full",
+                    order = -3,
                 },
                 shadowformInstanceOnly = {
                     type = "toggle",
@@ -64,6 +75,7 @@ local config = {
                     name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.raidBuffTracking end,
                     set = "SetRaidBuffTracking",
+                    width = "full"
                 },
                 raidBuffIconSize = {
                     type = "range",
@@ -72,6 +84,14 @@ local config = {
                     desc = "Input number for larger icons",
                     get = function() return ToastyClassChores.db.profile.raidBuffIconSize end,
                     set = "SetRaidBuffIconSize",
+                },
+                raidBuffOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.raidBuffOpacity end,
+                    set = "SetRaidBuffOpacity",
                 },
             }
         },
@@ -84,6 +104,7 @@ local config = {
                     name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.petsTracking end,
                     set = "SetPetsTracking",
+                    width = "full"
                 },
                 petsIconSize = {
                     type = "range",
@@ -92,6 +113,14 @@ local config = {
                     desc = "Input number for larger icons",
                     get = function() return ToastyClassChores.db.profile.petsIconSize end,
                     set = "SetPetsIconSize",
+                },
+                petsOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.petsOpacity end,
+                    set = "SetPetsOpacity",
                 },
                 petsInstanceOnly = {
                     type = "toggle",
@@ -121,6 +150,7 @@ local config = {
                     name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.druidFormsTracking end,
                     set = "SetDruidFormsTracking",
+                    width = "full",
                 },
                 druidFormsIconSize = {
                     type = "range",
@@ -129,6 +159,14 @@ local config = {
                     desc = "Input number for larger icons",
                     get = function() return ToastyClassChores.db.profile.druidFormsIconSize end,
                     set = "SetDruidFormsIconSize",
+                },
+                druidFormsOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.druidFormsOpacity end,
+                    set = "SetDruidFormsOpacity",
                 },
                 druidFormsAlwaysShow = {
                     type = "toggle",
@@ -175,19 +213,28 @@ local config = {
             type = "group",
             name = "Warrior Stances",
             args = {
-                druidFormsTracking = {
+                warriorStancesTracking = {
                     type = "toggle",
                     name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.warriorStancesTracking end,
                     set = "SetWarriorStancesTracking",
+                    width = "full"
                 },
-                druidFormsIconSize = {
+                warriorStancesIconSize = {
                     type = "range",
                     name = "Icon Size",
                     softMax = 200,
                     desc = "Input number for larger icons",
                     get = function() return ToastyClassChores.db.profile.warriorStancesIconSize end,
                     set = "SetWarriorStancesIconSize",
+                },
+                warriorStancesOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.warriorStancesOpacity end,
+                    set = "SetWarriorStancesOpacity",
                 },
                 warriorStancesProtShowsBattle = {
                     type = "toggle",
@@ -216,6 +263,7 @@ local config = {
                     name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.paladinAurasTracking end,
                     set = "SetPaladinAurasTracking",
+                    width = "full",
                 },
                 paladinAurasIconSize = {
                     type = "range",
@@ -224,6 +272,14 @@ local config = {
                     desc = "Input number for larger icons",
                     get = function() return ToastyClassChores.db.profile.paladinAurasIconSize end,
                     set = "SetPaladinAurasIconSize",
+                },
+                paladinAurasOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.paladinAurasOpacity end,
+                    set = "SetPaladinAurasOpacity",
                 },
                 paladinAurasAlwaysShow = {
                     type = "toggle",
@@ -270,6 +326,7 @@ local defaults = {
         shadowformInCombatOnly = false,
         shadowformInstanceOnly = false,
         shadowformNoLegacy = false,
+        shadowformOpacity = 1,
         shadowformLocation = {
             xPos = 0,
             yPos = 55,
@@ -278,6 +335,7 @@ local defaults = {
         },
         raidBuffTracking = true,
         raidBuffIconSize = 100,
+        raidBuffOpacity = 1,
         raidBuffLocation = {
             xPos = 0,
             yPos = -55,
@@ -288,6 +346,7 @@ local defaults = {
         petsIconSize = 100,
         petsInstanceOnly = false,
         petsNoLegacy = false,
+        petsOpacity = 1,
         petsLocation = {
             xPos = 0,
             yPos = 55,
@@ -300,6 +359,7 @@ local defaults = {
         druidFormsIgnoreTravel = false,
         druidFormsInstanceOnly = false,
         druidFormsNoLegacy = false,
+        druidFormsOpacity = 1,
         druidFormsLocation = {
             xPos = 0,
             yPos = 55,
@@ -311,6 +371,7 @@ local defaults = {
         warriorStancesIconSize = 100,
         warriorStancesProtShowsBattle = false,
         warriorStancesProtShowsDef = true,
+        warriorStancesOpacity = 1,
         warriorStancesLocation = {
             xPos = 0,
             yPos = 55,
@@ -322,6 +383,7 @@ local defaults = {
         paladinAurasInCombatOnly = false,
         paladinAurasInstanceOnly = false,
         paladinAurasNoLegacy = false,
+        paladinAurasOpacity = 1,
         paladinAurasLocation = {
             xPos = 0,
             yPos = 55,

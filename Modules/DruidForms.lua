@@ -48,7 +48,7 @@ function ToastyClassChores:SetDruidFormsTracking(info, value)
     else
         self:Print("Disabling Druid Form Tracking")
         if druidFormsFrame and not framesUnlocked then
-            druidFormsFrame:SetAlpha(0)
+            druidFormsFrame:Hide()
         end
     end
 end
@@ -91,6 +91,13 @@ function ToastyClassChores:SetDruidFormsNoLegacy(info, value)
     DruidForms:Update()
 end
 
+function ToastyClassChores:SetDruidFormsOpacity(info, value)
+    self.db.profile.druidFormsOpacity = value
+    if druidFormsFrame then
+        druidFormsFrame:SetAlpha(value)
+    end
+end
+
 function DruidForms:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.druidFormsTracking and playerClass == "DRUID") then
@@ -118,8 +125,9 @@ function DruidForms:Initialize()
                 druidFormsFrame:GetPoint()
         end)
     end
+    druidFormsFrame:SetAlpha(ToastyClassChores.db.profile.druidFormsOpacity)
     if not framesUnlocked then
-        druidFormsFrame:SetAlpha(0)
+        druidFormsFrame:Hide()
     end
     self:CheckForms()
     self:Update()
@@ -136,12 +144,12 @@ function DruidForms:Update()
     
     local _, instanceType = IsInInstance()
     
-    if ToastyClassChores.db.profile.druidFormsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid") then
-        druidFormsFrame:SetAlpha(0)
+    if ToastyClassChores.db.profile.druidFormsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+        druidFormsFrame:Hide()
         return
     end
     if ToastyClassChores.db.profile.druidFormsNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
-        druidFormsFrame:SetAlpha(0)
+        druidFormsFrame:Hide()
         return
     end
 
@@ -154,43 +162,43 @@ function DruidForms:Update()
     frameTexture:SetAllPoints()
 
     if ToastyClassChores.db.profile.druidFormsInCombatOnly and not PlayerIsInCombat() then
-        druidFormsFrame:SetAlpha(0)
+        druidFormsFrame:Hide()
         return
     end
 
     if ToastyClassChores.db.profile.druidFormsAlwaysShow then
-        druidFormsFrame:SetAlpha(1)
+        druidFormsFrame:Show()
         return
     end
 
     if (formIcons[effectiveFormIndex] == 132144 or formIcons[effectiveFormIndex] == 1394966) and ToastyClassChores.db.profile.druidFormsIgnoreTravel then
-        druidFormsFrame:SetAlpha(0)
+        druidFormsFrame:Hide()
         return
     end
 
     if IsMounted() and not framesUnlocked then
-        druidFormsFrame:SetAlpha(0)
+        druidFormsFrame:Hide()
         return
     end
     if specIndex ~= 4 then -- Resto is slightly weird
         if formIndex ~= preferredForm[specIndex] then
-            druidFormsFrame:SetAlpha(1)
+            druidFormsFrame:Show()
         else
             if not framesUnlocked then
-                druidFormsFrame:SetAlpha(0)
+                druidFormsFrame:Hide()
             end
         end
         if knowsWildpowerSurge == 1 and (formIndex == 1 or formIndex == 2) and not framesUnlocked then
             ToastyClassChores:Debug(knowsWildpowerSurge)
-            druidFormsFrame:SetAlpha(0)
+            druidFormsFrame:Hide()
         end
     else
         local treantIndex = 4 + knowsMoonkinForm
         if formIndex ~= 0 and formIndex ~= treantIndex then
-            druidFormsFrame:SetAlpha(1)
+            druidFormsFrame:Show()
         else
             if not framesUnlocked then
-                druidFormsFrame:SetAlpha(0)
+                druidFormsFrame:Hide()
             end
         end
     end
@@ -221,7 +229,7 @@ function DruidForms:ToggleFrameLock(value)
 
         if not value then
             framesUnlocked = true
-            druidFormsFrame:SetAlpha(1)
+            druidFormsFrame:Show()
         else
             framesUnlocked = false
             self:Update()
