@@ -87,55 +87,10 @@ function SacrificeGrimoire:Update()
         return
     end
     if C_SpellBook.IsSpellInSpellBook(132411) or C_SpellBook.IsSpellInSpellBook(132413) or C_SpellBook.IsSpellInSpellBook(132409) or C_SpellBook.IsSpellInSpellBook(261589) then
-        local hasUI, _ = HasPetUI()
-        if not hasUI then
-            grimoireFrame:Hide()
-            if grimoireCastTimestamp then
-                grimoireCastTimestamp = nil
-            end
-        else
-            if grimoireCastTimestamp then
-                if GetSessionTime() - grimoireCastTimestamp < 20 then
-                    grimoireFrame:Hide()
-                else
-                    grimoireFrame:Show()
-                end
-            else
-                grimoireFrame:Show()
-            end
-        end
+        grimoireFrame:Hide()
     else
         grimoireFrame:Show()
     end
-end
-
-function SacrificeGrimoire:GrimoireCast()
-    if not (ToastyClassChores.db.profile.sacrificeGrimoireTracking and playerClass == "WARLOCK") then
-        return
-    end
-    if not grimoireFrame then
-        self:Initialize()
-    end
-
-    if not C_SpellBook.IsSpellInSpellBook(108503) then
-        return
-    end
-    grimoireCastTimestamp = GetSessionTime()
-    grimoireFrame:Hide()
-end
-
-function SacrificeGrimoire:Death()
-    if not (ToastyClassChores.db.profile.sacrificeGrimoireTracking and playerClass == "WARLOCK") then
-        return
-    end
-    if not grimoireFrame then
-        self:Initialize()
-    end
-
-    if not C_SpellBook.IsSpellInSpellBook(108503) then
-        return
-    end
-    grimoireFrame:Show()
 end
 
 function SacrificeGrimoire:ToggleFrameLock(value)

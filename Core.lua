@@ -53,8 +53,6 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_PET")
         self:RegisterEvent("SPELLS_CHANGED")
         self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-        self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-        self:RegisterEvent("PLAYER_ALIVE")
     elseif playerClass == "PALADIN" then
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
@@ -156,13 +154,6 @@ function ToastyClassChores:UNIT_PET()
         self.Pets:Update()
     elseif playerClass == "WARLOCK" then
         self.Pets:Update()
-        self.SacrificeGrimoire:Update()
-    end
-end
-
-function ToastyClassChores:PLAYER_ALIVE()
-    if playerClass == "WARLOCK" then
-        self.SacrificeGrimoire:Update()
     end
 end
 
@@ -190,14 +181,6 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
     if playerClass == "PALADIN" and self.db.profile.paladinAurasInCombatOnly then
         self.PaladinAuras:Update()
-    end
-end
-
-function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
-    if unitTarget == "player" then
-        if playerClass == "WARLOCK" and spellID == 108503 then
-            self.SacrificeGrimoire:GrimoireCast()
-        end
     end
 end
 
