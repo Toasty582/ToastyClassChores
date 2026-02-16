@@ -100,6 +100,13 @@ local config = {
                     set = "SetDruidFormsAlwaysShow",
                     order = -3,
                 },
+                druidFormsIgnoreTravel = {
+                    type = "toggle",
+                    name = "Ignore Travel Form",
+                    get = function() return ToastyClassChores.db.profile.druidFormsIgnoreTravel end,
+                    set = "SetDruidFormsIgnoreTravel",
+                    order = -2,
+                },
                 druidFormsInCombatOnly = {
                     type = "toggle",
                     name = "In Combat Only",
@@ -205,6 +212,7 @@ local defaults = {
         druidFormsTracking = true,
         druidFormsIconSize = 100,
         druidFormsInCombatOnly = false,
+        druidFormsIgnoreTravel = false,
         druidFormsLocation = {
             xPos = 0,
             yPos = 55,

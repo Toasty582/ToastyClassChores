@@ -55,6 +55,9 @@ end
 
 function ToastyClassChores:SetDruidFormsAlwaysShow(info, value)
     self.db.profile.druidFormsAlwaysShow = value
+    if value then
+        self.db.profile.druidFormsIgnoreTravel = false
+    end
     DruidForms:Update()
 end
 
@@ -67,6 +70,14 @@ end
 
 function ToastyClassChores:SetDruidFormsInCombatOnly(info, value)
     self.db.profile.druidFormsInCombatOnly = value
+    DruidForms:Update()
+end
+
+function ToastyClassChores:SetDruidFormsIgnoreTravel(info, value)
+    self.db.profile.druidFormsIgnoreTravel = value
+    if value then
+        self.db.profile.druidFormsAlwaysShow = false
+    end
     DruidForms:Update()
 end
 
@@ -113,11 +124,11 @@ function DruidForms:Update()
         self:Initialize()
     end
     local formIndex = GetShapeshiftForm()
+    local effectiveFormIndex = formIndex
     if formIndex > 3 then
-        frameTexture:SetTexture(formIcons[formIndex + 10 * knowsTreantForm + 20 * knowsMoonkinForm])
-    else
-        frameTexture:SetTexture(formIcons[formIndex])
+        effectiveFormIndex = formIndex + 10 * knowsTreantForm + 20 * knowsMoonkinForm
     end
+    frameTexture:SetTexture(formIcons[effectiveFormIndex])
     frameTexture:SetAllPoints()
 
     if ToastyClassChores.db.profile.druidFormsInCombatOnly and not PlayerIsInCombat() then
@@ -129,6 +140,12 @@ function DruidForms:Update()
         druidFormsFrame:SetAlpha(1)
         return
     end
+
+    if (formIcons[effectiveFormIndex] == 132144 or formIcons[effectiveFormIndex] == 1394966) and ToastyClassChores.db.profile.druidFormsIgnoreTravel then
+        druidFormsFrame:SetAlpha(0)
+        return
+    end
+
     if IsMounted() and not framesUnlocked then
         druidFormsFrame:SetAlpha(0)
         return
