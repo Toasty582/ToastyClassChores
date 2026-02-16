@@ -41,6 +41,11 @@ function ToastyClassChores:SetPaladinAurasIconSize(info, value)
     end
 end
 
+function ToastyClassChores:SetPaladinAurasInCombatOnly(info, value)
+    self.db.profile.paladinAurasInCombatOnly = value
+    PaladinAuras:Update()
+end
+
 function ToastyClassChores:SetPaladinAurasInstanceOnly(info, value)
     self.db.profile.paladinAurasInstanceOnly = value
     PaladinAuras:Update()
@@ -99,6 +104,10 @@ function PaladinAuras:Update()
         return
     end
     if ToastyClassChores.db.profile.paladinAurasNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
+        paladinAurasFrame:SetAlpha(0)
+        return
+    end
+    if ToastyClassChores.db.profile.paladinAurasInCombatOnly and not PlayerIsInCombat() then
         paladinAurasFrame:SetAlpha(0)
         return
     end

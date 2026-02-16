@@ -55,6 +55,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
     elseif playerClass == "PALADIN" then
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+        self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     elseif playerClass == "DRUID" then
         self:RegisterEvent("SPELLS_CHANGED")
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
@@ -92,14 +93,33 @@ function ToastyClassChores:SPELL_UPDATE_USABLE()
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
-    self.Shadowform:Update()
-    self.PaladinAuras:Update()
-    self.DruidForms:Update()
+    if playerClass == "PRIEST" and self.db.profile.shadowformInstanceOnly then
+        self.Shadowform:Update()
+    end
+    if playerClass == "PALADIN" and self.db.profile.paladinAurasInstanceOnly then
+        self.PaladinAuras:Update()
+    end
+    if playerClass == "DRUID" and self.db.profile.druidFormsInstanceOnly then
+        self.DruidForms:Update()
+    end
+    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.petsInstanceOnly then
+        self.Pets:Update()
+    end
 end
+
 function ToastyClassChores:LEGACY_LOOT_RULES_CHANGED()
-    self.Shadowform:Update()
-    self.PaladinAuras:Update()
-    self.DruidForms:Update()
+    if playerClass == "PRIEST" and self.db.profile.shadowformNoLegacy then
+        self.Shadowform:Update()
+    end
+    if playerClass == "PALADIN" and self.db.profile.paladinAurasNoLegacy then
+        self.PaladinAuras:Update()
+    end
+    if playerClass == "DRUID" and self.db.profile.druidFormsNoLegacy then
+        self.DruidForms:Update()
+    end
+    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.petsNoLegacy then
+        self.Pets:Update()
+    end
 end
 
 function ToastyClassChores:UPDATE_SHAPESHIFT_FORM()
@@ -151,6 +171,9 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
     if playerClass == "DRUID" and self.db.profile.druidFormsInCombatOnly then
         self.DruidForms:Update()
+    end
+    if playerClass == "PALADIN" and self.db.profile.paladinAurasInCombatOnly then
+        self.PaladinAuras:Update()
     end
 end
 

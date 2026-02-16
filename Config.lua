@@ -224,7 +224,14 @@ local config = {
                     name = "Show Devotion Aura",
                     get = function() return ToastyClassChores.db.profile.paladinAurasAlwaysShow end,
                     set = "SetPaladinAurasAlwaysShow",
-                    order = -3,
+                    order = 101,
+                },
+                paladinAurasInCombatOnly = {
+                    type = "toggle",
+                    name = "In Combat Only",
+                    get = function() return ToastyClassChores.db.profile.paladinAurasInCombatOnly end,
+                    set = "SetPaladinAurasInCombatOnly",
+                    order = 102,
                 },
                 paladinAurasInstanceOnly = {
                     type = "toggle",
@@ -306,6 +313,7 @@ local defaults = {
         },
         paladinAurasTracking = true,
         paladinAurasIconSize = 100,
+        paladinAurasInCombatOnly = false,
         paladinAurasInstanceOnly = false,
         paladinAurasNoLegacy = false,
         paladinAurasLocation = {
