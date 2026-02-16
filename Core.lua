@@ -30,6 +30,7 @@ function ToastyClassChores:OnEnable()
     playerClass = self.cdb.profile.class
 
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
+    self:RegisterEvent("LEGACY_LOOT_RULES_CHANGED")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 
@@ -91,7 +92,14 @@ function ToastyClassChores:SPELL_UPDATE_USABLE()
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
-
+    self.Shadowform:Update()
+    self.PaladinAuras:Update()
+    self.DruidForms:Update()
+end
+function ToastyClassChores:LEGACY_LOOT_RULES_CHANGED()
+    self.Shadowform:Update()
+    self.PaladinAuras:Update()
+    self.DruidForms:Update()
 end
 
 function ToastyClassChores:UPDATE_SHAPESHIFT_FORM()

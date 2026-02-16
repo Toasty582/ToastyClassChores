@@ -34,7 +34,24 @@ local config = {
                     name = "In Combat Only",
                     get = function() return ToastyClassChores.db.profile.shadowformInCombatOnly end,
                     set = "SetShadowformInCombatOnly",
-                }
+                },
+                shadowformInstanceOnly = {
+                    type = "toggle",
+                    name = "Only Show in Instances",
+                    get = function() return ToastyClassChores.db.profile.shadowformInstanceOnly end,
+                    set = "SetShadowformInstanceOnly",
+                    width = "full",
+                    order = -2,
+                },
+                shadowformNoLegacy = {
+                    type = "toggle",
+                    name = "Hide in Legacy Instances",
+                    desc = "Hides frame whenever legacy loot rules are active",
+                    get = function() return ToastyClassChores.db.profile.shadowformNoLegacy end,
+                    set = "SetShadowformNoLegacy",
+                    width = "full",
+                    order = -1,
+                },
             }
         },
         raidBuff = {
@@ -73,6 +90,23 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.petsIconSize end,
                     set = "SetPetsIconSize",
                 },
+                petsInstanceOnly = {
+                    type = "toggle",
+                    name = "Only Show in Instances",
+                    get = function() return ToastyClassChores.db.profile.petsInstanceOnly end,
+                    set = "SetPetsInstanceOnly",
+                    width = "full",
+                    order = -2,
+                },
+                petsNoLegacy = {
+                    type = "toggle",
+                    name = "Hide in Legacy Instances",
+                    desc = "Hides frame whenever legacy loot rules are active",
+                    get = function() return ToastyClassChores.db.profile.petsNoLegacy end,
+                    set = "SetPetsNoLegacy",
+                    width = "full",
+                    order = -1,
+                }
             }
         },
         druidForms = {
@@ -98,22 +132,39 @@ local config = {
                     desc = "Stop the frame from hiding while in the 'correct' form",
                     get = function() return ToastyClassChores.db.profile.druidFormsAlwaysShow end,
                     set = "SetDruidFormsAlwaysShow",
-                    order = -3,
+                    order = 101,
                 },
                 druidFormsIgnoreTravel = {
                     type = "toggle",
                     name = "Ignore Travel Form",
                     get = function() return ToastyClassChores.db.profile.druidFormsIgnoreTravel end,
                     set = "SetDruidFormsIgnoreTravel",
-                    order = -2,
+                    order = 102,
                 },
                 druidFormsInCombatOnly = {
                     type = "toggle",
                     name = "In Combat Only",
                     get = function() return ToastyClassChores.db.profile.druidFormsInCombatOnly end,
                     set = "SetDruidFormsInCombatOnly",
-                    order = -1,
+                    order = 103,
                 },
+                druidFormsInstanceOnly = {
+                    type = "toggle",
+                    name = "Only Show in Instances",
+                    get = function() return ToastyClassChores.db.profile.druidFormsInstanceOnly end,
+                    set = "SetDruidFormsInstanceOnly",
+                    width = "full",
+                    order = -2,
+                },
+                druidFormsNoLegacy = {
+                    type = "toggle",
+                    name = "Hide in Legacy Instances",
+                    desc = "Hides frame whenever legacy loot rules are active",
+                    get = function() return ToastyClassChores.db.profile.druidFormsNoLegacy end,
+                    set = "SetDruidFormsNoLegacy",
+                    width = "full",
+                    order = -1,
+                }
             }
         },
         warriorStances = {
@@ -173,6 +224,23 @@ local config = {
                     name = "Show Devotion Aura",
                     get = function() return ToastyClassChores.db.profile.paladinAurasAlwaysShow end,
                     set = "SetPaladinAurasAlwaysShow",
+                    order = -3,
+                },
+                paladinAurasInstanceOnly = {
+                    type = "toggle",
+                    name = "Only Show in Instances",
+                    get = function() return ToastyClassChores.db.profile.paladinAurasInstanceOnly end,
+                    set = "SetPaladinAurasInstanceOnly",
+                    width = "full",
+                    order = -2,
+                },
+                paladinAurasNoLegacy = {
+                    type = "toggle",
+                    name = "Hide in Legacy Instances",
+                    desc = "Hides frame whenever legacy loot rules are active",
+                    get = function() return ToastyClassChores.db.profile.paladinAurasNoLegacy end,
+                    set = "SetPaladinAurasNoLegacy",
+                    width = "full",
                     order = -1,
                 },
             }
@@ -187,6 +255,8 @@ local defaults = {
         shadowformTracking = true,
         shadowformIconSize = 100,
         shadowformInCombatOnly = false,
+        shadowformInstanceOnly = false,
+        shadowformNoLegacy = false,
         shadowformLocation = {
             xPos = 0,
             yPos = 55,
@@ -203,6 +273,8 @@ local defaults = {
         },
         petsTracking = true,
         petsIconSize = 100,
+        petsInstanceOnly = false,
+        petsNoLegacy = false,
         petsLocation = {
             xPos = 0,
             yPos = 55,
@@ -213,6 +285,8 @@ local defaults = {
         druidFormsIconSize = 100,
         druidFormsInCombatOnly = false,
         druidFormsIgnoreTravel = false,
+        druidFormsInstanceOnly = false,
+        druidFormsNoLegacy = false,
         druidFormsLocation = {
             xPos = 0,
             yPos = 55,
@@ -222,16 +296,18 @@ local defaults = {
         warriorStancesAlwaysShow = false,
         warriorStancesTracking = true,
         warriorStancesIconSize = 100,
+        warriorStancesProtShowsBattle = false,
+        warriorStancesProtShowsDef = true,
         warriorStancesLocation = {
             xPos = 0,
             yPos = 55,
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },
-        warriorStancesProtShowsBattle = false,
-        warriorStancesProtShowsDef = true,
         paladinAurasTracking = true,
         paladinAurasIconSize = 100,
+        paladinAurasInstanceOnly = false,
+        paladinAurasNoLegacy = false,
         paladinAurasLocation = {
             xPos = 0,
             yPos = 55,

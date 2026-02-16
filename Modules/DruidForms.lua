@@ -81,6 +81,16 @@ function ToastyClassChores:SetDruidFormsIgnoreTravel(info, value)
     DruidForms:Update()
 end
 
+function ToastyClassChores:SetDruidFormsInstanceOnly(info, value)
+    self.db.profile.druidFormsInstanceOnly = value
+    DruidForms:Update()
+end
+
+function ToastyClassChores:SetDruidFormsNoLegacy(info, value)
+    self.db.profile.druidFormsNoLegacy = value
+    DruidForms:Update()
+end
+
 function DruidForms:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.druidFormsTracking and playerClass == "DRUID") then
@@ -123,6 +133,18 @@ function DruidForms:Update()
     if not druidFormsFrame then
         self:Initialize()
     end
+    
+    local _, instanceType = IsInInstance()
+    
+    if ToastyClassChores.db.profile.druidFormsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid") then
+        druidFormsFrame:SetAlpha(0)
+        return
+    end
+    if ToastyClassChores.db.profile.druidFormsNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
+        druidFormsFrame:SetAlpha(0)
+        return
+    end
+
     local formIndex = GetShapeshiftForm()
     local effectiveFormIndex = formIndex
     if formIndex > 3 then

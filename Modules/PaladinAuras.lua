@@ -41,6 +41,16 @@ function ToastyClassChores:SetPaladinAurasIconSize(info, value)
     end
 end
 
+function ToastyClassChores:SetPaladinAurasInstanceOnly(info, value)
+    self.db.profile.paladinAurasInstanceOnly = value
+    PaladinAuras:Update()
+end
+
+function ToastyClassChores:SetPaladinAurasNoLegacy(info, value)
+    self.db.profile.paladinAurasNoLegacy = value
+    PaladinAuras:Update()
+end
+
 function PaladinAuras:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.paladinAurasTracking and playerClass == "PALADIN") then
@@ -81,6 +91,18 @@ function PaladinAuras:Update()
     if not paladinAurasFrame then
         self:Initialize()
     end
+    
+    local _, instanceType = IsInInstance()
+    
+    if ToastyClassChores.db.profile.paladinAurasInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid") then
+        paladinAurasFrame:SetAlpha(0)
+        return
+    end
+    if ToastyClassChores.db.profile.paladinAurasNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
+        paladinAurasFrame:SetAlpha(0)
+        return
+    end
+
     local auraIndex = GetShapeshiftForm()
     frameTexture:SetTexture(auraIcons[auraIndex])
     frameTexture:SetAllPoints()

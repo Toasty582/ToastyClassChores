@@ -39,6 +39,16 @@ function ToastyClassChores:SetPetsIconSize(info, value)
     end
 end
 
+function ToastyClassChores:SetPetsInstanceOnly(info, value)
+    self.db.profile.petsInstanceOnly = value
+    Pets:Update()
+end
+
+function ToastyClassChores:SetPetsNoLegacy(info, value)
+    self.db.profile.petsNoLegacy = value
+    Pets:Update()
+end
+
 function Pets:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.petsTracking and petClasses[playerClass]) then
@@ -80,6 +90,18 @@ function Pets:Update()
     if not petsFrame then
         self:Initialize()
     end
+    
+    local _, instanceType = IsInInstance()
+    
+    if ToastyClassChores.db.profile.petsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid") then
+        petsFrame:SetAlpha(0)
+        return
+    end
+    if ToastyClassChores.db.profile.petsNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
+        petsFrame:SetAlpha(0)
+        return
+    end
+
     if IsMounted() and not framesUnlocked then
         petsFrame:SetAlpha(0)
         return

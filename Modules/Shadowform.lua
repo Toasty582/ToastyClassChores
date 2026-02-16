@@ -34,6 +34,16 @@ function ToastyClassChores:SetShadowformInCombatOnly(info, value)
     Shadowform:Update()
 end
 
+function ToastyClassChores:SetShadowformInstanceOnly(info, value)
+    self.db.profile.shadowformInstanceOnly = value
+    Shadowform:Update()
+end
+
+function ToastyClassChores:SetShadowformNoLegacy(info, value)
+    self.db.profile.shadowformNoLegacy = value
+    Shadowform:Update()
+end
+
 function Shadowform:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
@@ -74,6 +84,17 @@ function Shadowform:Update()
     end
     if not shadowformFrame then
         self:Initialize()
+    end
+    
+    local _, instanceType = IsInInstance()
+    
+    if ToastyClassChores.db.profile.shadowformInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid") then
+        shadowformFrame:SetAlpha(0)
+        return
+    end
+    if ToastyClassChores.db.profile.shadowformNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
+        shadowformFrame:SetAlpha(0)
+        return
     end
 
     if ToastyClassChores.db.profile.shadowformInCombatOnly and not PlayerIsInCombat() then
