@@ -17,7 +17,7 @@ function ToastyClassChores:SetShadowformTracking(info, value)
     else
         self:Print("Disabling Shadowform Tracking")
         if shadowformFrame and not framesUnlocked then
-            shadowformFrame.SetAlpha(0)
+            shadowformFrame:SetAlpha(0)
         end
     end
 end

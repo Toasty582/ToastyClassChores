@@ -19,7 +19,7 @@ local petClasses = {
     DEATHKNIGHT = 1100170,
 }
 
-function ToastyClassChores:SetPetTracking(info, value)
+function ToastyClassChores:SetPetsTracking(info, value)
     self.db.profile.petsTracking = value
     if value then
         self:Print("Enabling Pet Tracking")
