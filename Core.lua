@@ -57,9 +57,6 @@ function ToastyClassChores:OnEnable()
     if playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" then
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     end
-    if playerClass == "DEATHKNIGHT" then
-        self:RegisterEvent("SPELL_UPDATE_USABLE")
-    end
 
     self.Shadowform:Initialize()
     self.RaidBuff:Initialize()
@@ -71,12 +68,6 @@ function ToastyClassChores:OnEnable()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
-end
-
-function ToastyClassChores:SPELL_UPDATE_USABLE()
-    if playerClass == "DEATHKNIGHT" then
-        self.Pets:Update()
-    end
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
@@ -136,9 +127,7 @@ function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_HIDE(event, spellID)
 end
 
 function ToastyClassChores:UNIT_PET()
-    if playerClass == "HUNTER" then
-        self.Pets:Update()
-    elseif playerClass == "WARLOCK" then
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
         self.Pets:Update()
     end
 end
