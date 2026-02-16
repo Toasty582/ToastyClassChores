@@ -34,45 +34,31 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 
-    if playerClass == "WARRIOR" then
+    if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" then
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+    end
+
+    if playerClass == "WARRIOR" or playerClass == "PRIEST" then
         self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-    elseif playerClass == "HUNTER" then
+    end
+
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
         self:RegisterEvent("UNIT_PET")
+    end
+
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DRUID" or playerClass == "DEATHKNIGHT" then
         self:RegisterEvent("SPELLS_CHANGED")
+    end
+
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
         self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-    elseif playerClass == "MAGE" then
-
-    elseif playerClass == "ROGUE" then
-
-    elseif playerClass == "PRIEST" then
-        self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-        self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+    end
+    
+    if playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" then
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
-    elseif playerClass == "WARLOCK" then
-        self:RegisterEvent("UNIT_PET")
-        self:RegisterEvent("SPELLS_CHANGED")
-        self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
-    elseif playerClass == "PALADIN" then
-        self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-        self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
-    elseif playerClass == "DRUID" then
-        self:RegisterEvent("SPELLS_CHANGED")
-        self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-        self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
-    elseif playerClass == "SHAMAN" then
-
-    elseif playerClass == "MONK" then
-
-    elseif playerClass == "DEMONHUNTER" then
-
-    elseif playerClass == "DEATHKNIGHT" then
-        self:RegisterEvent("UNIT_PET")
-        self:RegisterEvent("SPELLS_CHANGED")
-        self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
+    end
+    if playerClass == "DEATHKNIGHT" then
         self:RegisterEvent("SPELL_UPDATE_USABLE")
-    elseif playerClass == "EVOKER" then
-
     end
 
     self.Shadowform:Initialize()
