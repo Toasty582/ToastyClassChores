@@ -29,6 +29,11 @@ function ToastyClassChores:SetShadowformIconSize(info, value)
     end
 end
 
+function ToastyClassChores:SetShadowformInCombatOnly(info, value)
+    self.db.profile.shadowformInCombatOnly = value
+    Shadowform:Update()
+end
+
 function Shadowform:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
@@ -70,6 +75,12 @@ function Shadowform:Update()
     if not shadowformFrame then
         self:Initialize()
     end
+
+    if ToastyClassChores.db.profile.shadowformInCombatOnly and not PlayerIsInCombat() then
+        shadowformFrame:SetAlpha(0)
+        return
+    end
+
     if C_SpecializationInfo.GetSpecialization() ~= 3 then
         shadowformFrame:SetAlpha(0)
         return

@@ -29,6 +29,12 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.shadowformIconSize end,
                     set = "SetShadowformIconSize",
                 },
+                shadowformInCombatOnly = {
+                    type = "toggle",
+                    name = "In Combat Only",
+                    get = function() return ToastyClassChores.db.profile.shadowformInCombatOnly end,
+                    set = "SetShadowformInCombatOnly",
+                }
             }
         },
         raidBuff = {
@@ -92,6 +98,13 @@ local config = {
                     desc = "Stop the frame from hiding while in the 'correct' form",
                     get = function() return ToastyClassChores.db.profile.druidFormsAlwaysShow end,
                     set = "SetDruidFormsAlwaysShow",
+                    order = -3,
+                },
+                druidFormsInCombatOnly = {
+                    type = "toggle",
+                    name = "In Combat Only",
+                    get = function() return ToastyClassChores.db.profile.druidFormsInCombatOnly end,
+                    set = "SetDruidFormsInCombatOnly",
                     order = -1,
                 },
             }
@@ -166,6 +179,7 @@ local defaults = {
         debug = false,
         shadowformTracking = true,
         shadowformIconSize = 100,
+        shadowformInCombatOnly = false,
         shadowformLocation = {
             xPos = 0,
             yPos = 55,
@@ -190,6 +204,7 @@ local defaults = {
         },
         druidFormsTracking = true,
         druidFormsIconSize = 100,
+        druidFormsInCombatOnly = false,
         druidFormsLocation = {
             xPos = 0,
             yPos = 55,

@@ -47,6 +47,7 @@ function ToastyClassChores:OnEnable()
     elseif playerClass == "PRIEST" then
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
         self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+        self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     elseif playerClass == "WARLOCK" then
         self:RegisterEvent("UNIT_PET")
         self:RegisterEvent("SPELLS_CHANGED")
@@ -56,6 +57,7 @@ function ToastyClassChores:OnEnable()
     elseif playerClass == "DRUID" then
         self:RegisterEvent("SPELLS_CHANGED")
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+        self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     elseif playerClass == "SHAMAN" then
 
     elseif playerClass == "MONK" then
@@ -132,6 +134,15 @@ function ToastyClassChores:SPELLS_CHANGED()
         if playerClass == "DRUID" then
             self.DruidForms:CheckForms()
         end
+    end
+end
+
+function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
+    if playerClass == "PRIEST" and self.db.profile.shadowformInCombatOnly then
+        self.Shadowform:Update()
+    end
+    if playerClass == "DRUID" and self.db.profile.druidFormsInCombatOnly then
+        self.DruidForms:Update()
     end
 end
 

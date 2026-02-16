@@ -65,6 +65,11 @@ function ToastyClassChores:SetDruidFormsIconSize(info, value)
     end
 end
 
+function ToastyClassChores:SetDruidFormsInCombatOnly(info, value)
+    self.db.profile.druidFormsInCombatOnly = value
+    DruidForms:Update()
+end
+
 function DruidForms:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.druidFormsTracking and playerClass == "DRUID") then
@@ -114,6 +119,11 @@ function DruidForms:Update()
         frameTexture:SetTexture(formIcons[formIndex])
     end
     frameTexture:SetAllPoints()
+
+    if ToastyClassChores.db.profile.druidFormsInCombatOnly and not PlayerIsInCombat() then
+        druidFormsFrame:SetAlpha(0)
+        return
+    end
 
     if ToastyClassChores.db.profile.druidFormsAlwaysShow then
         druidFormsFrame:SetAlpha(1)
