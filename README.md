@@ -10,13 +10,14 @@ Currently Implemented:
 - Druid forms
 - Warrior stances
 - Paladin auras
+- Rogue poisons
 - Grimoire of Sacrifice reminder
 
 Planned Features:
-- Rogue poisons
 - Raid buffs (Solo)
 
 Am looking into:
 - Source of Magic
 - Earth Shield
 - In combat rebuff reminder
+- Early warning for rogue poisons and raid buffs falling off

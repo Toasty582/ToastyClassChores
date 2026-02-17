@@ -31,6 +31,7 @@ function ToastyClassChores:OnEnable()
 
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("LEGACY_LOOT_RULES_CHANGED")
+    self:RegisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
     self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 
@@ -58,6 +59,18 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     end
 
+    if playerClass == "ROGUE" then
+        self:RegisterEvent("UNIT_AURA")
+    end
+
+    if playerClass == "ROGUE" then
+        self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+    end
+
+    if playerClass == "ROGUE" then
+        self:RegisterEvent("PLAYER_LOGOUT")
+    end
+
     self.Shadowform:Initialize()
     self.RaidBuff:Initialize()
     self.Pets:Initialize()
@@ -65,6 +78,7 @@ function ToastyClassChores:OnEnable()
     self.WarriorStances:Initialize()
     self.PaladinAuras:Initialize()
     self.SacrificeGrimoire:Initialize()
+    self.RoguePoisons:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
     self:RegisterChatCommand("chores", "SlashCommand")
@@ -159,6 +173,34 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
 end
 
+function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
+    if playerClass == "ROGUE" then
+        self.RoguePoisons:Update()
+    end
+end
+
+function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
+    if unitTarget == "player" then
+        if playerClass == "ROGUE" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+            self.RoguePoisons:Update()
+        end
+    end
+end
+
+function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
+    if unitTarget == "player" then
+        if playerClass == "ROGUE" then
+            self.RoguePoisons:PoisonCast(spellID)
+        end
+    end
+end
+
+function ToastyClassChores:PLAYER_LOGOUT()
+    if playerClass == "ROGUE" then
+        self.RoguePoisons:StoreDurations()
+    end
+end
+
 
 function ToastyClassChores:ToggleFrameLock()
     ToastyClassChores.db.profile.frameLock = not ToastyClassChores.db.profile.frameLock
@@ -175,6 +217,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.WarriorStances:ToggleFrameLock(value)
     self.PaladinAuras:ToggleFrameLock(value)
     self.SacrificeGrimoire:ToggleFrameLock(value)
+    self.RoguePoisons:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)

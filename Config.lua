@@ -346,8 +346,43 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.sacrificeGrimoireOpacity end,
                     set = "SetSacrificeGrimoireOpacity",
                 },
+            },
+        },
+        roguePoisons = {
+            type = "group",
+            name = "Rogue Poisons",
+            args = {
+                roguePoisonsTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.roguePoisonsTracking end,
+                    set = "SetRoguePoisonsTracking",
+                    width = "full",
+                    order = 1,
+                },
+                roguePoisonsSecretDisclaimer = {
+                    type = "description",
+                    name = "Manually removing poisons while secrets are active will not cause an alert to appear until secrets deactivate.",
+                    order = 2,
+                },
+                roguePoisonsIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    desc = "Input number for larger icons",
+                    get = function() return ToastyClassChores.db.profile.roguePoisonsIconSize end,
+                    set = "SetRoguePoisonsIconSize",
+                },
+                roguePoisonsOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.roguePoisonsOpacity end,
+                    set = "SetRoguePoisonsOpacity",
+                },
             }
-        }
+        },
     },
 }
 
@@ -433,12 +468,25 @@ local defaults = {
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },
+        roguePoisonsTracking = true,
+        roguePoisonsIconSize = 100,
+        roguePoisonsOpacity = 1,
+        roguePoisonsLocation = {
+            xPos = 0,
+            yPos = -55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        },
     },
 }
 
 local characterDefaults = {
     profile = {
-        class = ""
+        class = "",
+        remainingLethalPoisonTime = nil,
+        remainingNonLethalPoisonTime = nil,
+        remainingLethalPoisonTimeAssa = nil,
+        remainingNonLethalPoisonTimeAssa = nil,
     },
 }
 
