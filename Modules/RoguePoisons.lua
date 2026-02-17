@@ -30,7 +30,7 @@ local lethalIDs = {
 local nonLethalIDs = {
     [5761] = 5761,
     [3408] = 3408,
-    [381543] = 381543,
+    [381637] = 381637,
 }
 
 function ToastyClassChores:SetRoguePoisonsTracking(info, value)
@@ -105,6 +105,15 @@ function RoguePoisons:Update()
 
     self:CheckDurations()
 
+    ToastyClassChores:Debug(lethalDuration:GetRemainingDuration())
+    ToastyClassChores:Debug(nonLethalDuration:GetRemainingDuration())
+    if lethalDurationAssa then
+        ToastyClassChores:Debug(lethalDurationAssa:GetRemainingDuration())
+    end
+    if nonLethalDurationAssa then
+        ToastyClassChores:Debug(nonLethalDurationAssa:GetRemainingDuration())
+    end
+
     if C_SpecializationInfo.GetSpecialization() == 1 then
         if lethalDuration:GetRemainingDuration() == 0 or nonLethalDuration:GetRemainingDuration() == 0 or lethalDurationAssa:GetRemainingDuration() == 0 or nonLethalDurationAssa:GetRemainingDuration() == 0 or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil or lethalDurationAssa:GetRemainingDuration() == nil or nonLethalDurationAssa:GetRemainingDuration() == nil then
             roguePoisonsFrame:Show()
@@ -169,6 +178,7 @@ end
 
 function RoguePoisons:CheckDurations()
     if C_Secrets.ShouldAurasBeSecret() then
+        ToastyClassChores:Debug("Secrets active")
         if not lethalDuration:GetStartTime() then
             lethalDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingLethalPoisonTime, 3600)
         end
