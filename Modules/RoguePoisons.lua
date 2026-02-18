@@ -134,6 +134,9 @@ function RoguePoisons:Update()
 end
 
 function RoguePoisons:PoisonCast(spellID)
+    if not (ToastyClassChores.db.profile.roguePoisonsTracking and playerClass == "ROGUE") then
+        return
+    end
     if not lethalIDs[spellID] and not nonLethalIDs[spellID] then
         return
     end
@@ -162,6 +165,9 @@ function RoguePoisons:PoisonCast(spellID)
 end
 
 function RoguePoisons:CreateDurations()
+    if not (ToastyClassChores.db.profile.roguePoisonsTracking and playerClass == "ROGUE") then
+        return
+    end
     if GetSpecialization() ~= 1 then
         lethalDuration = C_DurationUtil.CreateDuration()
         nonLethalDuration = C_DurationUtil.CreateDuration()
@@ -177,6 +183,9 @@ function RoguePoisons:CreateDurations()
 end
 
 function RoguePoisons:CheckDurations()
+    if not (ToastyClassChores.db.profile.roguePoisonsTracking and playerClass == "ROGUE") then
+        return
+    end
     if C_Secrets.ShouldAurasBeSecret() then
         ToastyClassChores:Debug("Secrets active")
         if not lethalDuration:GetStartTime() then
@@ -241,6 +250,9 @@ function RoguePoisons:CheckDurations()
 end
 
 function RoguePoisons:StoreDurations()
+    if not (ToastyClassChores.db.profile.roguePoisonsTracking and playerClass == "ROGUE") then
+        return
+    end
     if lethalDuration then
         ToastyClassChores.cdb.profile.remainingLethalPoisonTime = lethalDuration:GetRemainingDuration()
     else

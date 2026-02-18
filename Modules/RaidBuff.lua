@@ -6,7 +6,8 @@ local RaidBuff = ToastyClassChores.RaidBuff
 
 local raidBuffFrame
 local playerClass
-local glowHidWhileFramesUnlocked = false
+local glowing = false
+local buffDuration
 local framesUnlocked = false
 
 local raidBuffClassList = {
@@ -84,39 +85,113 @@ function RaidBuff:Initialize()
     if not framesUnlocked then
         raidBuffFrame:Hide()
     end
+    self:CreateDurations()
+    self:Update()
+end
+
+function RaidBuff:Update()
+    ToastyClassChores:Debug("Update")
+    ToastyClassChores:Debug(glowing)
+    ToastyClassChores:Debug(raidBuffFrame)
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        return
+    end
+    if not raidBuffFrame then
+        self:Initialize()
+    end
+    self:CheckDurations()
+    ToastyClassChores:Debug(buffDuration:GetRemainingDuration())
+    if glowing then
+        raidBuffFrame:Show()
+    else
+        if buffDuration:GetRemainingDuration() == 0 or buffDuration:GetRemainingDuration() == nil then
+            raidBuffFrame:Show()
+            return
+        else
+            if not framesUnlocked then
+                raidBuffFrame:Hide()
+            end
+            return
+        end
+    end
 end
 
 function RaidBuff:GlowShow(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
-        if raidBuffFrame and not framesUnlocked then
-            raidBuffFrame:Hide()
-        end
         return
     end
-    if not raidBuffFrame then
-        self:Initialize()
+    if raidBuffClassList[spellID] then
+        glowing = true
     end
-    if raidBuffClassList[spellID] == playerClass then
-        raidBuffFrame:Show()
-    end
+    self:Update()
 end
 
 function RaidBuff:GlowHide(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
-        if raidBuffFrame and not framesUnlocked then
-            raidBuffFrame:Hide()
-        end
         return
     end
-    if framesUnlocked then
-        glowHidWhileFramesUnlocked = true
+    if raidBuffClassList[spellID] then
+        glowing = false
     end
-    if not raidBuffFrame then
-        self:Initialize()
+    self:Update()
+end
+
+function RaidBuff:CreateDurations()
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        return
     end
-    if raidBuffClassList[spellID] == playerClass and not framesUnlocked then
-        raidBuffFrame:Hide()
+    if raidBuffIconList[playerClass] then
+        buffDuration = C_DurationUtil.CreateDuration()
     end
+    self:CheckDurations()
+end
+
+function RaidBuff:CheckDurations()
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        return
+    end
+    if C_Secrets.ShouldAurasBeSecret() then
+        if not buffDuration:GetStartTime() then
+            buffDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingRaidBuffTime)
+        end
+    else
+        local buffFound = false
+        for spellID, _ in pairs(raidBuffClassList) do
+            if raidBuffClassList[spellID] == playerClass then
+                local aura = C_UnitAuras.GetPlayerAuraBySpellID(spellID)
+                if aura then
+                    buffDuration:SetTimeFromEnd(aura.expirationTime, 3600)
+                    buffFound = true
+                end
+            end
+        end
+        ToastyClassChores:Debug(buffFound)
+        if not buffFound then
+            buffDuration:Reset()
+        end
+    end
+    self:StoreDurations()
+end
+
+function RaidBuff:StoreDurations()
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        return
+    end
+    if buffDuration then
+        ToastyClassChores.cdb.profile.remainingRaidBuffTime = buffDuration:GetRemainingDuration()
+    else
+        ToastyClassChores.cdb.profile.remainingRaidBuffTime = nil
+    end
+end
+
+function RaidBuff:BuffCast(spellID)
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        return
+    end
+    if raidBuffClassList[spellID] then
+        buffDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
+    end
+    self:Update()
 end
 
 function RaidBuff:ToggleFrameLock(value)
@@ -129,11 +204,7 @@ function RaidBuff:ToggleFrameLock(value)
             raidBuffFrame:Show()
         else
             framesUnlocked = false
-            if glowHidWhileFramesUnlocked then
-                raidBuffFrame:Hide()
-            else
-                raidBuffFrame:Show()
-            end
+            self:Update()
         end
     end
 end

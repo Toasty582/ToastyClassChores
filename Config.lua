@@ -75,7 +75,13 @@ local config = {
                     name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.raidBuffTracking end,
                     set = "SetRaidBuffTracking",
-                    width = "full"
+                    width = "full",
+                    order = 1,
+                },
+                raidBuffSecretDisclaimer = {
+                    type = "description",
+                    name = "Manually removing your raid buff or another player applying your raid buff while secrets are active will not register until secrets deactivate.",
+                    order = 2,
                 },
                 raidBuffIconSize = {
                     type = "range",
@@ -323,14 +329,14 @@ local config = {
             type = "group",
             name = "Grimoire of Sacrifice",
             args = {
-                raidBuffTracking = {
+                sacrificeGrimoireTracking = {
                     type = "toggle",
                     name = "Enable Tracking",
                     get = function() return ToastyClassChores.db.profile.sacrificeGrimoireTracking end,
                     set = "SetSacrificeGrimoireTracking",
-                    width = "full"
+                    width = "full",
                 },
-                raidBuffIconSize = {
+                sacrificeGrimoireIconSize = {
                     type = "range",
                     name = "Icon Size",
                     softMax = 200,
@@ -338,7 +344,7 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.sacrificeGrimoireIconSize end,
                     set = "SetSacrificeGrimoireIconSize",
                 },
-                raidBuffOpacity = {
+                sacrificeGrimoireOpacity = {
                     type = "range",
                     name = "Opacity",
                     min = 0,
@@ -362,7 +368,7 @@ local config = {
                 },
                 roguePoisonsSecretDisclaimer = {
                     type = "description",
-                    name = "Manually removing poisons while secrets are active will not cause an alert to appear until secrets deactivate.",
+                    name = "Manually removing poisons while secrets are active will not register until secrets deactivate.",
                     order = 2,
                 },
                 roguePoisonsIconSize = {
@@ -487,6 +493,7 @@ local characterDefaults = {
         remainingNonLethalPoisonTime = nil,
         remainingLethalPoisonTimeAssa = nil,
         remainingNonLethalPoisonTimeAssa = nil,
+        remainingRaidBuffTime = nil
     },
 }
 

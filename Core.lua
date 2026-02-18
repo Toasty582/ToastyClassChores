@@ -54,20 +54,20 @@ function ToastyClassChores:OnEnable()
     if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
         self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
     end
-    
+
     if playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" then
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     end
 
-    if playerClass == "ROGUE" then
+    if playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
         self:RegisterEvent("UNIT_AURA")
     end
 
-    if playerClass == "ROGUE" then
+    if playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
         self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     end
 
-    if playerClass == "ROGUE" then
+    if playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
         self:RegisterEvent("PLAYER_LOGOUT")
     end
 
@@ -177,12 +177,18 @@ function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
     if playerClass == "ROGUE" then
         self.RoguePoisons:Update()
     end
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+        self.RaidBuff:Update()
+    end
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     if unitTarget == "player" then
         if playerClass == "ROGUE" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
             self.RoguePoisons:Update()
+        end
+        if (playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR") and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+            self.RaidBuff:Update()
         end
     end
 end
@@ -192,6 +198,9 @@ function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID,
         if playerClass == "ROGUE" then
             self.RoguePoisons:PoisonCast(spellID)
         end
+        if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+            self.RaidBuff:BuffCast(spellID)
+        end
     end
 end
 
@@ -199,8 +208,10 @@ function ToastyClassChores:PLAYER_LOGOUT()
     if playerClass == "ROGUE" then
         self.RoguePoisons:StoreDurations()
     end
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+        self.RaidBuff:StoreDurations()
+    end
 end
-
 
 function ToastyClassChores:ToggleFrameLock()
     ToastyClassChores.db.profile.frameLock = not ToastyClassChores.db.profile.frameLock

@@ -12,9 +12,10 @@ Currently Implemented:
 - Paladin auras
 - Rogue poisons
 - Grimoire of Sacrifice reminder
+- Raid buffs (Solo)
 
 Planned Features:
-- Raid buffs (Solo)
+- Lightning/Water Shield
 
 Am looking into:
 - Source of Magic
