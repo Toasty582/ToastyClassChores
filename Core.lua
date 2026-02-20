@@ -81,7 +81,6 @@ function ToastyClassChores:OnEnable()
     self.RoguePoisons:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
-    self:RegisterChatCommand("chores", "SlashCommand")
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
@@ -239,8 +238,8 @@ function ToastyClassChores:SlashCommand(msg)
         else
             self:Print("Debug Mode off!")
         end
-    elseif msg == "ping" then
-        self:Print("pong!")
+    elseif msg == "lock" then
+        self:ToggleFrameLock()
     else
         self:Print("Hi! Please report any bugs you find!")
     end

@@ -9,7 +9,8 @@ local config = {
         uiLock = {
             type = "execute",
             name = "Toggle Frame Locks",
-            func = "ToggleFrameLock"
+            func = "ToggleFrameLock",
+            desc = "/tcc lock"
         },
         shadowform = {
             type = "group",
