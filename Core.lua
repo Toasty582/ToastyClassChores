@@ -39,7 +39,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
     end
 
-    if playerClass == "WARRIOR" or playerClass == "PRIEST" then
+    if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "SHAMAN" then
         self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
     end
 
@@ -124,6 +124,7 @@ end
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
     self.Shadowform:Update()
     self.WarriorStances:Update()
+    self.ShamanShields:Update()
 end
 
 function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()

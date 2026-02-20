@@ -8,6 +8,8 @@ local shamanShieldsFrame
 local frameTexture
 local framesUnlocked = false
 
+local preferredShield
+
 local shieldDuration
 local shieldTimer
 
@@ -110,6 +112,15 @@ function ShamanShields:CheckDurations()
     if not (ToastyClassChores.db.profile.shamanShieldsTracking and playerClass == "SHAMAN") then
         return
     end
+    if C_SpecializationInfo.GetSpecialization() == 3 then
+        preferredShield = 52127
+        frameTexture:SetTexture(132315)
+        frameTexture:SetAllPoints()
+    else
+        preferredShield = 192106
+        frameTexture:SetTexture(136051)
+        frameTexture:SetAllPoints()
+    end
     if C_Secrets.ShouldAurasBeSecret() then
         if not shieldDuration:GetStartTime() then
             shieldDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingshamanShieldTime)
@@ -124,7 +135,7 @@ function ShamanShields:CheckDurations()
         end
     else
         local buffFound = false
-        local aura = C_UnitAuras.GetPlayerAuraBySpellID(52127)
+        local aura = C_UnitAuras.GetPlayerAuraBySpellID(preferredShield)
         if aura then
             shieldDuration:SetTimeFromEnd(aura.expirationTime, 3600)
             if shieldTimer then
@@ -136,21 +147,6 @@ function ShamanShields:CheckDurations()
                     function() ShamanShields:Update() end)
             end
             buffFound = true
-        else
-            aura = C_UnitAuras.GetPlayerAuraBySpellID(192106)
-            if aura then
-                shieldDuration:SetTimeFromEnd(aura.expirationTime, 3600)
-                if shieldTimer then
-                    shieldTimer:Cancel()
-                end
-                if shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning > 0 then
-                    shieldTimer = C_Timer.NewTimer(
-                        shieldDuration:GetRemainingDuration() -
-                        60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning,
-                        function() ShamanShields:Update() end)
-                end
-                buffFound = true
-            end
         end
         if not buffFound then
             shieldDuration:Reset()
