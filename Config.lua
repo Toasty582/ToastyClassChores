@@ -412,6 +412,52 @@ local config = {
                 }
             }
         },
+        shamanShields = {
+            type = "group",
+            name = "Shaman Shields",
+            args = {
+                shamanShieldsTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.shamanShieldsTracking end,
+                    set = "SetShamanShieldsTracking",
+                    width = "full",
+                    order = 1,
+                },
+                shamanShieldsSecretDisclaimer = {
+                    type = "description",
+                    name = "Manually removing shields or Water Shield being consumed while secrets are active will not register until secrets deactivate.",
+                    order = 2,
+                },
+                shamanShieldsIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    desc = "Input number for larger icons",
+                    get = function() return ToastyClassChores.db.profile.shamanShieldsIconSize end,
+                    set = "SetShamanShieldsIconSize",
+                },
+                shamanShieldsOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.shamanShieldsOpacity end,
+                    set = "SetShamanShieldsOpacity",
+                },
+                shamanShieldsEarlyWarning = {
+                    type = "range",
+                    name = "Early Warning",
+                    desc = "Time in minutes before expiration at which the alert appears. NOTE: This feature is experimental and may have missed an edge case, please report any bugs!",
+                    min = 0,
+                    max = 60,
+                    step = 1,
+                    get = function() return ToastyClassChores.db.profile.shamanShieldsEarlyWarning end,
+                    set = "SetShamanShieldsEarlyWarning",
+                    order = 103
+                }
+            }
+        },
     },
 }
 
@@ -508,6 +554,16 @@ local defaults = {
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },
+        shamanShieldsTracking = true,
+        shamanShieldsIconSize = 100,
+        shamanShieldsOpacity = 1,
+        shamanShieldsEarlyWarning = 0,
+        shamanShieldsLocation = {
+            xPos = 0,
+            yPos = 55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        },
     },
 }
 
@@ -518,7 +574,8 @@ local characterDefaults = {
         remainingNonLethalPoisonTime = nil,
         remainingLethalPoisonTimeAssa = nil,
         remainingNonLethalPoisonTimeAssa = nil,
-        remainingRaidBuffTime = nil
+        remainingRaidBuffTime = nil,
+        remainingShamanShieldTime = nil,
     },
 }
 

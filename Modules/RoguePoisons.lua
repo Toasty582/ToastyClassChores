@@ -8,11 +8,6 @@ local roguePoisonsFrame
 local frameTexture
 local framesUnlocked = false
 
-local lethalAuraInstanceID
-local nonLethalAuraInstanceID
-local lethalAuraInstanceIDAssa
-local nonLethalAuraInstanceIDAssa
-
 local lethalDuration
 local nonLethalDuration
 local lethalDurationAssa

@@ -31,3 +31,4 @@ Modules\WarriorStances.lua
 Modules\PaladinAuras.lua
 Modules\SacrificeGrimoire.lua
 Modules\RoguePoisons.lua
+Modules\ShamanShields.lua

@@ -79,6 +79,7 @@ function ToastyClassChores:OnEnable()
     self.PaladinAuras:Initialize()
     self.SacrificeGrimoire:Initialize()
     self.RoguePoisons:Initialize()
+    self.ShamanShields:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
 end
@@ -176,8 +177,12 @@ function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
     if playerClass == "ROGUE" then
         self.RoguePoisons:Update()
     end
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
         self.RaidBuff:Update()
+    end
+    if playerClass == "SHAMAN" then
+        self.RaidBuff:Update()
+        self.ShamanShields:Update()
     end
 end
 
@@ -186,8 +191,12 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
         if playerClass == "ROGUE" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
             self.RoguePoisons:Update()
         end
-        if (playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR") and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+        if (playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR") and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
             self.RaidBuff:Update()
+        end
+        if playerClass == "SHAMAN" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+            self.RaidBuff:Update()
+            self.ShamanShields:Update()
         end
     end
 end
@@ -197,8 +206,12 @@ function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID,
         if playerClass == "ROGUE" then
             self.RoguePoisons:PoisonCast(spellID)
         end
-        if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+        if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
             self.RaidBuff:BuffCast(spellID)
+        end
+        if playerClass == "SHAMAN" then
+            self.RaidBuff:BuffCast(spellID)
+            self.ShamanShields:ShieldCast(spellID)
         end
     end
 end
@@ -207,8 +220,12 @@ function ToastyClassChores:PLAYER_LOGOUT()
     if playerClass == "ROGUE" then
         self.RoguePoisons:StoreDurations()
     end
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
         self.RaidBuff:StoreDurations()
+    end
+    if playerClass == "SHAMAN" then
+        self.RaidBuff:StoreDurations()
+        self.ShamanShields:StoreDurations()
     end
 end
 
@@ -228,6 +245,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.PaladinAuras:ToggleFrameLock(value)
     self.SacrificeGrimoire:ToggleFrameLock(value)
     self.RoguePoisons:ToggleFrameLock(value)
+    self.ShamanShields:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)
