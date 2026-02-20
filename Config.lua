@@ -99,6 +99,17 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.raidBuffOpacity end,
                     set = "SetRaidBuffOpacity",
                 },
+                raidBuffEarlyWarning = {
+                    type = "range",
+                    name = "Early Warning",
+                    desc = "Time in minutes before expiration at which the alert appears. NOTE: This feature is experimental and may have missed an edge case, please report any bugs!",
+                    min = 0,
+                    max = 60,
+                    step = 1,
+                    get = function() return ToastyClassChores.db.profile.raidBuffEarlyWarning end,
+                    set = "SetRaidBuffEarlyWarning",
+                    order = 103
+                }
             }
         },
         pets = {
@@ -387,6 +398,17 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.roguePoisonsOpacity end,
                     set = "SetRoguePoisonsOpacity",
                 },
+                roguePoisonsEarlyWarning = {
+                    type = "range",
+                    name = "Early Warning",
+                    desc = "Time in minutes before expiration at which the alert appears. NOTE: This feature is experimental and may have missed an edge case, please report any bugs!",
+                    min = 0,
+                    max = 60,
+                    step = 1,
+                    get = function() return ToastyClassChores.db.profile.roguePoisonsEarlyWarning end,
+                    set = "SetRoguePoisonsEarlyWarning",
+                    order = 103
+                }
             }
         },
     },
@@ -411,6 +433,7 @@ local defaults = {
         raidBuffTracking = true,
         raidBuffIconSize = 100,
         raidBuffOpacity = 1,
+        raidBuffEarlyWarning = 0,
         raidBuffLocation = {
             xPos = 0,
             yPos = -55,
@@ -477,6 +500,7 @@ local defaults = {
         roguePoisonsTracking = true,
         roguePoisonsIconSize = 100,
         roguePoisonsOpacity = 1,
+        roguePoisonsEarlyWarning = 0,
         roguePoisonsLocation = {
             xPos = 0,
             yPos = -55,

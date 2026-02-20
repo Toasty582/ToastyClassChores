@@ -10,6 +10,8 @@ local glowing = false
 local buffDuration
 local framesUnlocked = false
 
+local raidBuffTimer
+
 local raidBuffClassList = {
     [1126] = "DRUID",
     [364342] = "EVOKER",
@@ -55,6 +57,11 @@ function ToastyClassChores:SetRaidBuffOpacity(info, value)
     end
 end
 
+function ToastyClassChores:SetRaidBuffEarlyWarning(info, value)
+    self.db.profile.raidBuffEarlyWarning = value
+    RaidBuff:Update()
+end
+
 function RaidBuff:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
@@ -92,7 +99,6 @@ end
 function RaidBuff:Update()
     ToastyClassChores:Debug("Update")
     ToastyClassChores:Debug(glowing)
-    ToastyClassChores:Debug(raidBuffFrame)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
@@ -101,10 +107,11 @@ function RaidBuff:Update()
     end
     self:CheckDurations()
     ToastyClassChores:Debug(buffDuration:GetRemainingDuration())
+    ToastyClassChores:Debug(60 * ToastyClassChores.db.profile.raidBuffEarlyWarning)
     if glowing then
         raidBuffFrame:Show()
     else
-        if buffDuration:GetRemainingDuration() == 0 or buffDuration:GetRemainingDuration() == nil then
+        if buffDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning or buffDuration:GetRemainingDuration() == nil then
             raidBuffFrame:Show()
             return
         else
@@ -153,6 +160,14 @@ function RaidBuff:CheckDurations()
     if C_Secrets.ShouldAurasBeSecret() then
         if not buffDuration:GetStartTime() then
             buffDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingRaidBuffTime)
+            if raidBuffTimer then
+                raidBuffTimer:Cancel()
+            end
+            if buffDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning > 0 then
+                raidBuffTimer = C_Timer.NewTimer(
+                    buffDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
+                    function() RaidBuff:Update() end)
+            end
         end
     else
         local buffFound = false
@@ -161,11 +176,18 @@ function RaidBuff:CheckDurations()
                 local aura = C_UnitAuras.GetPlayerAuraBySpellID(spellID)
                 if aura then
                     buffDuration:SetTimeFromEnd(aura.expirationTime, 3600)
+                    if raidBuffTimer then
+                        raidBuffTimer:Cancel()
+                    end
+                    if buffDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning > 0 then
+                        raidBuffTimer = C_Timer.NewTimer(
+                            buffDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
+                            function() RaidBuff:Update() end)
+                    end
                     buffFound = true
                 end
             end
         end
-        ToastyClassChores:Debug(buffFound)
         if not buffFound then
             buffDuration:Reset()
         end
@@ -190,6 +212,11 @@ function RaidBuff:BuffCast(spellID)
     end
     if raidBuffClassList[spellID] then
         buffDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
+        if raidBuffTimer then
+            raidBuffTimer:Cancel()
+        end
+        raidBuffTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
+            function() RaidBuff:Update() end)
     end
     self:Update()
 end

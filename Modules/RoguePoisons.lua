@@ -18,6 +18,11 @@ local nonLethalDuration
 local lethalDurationAssa
 local nonLethalDurationAssa
 
+local lethalTimer
+local nonLethalTimer
+local lethalTimerAssa
+local nonLethalTimerAssa
+
 local playerClass
 
 local lethalIDs = {
@@ -58,6 +63,11 @@ function ToastyClassChores:SetRoguePoisonsOpacity(info, value)
     if roguePoisonsFrame then
         roguePoisonsFrame:SetAlpha(value)
     end
+end
+
+function ToastyClassChores:SetRoguePoisonsEarlyWarning(info, value)
+    self.db.profile.roguePoisonsEarlyWarning = value
+    RoguePoisons:Update()
 end
 
 function RoguePoisons:Initialize()
@@ -115,7 +125,7 @@ function RoguePoisons:Update()
     end
 
     if C_SpecializationInfo.GetSpecialization() == 1 then
-        if lethalDuration:GetRemainingDuration() == 0 or nonLethalDuration:GetRemainingDuration() == 0 or lethalDurationAssa:GetRemainingDuration() == 0 or nonLethalDurationAssa:GetRemainingDuration() == 0 or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil or lethalDurationAssa:GetRemainingDuration() == nil or nonLethalDurationAssa:GetRemainingDuration() == nil then
+        if lethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or nonLethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or lethalDurationAssa:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or nonLethalDurationAssa:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil or lethalDurationAssa:GetRemainingDuration() == nil or nonLethalDurationAssa:GetRemainingDuration() == nil then
             roguePoisonsFrame:Show()
             return
         else
@@ -123,7 +133,7 @@ function RoguePoisons:Update()
             return
         end
     else
-        if lethalDuration:GetRemainingDuration() == 0 or nonLethalDuration:GetRemainingDuration() == 0 or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil then
+        if lethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or nonLethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil then
             roguePoisonsFrame:Show()
             return
         else
@@ -143,21 +153,51 @@ function RoguePoisons:PoisonCast(spellID)
     if GetSpecialization ~= 1 then
         if lethalIDs[spellID] then
             lethalDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
+            if lethalTimer then
+                lethalTimer:Cancel()
+            end
+            lethalTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                function() RoguePoisons:Update() end)
         elseif nonLethalIDs[spellID] then
             nonLethalDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
+            if nonLethalTimer then
+                nonLethalTimer:Cancel()
+            end
+            nonLethalTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                function() RoguePoisons:Update() end)
         end
     else
         if lethalIDs[spellID] then
             if lethalDuration:GetEndTime() < lethalDurationAssa:GetEndTime() then
                 lethalDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
+                if lethalTimer then
+                    lethalTimer:Cancel()
+                end
+                lethalTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                    function() RoguePoisons:Update() end)
             else
                 lethalDurationAssa:SetTimeFromEnd(GetTime() + 3600, 3600)
+                if lethalTimerAssa then
+                    lethalTimerAssa:Cancel()
+                end
+                lethalTimerAssa = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                    function() RoguePoisons:Update() end)
             end
         elseif nonLethalIDs[spellID] then
             if nonLethalDuration:GetEndTime() < nonLethalDurationAssa:GetEndTime() then
                 nonLethalDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
+                if nonLethalTimer then
+                    nonLethalTimer:Cancel()
+                end
+                nonLethalTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                    function() RoguePoisons:Update() end)
             else
                 nonLethalDurationAssa:SetTimeFromEnd(GetTime() + 3600, 3600)
+                if nonLethalTimerAssa then
+                    nonLethalTimerAssa:Cancel()
+                end
+                nonLethalTimerAssa = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                    function() RoguePoisons:Update() end)
             end
         end
     end
@@ -190,18 +230,55 @@ function RoguePoisons:CheckDurations()
         ToastyClassChores:Debug("Secrets active")
         if not lethalDuration:GetStartTime() then
             lethalDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingLethalPoisonTime, 3600)
+            if lethalTimer then
+                lethalTimer:Cancel()
+            end
+            if lethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
+                lethalTimer = C_Timer.NewTimer(
+                    lethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                    function() RoguePoisons:Update() end)
+            end
         end
         if not nonLethalDuration:GetStartTime() then
             nonLethalDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingNonLethalPoisonTime, 3600)
+            if nonLethalTimer then
+                nonLethalTimer:Cancel()
+            end
+            if nonLethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
+                nonLethalTimer = C_Timer.NewTimer(
+                    nonLethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile
+                    .roguePoisonsEarlyWarning,
+                    function() RoguePoisons:Update() end)
+            end
         end
         if lethalDurationAssa then
             if not lethalDurationAssa:GetStartTime() then
-                lethalDurationAssa:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingLethalPoisonTimeAssa, 3600)
+                lethalDurationAssa:SetTimeFromEnd(
+                    GetTime() + ToastyClassChores.cdb.profile.remainingLethalPoisonTimeAssa, 3600)
+                if lethalTimerAssa then
+                    lethalTimerAssa:Cancel()
+                end
+                if lethalDurationAssa:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
+                    lethalTimerAssa = C_Timer.NewTimer(
+                        lethalDurationAssa:GetRemainingDuration() -
+                        60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                        function() RoguePoisons:Update() end)
+                end
             end
         end
         if nonLethalDurationAssa then
             if not nonLethalDurationAssa:GetStartTime() then
-                nonLethalDurationAssa:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingNOnLethalPoisonTimeAssa, 3600)
+                nonLethalDurationAssa:SetTimeFromEnd(
+                    GetTime() + ToastyClassChores.cdb.profile.remainingNonLethalPoisonTimeAssa, 3600)
+                if nonLethalTimerAssa then
+                    nonLethalTimerAssa:Cancel()
+                end
+                if nonLethalDurationAssa:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
+                    nonLethalTimerAssa = C_Timer.NewTimer(
+                        nonLethalDurationAssa:GetRemainingDuration() -
+                        60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                        function() RoguePoisons:Update() end)
+                end
             end
         end
     else
@@ -212,18 +289,42 @@ function RoguePoisons:CheckDurations()
             if aura then
                 if firstPoisonFound then
                     nonLethalDurationAssa:SetTimeFromEnd(aura.expirationTime, 3600)
+                    if nonLethalTimerAssa then
+                        nonLethalTimerAssa:Cancel()
+                    end
+                    if nonLethalDurationAssa:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
+                        nonLethalTimerAssa = C_Timer.NewTimer(
+                            nonLethalDurationAssa:GetRemainingDuration() -
+                            60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                            function() RoguePoisons:Update() end)
+                    end
                     secondPoisonFound = true
                 else
                     nonLethalDuration:SetTimeFromEnd(aura.expirationTime, 3600)
+                    if nonLethalTimer then
+                        nonLethalTimer:Cancel()
+                    end
+                    if nonLethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
+                        nonLethalTimer = C_Timer.NewTimer(
+                            nonLethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile
+                            .roguePoisonsEarlyWarning,
+                            function() RoguePoisons:Update() end)
+                    end
                     firstPoisonFound = true
                 end
             end
         end
         if not firstPoisonFound then
             nonLethalDuration:Reset()
+            if nonLethalTimer then
+                nonLethalTimer:Cancel()
+            end
         end
         if not secondPoisonFound and nonLethalDurationAssa then
             nonLethalDurationAssa:Reset()
+            if nonLethalTimerAssa then
+                nonLethalTimerAssa:Cancel()
+            end
         end
         firstPoisonFound = false
         secondPoisonFound = false
@@ -232,18 +333,42 @@ function RoguePoisons:CheckDurations()
             if aura then
                 if firstPoisonFound then
                     lethalDurationAssa:SetTimeFromEnd(aura.expirationTime, 3600)
+                    if lethalTimerAssa then
+                        lethalTimerAssa:Cancel()
+                    end
+                    if lethalDurationAssa:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
+                        lethalTimerAssa = C_Timer.NewTimer(
+                            lethalDurationAssa:GetRemainingDuration() -
+                            60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                            function() RoguePoisons:Update() end)
+                    end
                     secondPoisonFound = true
                 else
                     lethalDuration:SetTimeFromEnd(aura.expirationTime, 3600)
+                    if lethalTimer then
+                        lethalTimer:Cancel()
+                    end
+                    if lethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
+                        lethalTimer = C_Timer.NewTimer(
+                            lethalDuration:GetRemainingDuration() -
+                            60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+                            function() RoguePoisons:Update() end)
+                    end
                     firstPoisonFound = true
                 end
             end
         end
         if not firstPoisonFound then
             lethalDuration:Reset()
+            if lethalTimer then
+                lethalTimer:Cancel()
+            end
         end
         if not secondPoisonFound and lethalDurationAssa then
             lethalDurationAssa:Reset()
+            if lethalTimerAssa then
+                lethalTimerAssa:Cancel()
+            end
         end
         self:StoreDurations()
     end
