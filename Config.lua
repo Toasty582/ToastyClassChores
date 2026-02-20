@@ -109,7 +109,23 @@ local config = {
                     step = 1,
                     get = function() return ToastyClassChores.db.profile.raidBuffEarlyWarning end,
                     set = "SetRaidBuffEarlyWarning",
-                    order = 103
+                    order = 103,
+                },
+                raidBuffPostResTimer = {
+                    type = "range",
+                    name = "Battle Res Alert Time",
+                    desc = "Time in seconds for the reminder to be shown after each battle resurrection.",
+                    min = 0,
+                    softMax = 20,
+                    get = function() return ToastyClassChores.db.profile.raidBuffPostResTimer end,
+                    set = function(info, value) ToastyClassChores.db.profile.raidBuffPostResTimer = value end,
+                    order = 104
+                },
+                raidBuffPostResDisclaimer = {
+                    type = "description",
+                    name = "While in combat with secrets active, we cannot consistently be sure if someone else has already rebuffed the resurrected player. Because of this the reminder will instead show for a static amount of time after each battle res or until you rebuff yourself.",
+                    order = 105,
+                    width = "full"
                 }
             }
         },
@@ -481,6 +497,7 @@ local defaults = {
         raidBuffIconSize = 100,
         raidBuffOpacity = 1,
         raidBuffEarlyWarning = 0,
+        raidBuffPostResTimer = 10,
         raidBuffLocation = {
             xPos = 0,
             yPos = -55,

@@ -3,7 +3,7 @@ A World of Warcraft addon designed to help keep track of important class upkeep 
 
 Currently Implemented:
 - Shadowform
-- Raid buffs (Out of combat)
+- Raid buffs
 - Hunter pets
 - Warlock pets
 - DK pets
@@ -12,12 +12,11 @@ Currently Implemented:
 - Paladin auras
 - Rogue poisons
 - Grimoire of Sacrifice reminder
-- Raid buffs (Solo)
+- Lightning/Water Shield
 
 Planned Features:
-- Lightning/Water Shield
+- Nothing high priority atm
 
 Am looking into:
 - Source of Magic
 - Earth Shield
-- In combat rebuff reminder

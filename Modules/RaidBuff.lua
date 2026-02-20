@@ -7,6 +7,7 @@ local RaidBuff = ToastyClassChores.RaidBuff
 local raidBuffFrame
 local playerClass
 local glowing = false
+local postResWarning = false
 local buffDuration
 local framesUnlocked = false
 
@@ -108,7 +109,7 @@ function RaidBuff:Update()
     self:CheckDurations()
     ToastyClassChores:Debug(buffDuration:GetRemainingDuration())
     ToastyClassChores:Debug(60 * ToastyClassChores.db.profile.raidBuffEarlyWarning)
-    if glowing then
+    if glowing or postResWarning then
         raidBuffFrame:Show()
     else
         if buffDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning or buffDuration:GetRemainingDuration() == nil then
@@ -211,6 +212,7 @@ function RaidBuff:BuffCast(spellID)
         return
     end
     if raidBuffClassList[spellID] then
+        postResWarning = false
         buffDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
         if raidBuffTimer then
             raidBuffTimer:Cancel()
@@ -219,6 +221,21 @@ function RaidBuff:BuffCast(spellID)
             function() RaidBuff:Update() end)
     end
     self:Update()
+end
+
+function RaidBuff:PlayerRes()
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        return
+    end
+    if not PlayerIsInCombat() then
+        return
+    end
+    postResWarning = true
+    C_Timer.After(ToastyClassChores.db.profile.raidBuffPostResTimer,
+        function()
+            postResWarning = false
+            RaidBuff:Update()
+        end)
 end
 
 function RaidBuff:ToggleFrameLock(value)

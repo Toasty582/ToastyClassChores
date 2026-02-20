@@ -71,6 +71,10 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_LOGOUT")
     end
 
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+        self:RegisterEvent("PLAYER_ALIVE")
+    end
+
     self.Shadowform:Initialize()
     self.RaidBuff:Initialize()
     self.Pets:Initialize()
@@ -227,6 +231,12 @@ function ToastyClassChores:PLAYER_LOGOUT()
     if playerClass == "SHAMAN" then
         self.RaidBuff:StoreDurations()
         self.ShamanShields:StoreDurations()
+    end
+end
+
+function ToastyClassChores:PLAYER_ALIVE()
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" or playerClass == "SHAMAN" then
+        self.RaidBuff:StoreDurations()
     end
 end
 
