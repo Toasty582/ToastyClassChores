@@ -75,6 +75,10 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_ALIVE")
     end
 
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+        self:RegisterEvent("PLAYER_DEAD")
+    end
+
     self.Shadowform:Initialize()
     self.RaidBuff:Initialize()
     self.Pets:Initialize()
@@ -236,7 +240,15 @@ end
 
 function ToastyClassChores:PLAYER_ALIVE()
     if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" or playerClass == "SHAMAN" then
-        self.RaidBuff:StoreDurations()
+        self.RaidBuff:PlayerRes()
+    end
+end
+
+function ToastyClassChores:PLAYER_DEAD()
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" or playerClass == "SHAMAN" then
+        if UnitIsDead("player") then
+            self.RaidBuff:Death()
+        end
     end
 end
 

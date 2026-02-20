@@ -109,6 +109,7 @@ function RaidBuff:Update()
     self:CheckDurations()
     ToastyClassChores:Debug(buffDuration:GetRemainingDuration())
     ToastyClassChores:Debug(60 * ToastyClassChores.db.profile.raidBuffEarlyWarning)
+    ToastyClassChores:Debug(postResWarning)
     if glowing or postResWarning then
         raidBuffFrame:Show()
     else
@@ -159,8 +160,8 @@ function RaidBuff:CheckDurations()
         return
     end
     if C_Secrets.ShouldAurasBeSecret() then
-        if not buffDuration:GetStartTime() then
-            buffDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingRaidBuffTime)
+        if buffDuration:GetStartTime() == 0 or buffDuration:GetStartTime() == nil then
+            buffDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingRaidBuffTime, 3600)
             if raidBuffTimer then
                 raidBuffTimer:Cancel()
             end
@@ -236,6 +237,24 @@ function RaidBuff:PlayerRes()
             postResWarning = false
             RaidBuff:Update()
         end)
+    self:Update()
+end
+
+function RaidBuff:Death()
+    ToastyClassChores:Debug("Death")
+    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+        return
+    end
+    if buffDuration then
+        buffDuration:Reset()
+    end
+    if raidBuffTimer then
+        raidBuffTimer:Cancel()
+    end
+    self:StoreDurations()
+    ToastyClassChores:Debug(buffDuration:GetRemainingDuration())
+
+    self:Update()
 end
 
 function RaidBuff:ToggleFrameLock(value)
