@@ -102,11 +102,11 @@ function Pets:Update()
 
     local _, instanceType = IsInInstance()
 
-    if ToastyClassChores.db.profile.petsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+    if ToastyClassChores.db.profile.petsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
         petsFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.petsNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
+    if ToastyClassChores.db.profile.petsNoLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
         petsFrame:Hide()
         return
     end

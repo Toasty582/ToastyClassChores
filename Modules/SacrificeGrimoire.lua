@@ -82,11 +82,11 @@ function SacrificeGrimoire:Update()
         self:Initialize()
     end
 
-    if not C_SpellBook.IsSpellInSpellBook(108503) then
+    if not C_SpellBook.IsSpellInSpellBook(108503) and not framesUnlocked then
         grimoireFrame:Hide()
         return
     end
-    if C_SpellBook.IsSpellInSpellBook(132411) or C_SpellBook.IsSpellInSpellBook(132413) or C_SpellBook.IsSpellInSpellBook(132409) or C_SpellBook.IsSpellInSpellBook(261589) then
+    if (C_SpellBook.IsSpellInSpellBook(132411) or C_SpellBook.IsSpellInSpellBook(132413) or C_SpellBook.IsSpellInSpellBook(132409) or C_SpellBook.IsSpellInSpellBook(261589)) and not framesUnlocked then
         grimoireFrame:Hide()
     else
         grimoireFrame:Show()

@@ -107,15 +107,15 @@ function PaladinAuras:Update()
 
     local _, instanceType = IsInInstance()
 
-    if ToastyClassChores.db.profile.paladinAurasInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+    if ToastyClassChores.db.profile.paladinAurasInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
         paladinAurasFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.paladinAurasNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
+    if ToastyClassChores.db.profile.paladinAurasNoLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
         paladinAurasFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.paladinAurasInCombatOnly and not PlayerIsInCombat() then
+    if ToastyClassChores.db.profile.paladinAurasInCombatOnly and not PlayerIsInCombat() and not framesUnlocked then
         paladinAurasFrame:Hide()
         return
     end

@@ -124,16 +124,20 @@ function RoguePoisons:Update()
             roguePoisonsFrame:Show()
             return
         else
-            roguePoisonsFrame:Hide()
-            return
+            if not framesUnlocked then
+                roguePoisonsFrame:Hide()
+                return
+            end
         end
     else
         if lethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or nonLethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil then
             roguePoisonsFrame:Show()
             return
         else
-            roguePoisonsFrame:Hide()
-            return
+            if not framesUnlocked then
+                roguePoisonsFrame:Hide()
+                return
+            end
         end
     end
 end

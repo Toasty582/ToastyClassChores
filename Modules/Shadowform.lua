@@ -98,21 +98,21 @@ function Shadowform:Update()
     end
     local _, instanceType = IsInInstance()
 
-    if ToastyClassChores.db.profile.shadowformInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+    if ToastyClassChores.db.profile.shadowformInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
         shadowformFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.shadowformNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
-        shadowformFrame:Hide()
-        return
-    end
-
-    if ToastyClassChores.db.profile.shadowformInCombatOnly and not PlayerIsInCombat() then
+    if ToastyClassChores.db.profile.shadowformNoLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
         shadowformFrame:Hide()
         return
     end
 
-    if C_SpecializationInfo.GetSpecialization() ~= 3 then
+    if ToastyClassChores.db.profile.shadowformInCombatOnly and not PlayerIsInCombat() and not framesUnlocked then
+        shadowformFrame:Hide()
+        return
+    end
+
+    if C_SpecializationInfo.GetSpecialization() ~= 3 and not framesUnlocked then
         shadowformFrame:Hide()
         return
     end
