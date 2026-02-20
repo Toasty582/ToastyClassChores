@@ -21,4 +21,3 @@ Am looking into:
 - Source of Magic
 - Earth Shield
 - In combat rebuff reminder
-- Early warning for rogue poisons and raid buffs falling off
