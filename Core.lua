@@ -105,6 +105,17 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.petsInstanceOnly then
         self.Pets:Update()
     end
+    -- Because for some reason durationObjects do not load properly until a frame after PLAYER_ENTERING_WORLD
+    if playerClass == "ROGUE" then
+        RunNextFrame(function () self.RoguePoisons:Update() end)
+    end
+    if playerClass == "SHAMAN" then
+        RunNextFrame(function () self.ShamanShields:Update() end)
+        RunNextFrame(function () self.RaidBuff:Update() end)
+    end
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
+        RunNextFrame(function () self.RaidBuff:Update() end)
+    end
 end
 
 function ToastyClassChores:LEGACY_LOOT_RULES_CHANGED()
