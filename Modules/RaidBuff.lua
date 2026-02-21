@@ -168,7 +168,7 @@ function RaidBuff:CheckDurations()
             if buffDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning > 0 then
                 raidBuffTimer = C_Timer.NewTimer(
                     buffDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
-                    function() RaidBuff:Update() end)
+                    function() self:Update() end)
             end
         end
     else
@@ -184,7 +184,7 @@ function RaidBuff:CheckDurations()
                     if buffDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning > 0 then
                         raidBuffTimer = C_Timer.NewTimer(
                             buffDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
-                            function() RaidBuff:Update() end)
+                            function() self:Update() end)
                     end
                     buffFound = true
                 end
@@ -219,7 +219,7 @@ function RaidBuff:BuffCast(spellID)
             raidBuffTimer:Cancel()
         end
         raidBuffTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
-            function() RaidBuff:Update() end)
+            function() self:Update() end)
     end
     self:Update()
 end

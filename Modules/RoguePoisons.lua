@@ -156,14 +156,14 @@ function RoguePoisons:PoisonCast(spellID)
                 lethalTimer:Cancel()
             end
             lethalTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                function() RoguePoisons:Update() end)
+                function() self:Update() end)
         elseif nonLethalIDs[spellID] then
             nonLethalDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
             if nonLethalTimer then
                 nonLethalTimer:Cancel()
             end
             nonLethalTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                function() RoguePoisons:Update() end)
+                function() self:Update() end)
         end
     else
         if lethalIDs[spellID] then
@@ -173,14 +173,14 @@ function RoguePoisons:PoisonCast(spellID)
                     lethalTimer:Cancel()
                 end
                 lethalTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                    function() RoguePoisons:Update() end)
+                    function() self:Update() end)
             else
                 lethalDurationAssa:SetTimeFromEnd(GetTime() + 3600, 3600)
                 if lethalTimerAssa then
                     lethalTimerAssa:Cancel()
                 end
                 lethalTimerAssa = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                    function() RoguePoisons:Update() end)
+                    function() self:Update() end)
             end
         elseif nonLethalIDs[spellID] then
             if nonLethalDuration:GetEndTime() < nonLethalDurationAssa:GetEndTime() then
@@ -189,14 +189,14 @@ function RoguePoisons:PoisonCast(spellID)
                     nonLethalTimer:Cancel()
                 end
                 nonLethalTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                    function() RoguePoisons:Update() end)
+                    function() self:Update() end)
             else
                 nonLethalDurationAssa:SetTimeFromEnd(GetTime() + 3600, 3600)
                 if nonLethalTimerAssa then
                     nonLethalTimerAssa:Cancel()
                 end
                 nonLethalTimerAssa = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                    function() RoguePoisons:Update() end)
+                    function() self:Update() end)
             end
         end
     end
@@ -235,7 +235,7 @@ function RoguePoisons:CheckDurations()
             if lethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning > 0 then
                 lethalTimer = C_Timer.NewTimer(
                     lethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                    function() RoguePoisons:Update() end)
+                    function() self:Update() end)
             end
         end
         if not nonLethalDuration:GetStartTime() then
@@ -247,7 +247,7 @@ function RoguePoisons:CheckDurations()
                 nonLethalTimer = C_Timer.NewTimer(
                     nonLethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile
                     .roguePoisonsEarlyWarning,
-                    function() RoguePoisons:Update() end)
+                    function() self:Update() end)
             end
         end
         if lethalDurationAssa then
@@ -261,7 +261,7 @@ function RoguePoisons:CheckDurations()
                     lethalTimerAssa = C_Timer.NewTimer(
                         lethalDurationAssa:GetRemainingDuration() -
                         60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                        function() RoguePoisons:Update() end)
+                        function() self:Update() end)
                 end
             end
         end
@@ -276,7 +276,7 @@ function RoguePoisons:CheckDurations()
                     nonLethalTimerAssa = C_Timer.NewTimer(
                         nonLethalDurationAssa:GetRemainingDuration() -
                         60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                        function() RoguePoisons:Update() end)
+                        function() self:Update() end)
                 end
             end
         end
@@ -295,7 +295,7 @@ function RoguePoisons:CheckDurations()
                         nonLethalTimerAssa = C_Timer.NewTimer(
                             nonLethalDurationAssa:GetRemainingDuration() -
                             60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                            function() RoguePoisons:Update() end)
+                            function() self:Update() end)
                     end
                     secondPoisonFound = true
                 else
@@ -307,7 +307,7 @@ function RoguePoisons:CheckDurations()
                         nonLethalTimer = C_Timer.NewTimer(
                             nonLethalDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile
                             .roguePoisonsEarlyWarning,
-                            function() RoguePoisons:Update() end)
+                            function() self:Update() end)
                     end
                     firstPoisonFound = true
                 end
@@ -339,7 +339,7 @@ function RoguePoisons:CheckDurations()
                         lethalTimerAssa = C_Timer.NewTimer(
                             lethalDurationAssa:GetRemainingDuration() -
                             60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                            function() RoguePoisons:Update() end)
+                            function() self:Update() end)
                     end
                     secondPoisonFound = true
                 else
@@ -351,7 +351,7 @@ function RoguePoisons:CheckDurations()
                         lethalTimer = C_Timer.NewTimer(
                             lethalDuration:GetRemainingDuration() -
                             60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                            function() RoguePoisons:Update() end)
+                            function() self:Update() end)
                     end
                     firstPoisonFound = true
                 end

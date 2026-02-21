@@ -130,7 +130,7 @@ function ShamanShields:CheckDurations()
             if shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning > 0 then
                 shieldTimer = C_Timer.NewTimer(
                     shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning,
-                    function() ShamanShields:Update() end)
+                    function() self:Update() end)
             end
         end
     else
@@ -144,7 +144,7 @@ function ShamanShields:CheckDurations()
             if shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning > 0 then
                 shieldTimer = C_Timer.NewTimer(
                     shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning,
-                    function() ShamanShields:Update() end)
+                    function() self:Update() end)
             end
             buffFound = true
         end
@@ -176,7 +176,7 @@ function ShamanShields:ShieldCast(spellID)
             shieldTimer:Cancel()
         end
         shieldTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning,
-            function() ShamanShields:Update() end)
+            function() self:Update() end)
     end
     self:Update()
 end
