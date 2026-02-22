@@ -100,6 +100,22 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.raidBuffOpacity end,
                     set = "SetRaidBuffOpacity",
                 },
+                raidBuffPostResTimer = {
+                    type = "range",
+                    name = "Battle Res Alert Time",
+                    desc = "Time in seconds for the reminder to be shown after each battle resurrection.",
+                    min = 0,
+                    softMax = 20,
+                    get = function() return ToastyClassChores.db.profile.raidBuffPostResTimer end,
+                    set = function(info, value) ToastyClassChores.db.profile.raidBuffPostResTimer = value end,
+                    order = 101
+                },
+                raidBuffPostResDisclaimer = {
+                    type = "description",
+                    name = "While in combat with secrets active, we cannot consistently be sure if someone else has already rebuffed the resurrected player. Because of this the reminder will instead show for a static amount of time after each battle res or until you rebuff yourself.",
+                    order = 102,
+                    width = "full"
+                },
                 raidBuffEarlyWarning = {
                     type = "range",
                     name = "Early Warning",
@@ -111,22 +127,14 @@ local config = {
                     set = "SetRaidBuffEarlyWarning",
                     order = 103,
                 },
-                raidBuffPostResTimer = {
-                    type = "range",
-                    name = "Battle Res Alert Time",
-                    desc = "Time in seconds for the reminder to be shown after each battle resurrection.",
-                    min = 0,
-                    softMax = 20,
-                    get = function() return ToastyClassChores.db.profile.raidBuffPostResTimer end,
-                    set = function(info, value) ToastyClassChores.db.profile.raidBuffPostResTimer = value end,
-                    order = 104
+                raidBuffEarlyWarningNoCombat = {
+                    type = "toggle",
+                    name = "Hide Early Warning During Combat",
+                    get = function() return ToastyClassChores.db.profile.raidBuffEarlyWarningNoCombat end,
+                    set = "SetRaidBuffEarlyWarningNoCombat",
+                    width = "full",
+                    order = 104,
                 },
-                raidBuffPostResDisclaimer = {
-                    type = "description",
-                    name = "While in combat with secrets active, we cannot consistently be sure if someone else has already rebuffed the resurrected player. Because of this the reminder will instead show for a static amount of time after each battle res or until you rebuff yourself.",
-                    order = 105,
-                    width = "full"
-                }
             }
         },
         pets = {
@@ -424,7 +432,15 @@ local config = {
                     step = 1,
                     get = function() return ToastyClassChores.db.profile.roguePoisonsEarlyWarning end,
                     set = "SetRoguePoisonsEarlyWarning",
-                    order = 103
+                    order = 103,
+                },
+                roguePoisonsEarlyWarningNoCombat = {
+                    type = "toggle",
+                    name = "Hide Early Warning During Combat",
+                    get = function() return ToastyClassChores.db.profile.roguePoisonsEarlyWarningNoCombat end,
+                    set = "SetRoguePoisonsEarlyWarningNoCombat",
+                    width = "full",
+                    order = 104
                 }
             }
         },
@@ -471,6 +487,14 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.shamanShieldsEarlyWarning end,
                     set = "SetShamanShieldsEarlyWarning",
                     order = 103
+                },
+                shamanShieldsEarlyWarningNoCombat = {
+                    type = "toggle",
+                    name = "Hide Early Warning During Combat",
+                    get = function() return ToastyClassChores.db.profile.shamanShieldsEarlyWarningNoCombat end,
+                    set = "SetShamanShieldsEarlyWarningNoCombat",
+                    width = "full",
+                    order = 104
                 }
             }
         },
@@ -497,6 +521,7 @@ local defaults = {
         raidBuffIconSize = 100,
         raidBuffOpacity = 1,
         raidBuffEarlyWarning = 0,
+        raidBuffEarlyWarningNoCombat = false,
         raidBuffPostResTimer = 10,
         raidBuffLocation = {
             xPos = 0,
@@ -565,6 +590,7 @@ local defaults = {
         roguePoisonsIconSize = 100,
         roguePoisonsOpacity = 1,
         roguePoisonsEarlyWarning = 0,
+        roguePoisonsEarlyWarningNoCombat = false,
         roguePoisonsLocation = {
             xPos = 0,
             yPos = -55,
@@ -575,6 +601,7 @@ local defaults = {
         shamanShieldsIconSize = 100,
         shamanShieldsOpacity = 1,
         shamanShieldsEarlyWarning = 0,
+        shamanShieldsEarlyWarningNoCombat = false,
         shamanShieldsLocation = {
             xPos = 0,
             yPos = 55,

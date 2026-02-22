@@ -47,6 +47,11 @@ function ToastyClassChores:SetShamanShieldsEarlyWarning(info, value)
     ShamanShields:Update()
 end
 
+function ToastyClassChores:SetShamanShieldsEarlyWarningNoCombat(info, value)
+    self.db.profile.shamanShieldsEarlyWarningNoCombat = value
+    ShamanShields:Update()
+end
+
 function ShamanShields:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.shamanShieldsTracking and playerClass == "SHAMAN") then
@@ -90,7 +95,12 @@ function ShamanShields:Update()
         self:Initialize()
     end
     self:CheckDurations()
-    if shieldDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning or shieldDuration:GetRemainingDuration() == nil then
+
+    local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning
+    if PlayerIsInCombat() and ToastyClassChores.db.profile.shamanShieldsEarlyWarningNoCombat then
+        earlyWarningThreshold = 0
+    end
+    if shieldDuration:GetRemainingDuration() <= earlyWarningThreshold or shieldDuration:GetRemainingDuration() == nil then
         shamanShieldsFrame:Show()
         return
     else

@@ -55,7 +55,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
     end
 
-    if playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" then
+    if playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" or playerClass == "PALADIN" then
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     end
 
@@ -190,6 +190,17 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
     if playerClass == "PALADIN" and self.db.profile.paladinAurasInCombatOnly then
         self.PaladinAuras:Update()
+    end
+
+    if playerClass == "ROGUE" then
+        self.RoguePoisons:Update()
+    end
+    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
+        self.RaidBuff:Update()
+    end
+    if playerClass == "SHAMAN" then
+        self.RaidBuff:Update()
+        self.ShamanShields:Update()
     end
 end
 

@@ -65,6 +65,11 @@ function ToastyClassChores:SetRoguePoisonsEarlyWarning(info, value)
     RoguePoisons:Update()
 end
 
+function ToastyClassChores:SetRoguePoisonsEarlyWarningNoCombat(info, value)
+    self.db.profile.roguePoisonsEarlyWarningNoCombat = value
+    RoguePoisons:Update()
+end
+
 function RoguePoisons:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.roguePoisonsTracking and playerClass == "ROGUE") then
@@ -109,7 +114,7 @@ function RoguePoisons:Update()
     end
 
     self:CheckDurations()
-
+    --[[
     ToastyClassChores:Debug(lethalDuration:GetRemainingDuration())
     ToastyClassChores:Debug(nonLethalDuration:GetRemainingDuration())
     if lethalDurationAssa then
@@ -117,10 +122,15 @@ function RoguePoisons:Update()
     end
     if nonLethalDurationAssa then
         ToastyClassChores:Debug(nonLethalDurationAssa:GetRemainingDuration())
+    end]]--
+
+    local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning
+    if PlayerIsInCombat() and ToastyClassChores.db.profile.roguePoisonsEarlyWarningNoCombat then
+        earlyWarningThreshold = 0
     end
 
     if C_SpecializationInfo.GetSpecialization() == 1 then
-        if lethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or nonLethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or lethalDurationAssa:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or nonLethalDurationAssa:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil or lethalDurationAssa:GetRemainingDuration() == nil or nonLethalDurationAssa:GetRemainingDuration() == nil then
+        if lethalDuration:GetRemainingDuration() <= earlyWarningThreshold or nonLethalDuration:GetRemainingDuration() <= earlyWarningThreshold or lethalDurationAssa:GetRemainingDuration() <= earlyWarningThreshold or nonLethalDurationAssa:GetRemainingDuration() <= earlyWarningThreshold or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil or lethalDurationAssa:GetRemainingDuration() == nil or nonLethalDurationAssa:GetRemainingDuration() == nil then
             roguePoisonsFrame:Show()
             return
         else
@@ -130,7 +140,7 @@ function RoguePoisons:Update()
             end
         end
     else
-        if lethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or nonLethalDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil then
+        if lethalDuration:GetRemainingDuration() <= earlyWarningThreshold or nonLethalDuration:GetRemainingDuration() <= earlyWarningThreshold or lethalDuration:GetRemainingDuration() == nil or nonLethalDuration:GetRemainingDuration() == nil then
             roguePoisonsFrame:Show()
             return
         else
@@ -226,7 +236,6 @@ function RoguePoisons:CheckDurations()
         return
     end
     if C_Secrets.ShouldAurasBeSecret() then
-        ToastyClassChores:Debug("Secrets active")
         if not lethalDuration:GetStartTime() then
             lethalDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingLethalPoisonTime, 3600)
             if lethalTimer then

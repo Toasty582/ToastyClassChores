@@ -63,6 +63,11 @@ function ToastyClassChores:SetRaidBuffEarlyWarning(info, value)
     RaidBuff:Update()
 end
 
+function ToastyClassChores:SetRaidBuffEarlyWarningNoCombat(info, value)
+    self.db.profile.raidBuffEarlyWarningNoCombat = value
+    RaidBuff:Update()
+end
+
 function RaidBuff:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
@@ -98,8 +103,6 @@ function RaidBuff:Initialize()
 end
 
 function RaidBuff:Update()
-    ToastyClassChores:Debug("Update")
-    ToastyClassChores:Debug(glowing)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
@@ -107,13 +110,14 @@ function RaidBuff:Update()
         self:Initialize()
     end
     self:CheckDurations()
-    ToastyClassChores:Debug(buffDuration:GetRemainingDuration())
-    ToastyClassChores:Debug(60 * ToastyClassChores.db.profile.raidBuffEarlyWarning)
-    ToastyClassChores:Debug(postResWarning)
     if glowing or postResWarning then
         raidBuffFrame:Show()
     else
-        if buffDuration:GetRemainingDuration() <= 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning or buffDuration:GetRemainingDuration() == nil then
+        local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning
+        if PlayerIsInCombat() and ToastyClassChores.db.profile.raidBuffEarlyWarningNoCombat then
+            earlyWarningThreshold = 0
+        end
+        if buffDuration:GetRemainingDuration() <= earlyWarningThreshold or buffDuration:GetRemainingDuration() == nil then
             raidBuffFrame:Show()
             return
         else
@@ -241,7 +245,6 @@ function RaidBuff:PlayerRes()
 end
 
 function RaidBuff:Death()
-    ToastyClassChores:Debug("Death")
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
@@ -252,7 +255,6 @@ function RaidBuff:Death()
         raidBuffTimer:Cancel()
     end
     self:StoreDurations()
-    ToastyClassChores:Debug(buffDuration:GetRemainingDuration())
 
     self:Update()
 end
