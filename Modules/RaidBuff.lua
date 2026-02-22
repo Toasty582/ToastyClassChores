@@ -13,9 +13,18 @@ local framesUnlocked = false
 
 local raidBuffTimer
 
-local raidBuffClassList = {
+local raidBuffSpellList = {
     [1126] = "DRUID",
     [364342] = "EVOKER",
+    [1459] = "MAGE",
+    [21562] = "PRIEST",
+    [462854] = "SHAMAN",
+    [6673] = "WARRIOR"
+}
+
+local raidBuffAuraList = {
+    [1126] = "DRUID",
+    [381748] = "EVOKER",
     [1459] = "MAGE",
     [21562] = "PRIEST",
     [462854] = "SHAMAN",
@@ -133,7 +142,7 @@ function RaidBuff:GlowShow(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    if raidBuffClassList[spellID] then
+    if raidBuffSpellList[spellID] then
         glowing = true
     end
     self:Update()
@@ -143,7 +152,7 @@ function RaidBuff:GlowHide(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    if raidBuffClassList[spellID] then
+    if raidBuffSpellList[spellID] then
         glowing = false
     end
     self:Update()
@@ -177,8 +186,8 @@ function RaidBuff:CheckDurations()
         end
     else
         local buffFound = false
-        for spellID, _ in pairs(raidBuffClassList) do
-            if raidBuffClassList[spellID] == playerClass then
+        for spellID, _ in pairs(raidBuffAuraList) do
+            if raidBuffAuraList[spellID] == playerClass then
                 local aura = C_UnitAuras.GetPlayerAuraBySpellID(spellID)
                 if aura then
                     buffDuration:SetTimeFromEnd(aura.expirationTime, 3600)
@@ -216,7 +225,7 @@ function RaidBuff:BuffCast(spellID)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    if raidBuffClassList[spellID] then
+    if raidBuffSpellList[spellID] then
         postResWarning = false
         buffDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
         if raidBuffTimer then
