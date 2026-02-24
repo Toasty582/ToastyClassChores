@@ -38,6 +38,8 @@ function ToastyClassChores:SetSacrificeGrimoireOpacity(info, value)
 end
 
 function SacrificeGrimoire:Initialize()
+    ToastyClassChores:Debug("Initializing")
+    ToastyClassChores:Debug(grimoireFrame)
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.sacrificeGrimoireTracking and playerClass == "WARLOCK") then
         return
@@ -46,6 +48,7 @@ function SacrificeGrimoire:Initialize()
         return
     end
     if not grimoireFrame then
+        ToastyClassChores:Debug("Creating Frame")
         grimoireFrame = CreateFrame("Frame", "Sacrifice Grimoire Reminder", UIParent)
         grimoireFrame:SetPoint(ToastyClassChores.db.profile.sacrificeGrimoireLocation.frameAnchorPoint, UIParent,
             ToastyClassChores.db.profile.sacrificeGrimoireLocation.parentAnchorPoint,
@@ -83,7 +86,9 @@ function SacrificeGrimoire:Update()
     end
 
     if not C_SpellBook.IsSpellInSpellBook(108503) and not framesUnlocked then
-        grimoireFrame:Hide()
+        if grimoireFrame then
+            grimoireFrame:Hide()
+        end
         return
     end
     if (C_SpellBook.IsSpellInSpellBook(132411) or C_SpellBook.IsSpellInSpellBook(132413) or C_SpellBook.IsSpellInSpellBook(132409) or C_SpellBook.IsSpellInSpellBook(261589)) and not framesUnlocked then

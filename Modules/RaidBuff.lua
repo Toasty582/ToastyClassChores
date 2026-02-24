@@ -22,6 +22,7 @@ local raidBuffSpellList = {
     [6673] = "WARRIOR"
 }
 
+-- Evoker has a different spellID for the aura and the spell
 local raidBuffAuraList = {
     [1126] = "DRUID",
     [381748] = "EVOKER",
