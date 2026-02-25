@@ -98,7 +98,7 @@ local config = {
                 raidBuffEarlyWarning = {
                     type = "range",
                     name = "Early Warning",
-                    desc = "Time in minutes before expiration at which the alert appears. NOTE: This feature is experimental and may have missed an edge case, please report any bugs!",
+                    desc = "Time in minutes before expiration at which the alert appears. Note that this only tracks the buff on you, not anyone in your group.",
                     min = 0,
                     max = 60,
                     step = 1,
@@ -587,7 +587,6 @@ local defaults = {
 local characterDefaults = {
     profile = {
         class = "",
-        remainingRaidBuffTime = nil,
         remainingShamanShieldTime = nil,
     },
 }

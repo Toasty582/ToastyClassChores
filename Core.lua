@@ -203,7 +203,7 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     if playerClass == "ROGUE" and self.db.profile.roguePoisonsEarlyWarningNoCombat then
         self.RoguePoisons:Update()
     end
-    if raidBuffClassList[playerClass] then
+    if raidBuffClassList[playerClass] and self.db.profile.raidBuffEarlyWarningNoCombat then
         self.RaidBuff:Update()
     end
     if playerClass == "SHAMAN" then
@@ -222,7 +222,9 @@ end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     if raidBuffClassList[playerClass] then
-        self.RaidBuff:CheckBuff(unitTarget)
+        if UnitIsPlayer(unitTarget) then
+            self.RaidBuff:CheckBuff(unitTarget)
+        end
     end
     if unitTarget == "player" then
         if playerClass == "ROGUE" and updateInfo.removedAuraInstanceIDs then
