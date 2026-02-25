@@ -402,11 +402,6 @@ local config = {
                     width = "full",
                     order = 1,
                 },
-                roguePoisonsSecretDisclaimer = {
-                    type = "description",
-                    name = "Manually removing poisons while secrets are active will not register until secrets deactivate.",
-                    order = 2,
-                },
                 roguePoisonsIconSize = {
                     type = "range",
                     name = "Icon Size",
@@ -426,7 +421,7 @@ local config = {
                 roguePoisonsEarlyWarning = {
                     type = "range",
                     name = "Early Warning",
-                    desc = "Time in minutes before expiration at which the alert appears. NOTE: This feature is experimental and may have missed an edge case, please report any bugs!",
+                    desc = "Time in minutes before expiration at which the alert appears.",
                     min = 0,
                     max = 60,
                     step = 1,

@@ -192,7 +192,7 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
         self.PaladinAuras:Update()
     end
 
-    if playerClass == "ROGUE" then
+    if playerClass == "ROGUE" and self.db.profile.roguePoisonsEarlyWarningNoCombat then
         self.RoguePoisons:Update()
     end
     if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then

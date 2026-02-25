@@ -16,15 +16,15 @@ local nonLethalTimerAssa
 local playerClass
 
 local lethalIDs = {
-    [8679] = 8679, -- Wound
+    [8679] = 8679,     -- Wound
     [315584] = 315584, -- Instant
     [381664] = 381664, -- Amplifying
-    [2823] = 2823, -- Deadly
+    [2823] = 2823,     -- Deadly
 }
 
 local nonLethalIDs = {
-    [5761] = 5761, -- Numbing
-    [3408] = 3408, -- Crippling
+    [5761] = 5761,     -- Numbing
+    [3408] = 3408,     -- Crippling
     [381637] = 381637, -- Atrophic
 }
 
@@ -96,7 +96,6 @@ function RoguePoisons:Initialize()
     if not framesUnlocked then
         roguePoisonsFrame:Hide()
     end
-    self:CreateDurations()
     self:Update()
 end
 
@@ -116,6 +115,10 @@ function RoguePoisons:Update()
     end
 
     if C_SpecializationInfo.GetSpecialization() == 1 then
+        if lethalTime == nil or nonLethalTime == nil or lethalTimeAssa == nil or nonLethalTimeAssa == nil then
+            roguePoisonsFrame:Show()
+            return
+        end
         if lethalTime <= earlyWarningThreshold or nonLethalTime <= earlyWarningThreshold or lethalTimeAssa <= earlyWarningThreshold or nonLethalTimeAssa <= earlyWarningThreshold then
             roguePoisonsFrame:Show()
             return
@@ -126,6 +129,10 @@ function RoguePoisons:Update()
             end
         end
     else
+        if lethalTime == nil or nonLethalTime == nil then
+            roguePoisonsFrame:Show()
+            return
+        end
         if lethalTime <= earlyWarningThreshold or nonLethalTime <= earlyWarningThreshold then
             roguePoisonsFrame:Show()
             return
@@ -183,7 +190,8 @@ function RoguePoisons:PoisonCast(spellID)
             if lethalTimerAssa then
                 lethalTimerAssa:Cancel()
             end
-            lethalTimerAssa = C_Timer.NewTimer(lethalTimeAssa - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+            lethalTimerAssa = C_Timer.NewTimer(
+                lethalTimeAssa - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
                 function() self:Update() end)
         end
     elseif nonLethalIDs[spellID] then
@@ -196,9 +204,12 @@ function RoguePoisons:PoisonCast(spellID)
             if nonLethalTimerAssa then
                 nonLethalTimerAssa:Cancel()
             end
-            nonLethalTimerAssa = C_Timer.NewTimer(nonLethalTimeAssa - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
+            nonLethalTimerAssa = C_Timer.NewTimer(
+                nonLethalTimeAssa - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
                 function() self:Update() end)
         end
+    else
+        return
     end
     self:Update()
 end
