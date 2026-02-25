@@ -195,12 +195,10 @@ function RaidBuff:CheckBuff(unit)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
-    if unit == "target" then
-        return
-    end
-    if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) then
-        if unitsMissingBuff[unit] then
-            unitsMissingBuff[unit] = nil
+    local unitGUID = UnitGUID(unit)
+    if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
+        if unitsMissingBuff[unitGUID] and unitGUID then
+            unitsMissingBuff[unitGUID] = nil
         end
         return
     end
@@ -211,8 +209,8 @@ function RaidBuff:CheckBuff(unit)
     end
     local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
     if aura then
-        if unitsMissingBuff[unit] then
-            unitsMissingBuff[unit] = nil
+        if unitsMissingBuff[unitGUID] and unitGUID then
+            unitsMissingBuff[unitGUID] = nil
         end
         if unit == "player" then
             if raidBuffTimer then
@@ -225,14 +223,17 @@ function RaidBuff:CheckBuff(unit)
             end
         end
     else
-        if not unitsMissingBuff[unit] then
-            unitsMissingBuff[unit] = unit
+        if not unitsMissingBuff[unitGUID] and unitGUID then
+            unitsMissingBuff[unitGUID] = unitGUID
         end
         if unit == "player" then
             if raidBuffTimer then
                 raidBuffTimer:Cancel()
             end
         end
+    end
+    for _, val in pairs(unitsMissingBuff) do
+        ToastyClassChores:Debug(val)
     end
     self:Update()
 end
