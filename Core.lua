@@ -219,7 +219,7 @@ end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     if unitTarget == "player" then
-        if playerClass == "ROGUE" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+        if playerClass == "ROGUE" and updateInfo.removedAuraInstanceIDs then
             self.RoguePoisons:Update()
         end
         if (playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR") and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then

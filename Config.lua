@@ -614,10 +614,6 @@ local defaults = {
 local characterDefaults = {
     profile = {
         class = "",
-        remainingLethalPoisonTime = nil,
-        remainingNonLethalPoisonTime = nil,
-        remainingLethalPoisonTimeAssa = nil,
-        remainingNonLethalPoisonTimeAssa = nil,
         remainingRaidBuffTime = nil,
         remainingShamanShieldTime = nil,
     },
