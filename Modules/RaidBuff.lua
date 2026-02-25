@@ -206,7 +206,8 @@ function RaidBuff:CheckBuff(unit)
     end
     local buffSpellID = raidBuffAurasByClass[playerClass]
     if playerClass == "EVOKER" then
-        buffSpellID = buffSpellID[UnitClass(unit)]
+        local _, unitClass, _ = UnitClass(unit)
+        buffSpellID = buffSpellID[unitClass]
     end
     local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
     if aura then
@@ -239,7 +240,8 @@ end
 function RaidBuff:GetRemainingBuffTime(unit)
     local buffSpellID = raidBuffAurasByClass[playerClass]
     if playerClass == "EVOKER" then
-        buffSpellID = buffSpellID[UnitClass(unit)]
+        local _, unitClass, _ = UnitClass(unit)
+        buffSpellID = buffSpellID[unitClass]
     end
     local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
     if aura then
