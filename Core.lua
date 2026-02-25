@@ -25,6 +25,15 @@ function ToastyClassChores:OnInitialize()
     end
 end
 
+local raidBuffClassList = {
+    DRUID = 136078,
+    EVOKER = 4622448,
+    MAGE = 135932,
+    PRIEST = 135987,
+    SHAMAN = 4630367,
+    WARRIOR = 132333
+}
+
 function ToastyClassChores:OnEnable()
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
@@ -55,28 +64,28 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_MOUNT_DISPLAY_CHANGED")
     end
 
-    if playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" or playerClass == "PALADIN" then
+    if playerClass == "ROGUE" or raidBuffClassList[playerClass] or playerClass == "PALADIN" then
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     end
 
-    if playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+    if playerClass == "ROGUE" or raidBuffClassList[playerClass] then
         self:RegisterEvent("UNIT_AURA")
     end
 
-    if playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+    if playerClass == "ROGUE" then
         self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     end
 
-    if playerClass == "ROGUE" or playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
+    if playerClass == "SHAMAN" then
         self:RegisterEvent("PLAYER_LOGOUT")
     end
 
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
-        self:RegisterEvent("PLAYER_ALIVE")
+    if raidBuffClassList[playerClass] then
+        self:RegisterEvent("PLAYER_FLAGS_CHANGED")
     end
 
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "WARRIOR" then
-        self:RegisterEvent("PLAYER_DEAD")
+    if raidBuffClassList[playerClass] then
+        self:RegisterEvent("GROUP_ROSTER_UPDATE")
     end
 
     self.Shadowform:Initialize()
@@ -107,14 +116,13 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     end
     -- Because for some reason durationObjects do not load properly until a frame after PLAYER_ENTERING_WORLD
     if playerClass == "ROGUE" then
-        RunNextFrame(function () self.RoguePoisons:Update() end)
+        RunNextFrame(function() self.RoguePoisons:Update() end)
     end
     if playerClass == "SHAMAN" then
-        RunNextFrame(function () self.ShamanShields:Update() end)
-        RunNextFrame(function () self.RaidBuff:Update() end)
+        RunNextFrame(function() self.ShamanShields:Update() end)
     end
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
-        RunNextFrame(function () self.RaidBuff:Update() end)
+    if raidBuffClassList[playerClass] then
+        RunNextFrame(function() self.RaidBuff:Update() end)
     end
 end
 
@@ -195,38 +203,32 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     if playerClass == "ROGUE" and self.db.profile.roguePoisonsEarlyWarningNoCombat then
         self.RoguePoisons:Update()
     end
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
+    if raidBuffClassList[playerClass] then
         self.RaidBuff:Update()
     end
     if playerClass == "SHAMAN" then
-        self.RaidBuff:Update()
         self.ShamanShields:Update()
     end
 end
 
 function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
-    if playerClass == "ROGUE" then
-        self.RoguePoisons:Update()
-    end
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
+    if raidBuffClassList[playerClass] then
         self.RaidBuff:Update()
     end
     if playerClass == "SHAMAN" then
-        self.RaidBuff:Update()
         self.ShamanShields:Update()
     end
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
+    if raidBuffClassList[playerClass] then
+        self.RaidBuff:CheckBuff(unitTarget)
+    end
     if unitTarget == "player" then
         if playerClass == "ROGUE" and updateInfo.removedAuraInstanceIDs then
             self.RoguePoisons:Update()
         end
-        if (playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR") and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
-            self.RaidBuff:Update()
-        end
         if playerClass == "SHAMAN" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
-            self.RaidBuff:Update()
             self.ShamanShields:Update()
         end
     end
@@ -237,41 +239,24 @@ function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID,
         if playerClass == "ROGUE" then
             self.RoguePoisons:PoisonCast(spellID)
         end
-        if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
-            self.RaidBuff:BuffCast(spellID)
-        end
         if playerClass == "SHAMAN" then
-            self.RaidBuff:BuffCast(spellID)
             self.ShamanShields:ShieldCast(spellID)
         end
     end
 end
 
 function ToastyClassChores:PLAYER_LOGOUT()
-    if playerClass == "ROGUE" then
-        self.RoguePoisons:StoreDurations()
-    end
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" then
-        self.RaidBuff:StoreDurations()
-    end
     if playerClass == "SHAMAN" then
-        self.RaidBuff:StoreDurations()
         self.ShamanShields:StoreDurations()
     end
 end
 
-function ToastyClassChores:PLAYER_ALIVE()
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" or playerClass == "SHAMAN" then
-        self.RaidBuff:PlayerRes()
-    end
+function ToastyClassChores:PLAYER_FLAGS_CHANGED(event, unitTarget)
+    self.RaidBuff:CheckBuff(unitTarget)
 end
 
-function ToastyClassChores:PLAYER_DEAD()
-    if playerClass == "DRUID" or playerClass == "EVOKER" or playerClass == "MAGE" or playerClass == "PRIEST" or playerClass == "WARRIOR" or playerClass == "SHAMAN" then
-        if UnitIsDead("player") then
-            self.RaidBuff:Death()
-        end
-    end
+function ToastyClassChores:GROUP_ROSTER_UPDATE()
+    self.RaidBuff:CheckWholeRaid()
 end
 
 function ToastyClassChores:ToggleFrameLock()

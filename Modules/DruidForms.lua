@@ -189,7 +189,6 @@ function DruidForms:Update()
             end
         end
         if knowsWildpowerSurge == 1 and (formIndex == 1 or formIndex == 2) and not framesUnlocked then
-            ToastyClassChores:Debug(knowsWildpowerSurge)
             druidFormsFrame:Hide()
         end
     else
