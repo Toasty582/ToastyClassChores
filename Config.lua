@@ -79,11 +79,6 @@ local config = {
                     width = "full",
                     order = 1,
                 },
-                raidBuffSecretDisclaimer = {
-                    type = "description",
-                    name = "Manually removing your raid buff or another player applying your raid buff while secrets are active will not register until secrets deactivate.",
-                    order = 2,
-                },
                 raidBuffIconSize = {
                     type = "range",
                     name = "Icon Size",
@@ -100,26 +95,10 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.raidBuffOpacity end,
                     set = "SetRaidBuffOpacity",
                 },
-                raidBuffPostResTimer = {
-                    type = "range",
-                    name = "Battle Res Alert Time",
-                    desc = "Time in seconds for the reminder to be shown after each battle resurrection.",
-                    min = 0,
-                    softMax = 20,
-                    get = function() return ToastyClassChores.db.profile.raidBuffPostResTimer end,
-                    set = function(info, value) ToastyClassChores.db.profile.raidBuffPostResTimer = value end,
-                    order = 101
-                },
-                raidBuffPostResDisclaimer = {
-                    type = "description",
-                    name = "While in combat with secrets active, we cannot consistently be sure if someone else has already rebuffed the resurrected player. Because of this the reminder will instead show for a static amount of time after each battle res or until you rebuff yourself.",
-                    order = 102,
-                    width = "full"
-                },
                 raidBuffEarlyWarning = {
                     type = "range",
                     name = "Early Warning",
-                    desc = "Time in minutes before expiration at which the alert appears. NOTE: This feature is experimental and may have missed an edge case, please report any bugs!",
+                    desc = "Time in minutes before expiration at which the alert appears. Note that this only tracks the buff on you, not anyone in your group.",
                     min = 0,
                     max = 60,
                     step = 1,
@@ -402,11 +381,6 @@ local config = {
                     width = "full",
                     order = 1,
                 },
-                roguePoisonsSecretDisclaimer = {
-                    type = "description",
-                    name = "Manually removing poisons while secrets are active will not register until secrets deactivate.",
-                    order = 2,
-                },
                 roguePoisonsIconSize = {
                     type = "range",
                     name = "Icon Size",
@@ -426,7 +400,7 @@ local config = {
                 roguePoisonsEarlyWarning = {
                     type = "range",
                     name = "Early Warning",
-                    desc = "Time in minutes before expiration at which the alert appears. NOTE: This feature is experimental and may have missed an edge case, please report any bugs!",
+                    desc = "Time in minutes before expiration at which the alert appears.",
                     min = 0,
                     max = 60,
                     step = 1,
@@ -522,7 +496,6 @@ local defaults = {
         raidBuffOpacity = 1,
         raidBuffEarlyWarning = 0,
         raidBuffEarlyWarningNoCombat = false,
-        raidBuffPostResTimer = 10,
         raidBuffLocation = {
             xPos = 0,
             yPos = -55,
@@ -614,11 +587,6 @@ local defaults = {
 local characterDefaults = {
     profile = {
         class = "",
-        remainingLethalPoisonTime = nil,
-        remainingNonLethalPoisonTime = nil,
-        remainingLethalPoisonTimeAssa = nil,
-        remainingNonLethalPoisonTimeAssa = nil,
-        remainingRaidBuffTime = nil,
         remainingShamanShieldTime = nil,
     },
 }

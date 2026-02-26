@@ -38,8 +38,6 @@ function ToastyClassChores:SetSacrificeGrimoireOpacity(info, value)
 end
 
 function SacrificeGrimoire:Initialize()
-    ToastyClassChores:Debug("Initializing")
-    ToastyClassChores:Debug(grimoireFrame)
     playerClass = ToastyClassChores.cdb.profile.class
     if not (ToastyClassChores.db.profile.sacrificeGrimoireTracking and playerClass == "WARLOCK") then
         return
@@ -48,7 +46,6 @@ function SacrificeGrimoire:Initialize()
         return
     end
     if not grimoireFrame then
-        ToastyClassChores:Debug("Creating Frame")
         grimoireFrame = CreateFrame("Frame", "Sacrifice Grimoire Reminder", UIParent)
         grimoireFrame:SetPoint(ToastyClassChores.db.profile.sacrificeGrimoireLocation.frameAnchorPoint, UIParent,
             ToastyClassChores.db.profile.sacrificeGrimoireLocation.parentAnchorPoint,
