@@ -44,6 +44,11 @@ function ToastyClassChores:SetWarriorStancesIconSize(info, value)
     end
 end
 
+function ToastyClassChores:SetWarriorStancesInCombatOnly(info, value)
+    self.db.profile.warriorStancesInCombatOnly = value
+    WarriorStances:Update()
+end
+
 function ToastyClassChores:SetProtShowsDef(info, value)
     self.db.profile.warriorStancesProtShowsDef = value
     WarriorStances:Update()
@@ -111,6 +116,12 @@ function WarriorStances:Update()
         frameTexture:SetTexture(stanceIcons[stanceIndex])
     end
     frameTexture:SetAllPoints()
+
+    
+    if ToastyClassChores.db.profile.warriorStancesInCombatOnly and not PlayerIsInCombat() and not framesUnlocked then
+        warriorStancesFrame:Hide()
+        return
+    end
 
     if specIndex ~= 3 then
         if stanceIndex ~= 2 then

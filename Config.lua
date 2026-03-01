@@ -260,6 +260,14 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.warriorStancesOpacity end,
                     set = "SetWarriorStancesOpacity",
                 },
+                warriorStancesInCombatOnly = {
+                    type = "toggle",
+                    name = "In Combat Only",
+                    get = function() return ToastyClassChores.db.profile.warriorStancesInCombatOnly end,
+                    set = "SetWarriorStancesInCombatOnly",
+                    width = "full",
+                    order = -3,
+                },
                 warriorStancesProtShowsBattle = {
                     type = "toggle",
                     name = "Show Battle Stance for Prot",
@@ -578,6 +586,7 @@ local defaults = {
         warriorStancesAlwaysShow = false,
         warriorStancesTracking = true,
         warriorStancesIconSize = 100,
+        warriorStancesInCombatOnly = false,
         warriorStancesProtShowsBattle = false,
         warriorStancesProtShowsDef = true,
         warriorStancesOpacity = 1,

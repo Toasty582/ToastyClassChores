@@ -206,6 +206,9 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     if playerClass == "PALADIN" and self.db.profile.paladinAurasInCombatOnly then
         self.PaladinAuras:Update()
     end
+    if playerClass == "WARRIOR" and self.db.profile.warriorStancesInCombatOnly then
+        self.WarriorStances:Update()
+    end
 
     if playerClass == "ROGUE" and self.db.profile.roguePoisonsEarlyWarningNoCombat then
         self.RoguePoisons:Update()
