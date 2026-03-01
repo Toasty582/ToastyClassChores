@@ -472,6 +472,55 @@ local config = {
                 }
             }
         },
+        lightsmithRites = {
+            type = "group",
+            name = "Lightsmith Rites",
+            args = {
+                lightsmithRitesTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.lightsmithRitesTracking end,
+                    set = "SetLightsmithRitesTracking",
+                    width = "full",
+                    order = 1,
+                },
+                lightsmithRitesIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    desc = "Input number for larger icons",
+                    get = function() return ToastyClassChores.db.profile.lightsmithRitesIconSize end,
+                    set = "SetLightsmithRitesIconSize",
+                },
+                lightsmithRitesOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.lightsmithRitesOpacity end,
+                    set = "SetLightsmithRitesOpacity",
+                },
+                lightsmithRitesEarlyWarning = {
+                    type = "range",
+                    name = "Early Warning",
+                    desc = "Time in minutes before expiration at which the alert appears.",
+                    min = 0,
+                    max = 60,
+                    step = 1,
+                    get = function() return ToastyClassChores.db.profile.lightsmithRitesEarlyWarning end,
+                    set = "SetLightsmithRitesEarlyWarning",
+                    order = 103,
+                },
+                lightsmithRitesEarlyWarningNoCombat = {
+                    type = "toggle",
+                    name = "Hide Early Warning During Combat",
+                    get = function() return ToastyClassChores.db.profile.lightsmithRitesEarlyWarningNoCombat end,
+                    set = "SetLightsmithRitesEarlyWarningNoCombat",
+                    width = "full",
+                    order = 104
+                }
+            }
+        },
     },
 }
 
@@ -578,6 +627,17 @@ local defaults = {
         shamanShieldsLocation = {
             xPos = 0,
             yPos = 55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        },
+        lightsmithRitesTracking = true,
+        lightsmithRitesIconSize = 100,
+        lightsmithRitesOpacity = 1,
+        lightsmithRitesEarlyWarning = 0,
+        lightsmithRitesEarlyWarningNoCombat = false,
+        lightsmithRitesLocation = {
+            xPos = 0,
+            yPos = -55,
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },

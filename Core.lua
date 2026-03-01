@@ -56,7 +56,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_PET")
     end
 
-    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DRUID" or playerClass == "DEATHKNIGHT" then
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DRUID" or playerClass == "DEATHKNIGHT" or playerClass == "PALADIN" then
         self:RegisterEvent("SPELLS_CHANGED")
     end
 
@@ -68,11 +68,11 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     end
 
-    if playerClass == "ROGUE" or raidBuffClassList[playerClass] then
+    if playerClass == "ROGUE" or raidBuffClassList[playerClass] or playerClass == "PALADIN" then
         self:RegisterEvent("UNIT_AURA")
     end
 
-    if playerClass == "ROGUE" then
+    if playerClass == "ROGUE" or playerClass == "PALADIN" or playerClass == "SHAMAN" then
         self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     end
 
@@ -97,6 +97,7 @@ function ToastyClassChores:OnEnable()
     self.SacrificeGrimoire:Initialize()
     self.RoguePoisons:Initialize()
     self.ShamanShields:Initialize()
+    self.LightsmithRites:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
 end
@@ -123,6 +124,9 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     end
     if raidBuffClassList[playerClass] then
         RunNextFrame(function() self.RaidBuff:Update() end)
+    end
+    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
+        RunNextFrame(function() self.LightsmithRites:Update() end)
     end
 end
 
@@ -186,6 +190,9 @@ function ToastyClassChores:SPELLS_CHANGED()
             self.Pets:CheckAnomaly()
             self.SacrificeGrimoire:Update()
         end
+        if playerClass == "PALADIN" then
+            self.LightsmithRites:Update()
+        end
     end
 end
 
@@ -208,6 +215,9 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
     if playerClass == "SHAMAN" then
         self.ShamanShields:Update()
+    end
+    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 and self.db.profile.lightsmithRitesEarlyWarningNoCombat then
+        self.LightsmithRites:Update()
     end
 end
 
@@ -233,6 +243,9 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
         if playerClass == "SHAMAN" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
             self.ShamanShields:Update()
         end
+        if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
+            self.LightsmithRites:Update()
+        end
     end
 end
 
@@ -243,6 +256,9 @@ function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID,
         end
         if playerClass == "SHAMAN" then
             self.ShamanShields:ShieldCast(spellID)
+        end
+        if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
+            RunNextFrame(function() self.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
         end
     end
 end
@@ -278,6 +294,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.SacrificeGrimoire:ToggleFrameLock(value)
     self.RoguePoisons:ToggleFrameLock(value)
     self.ShamanShields:ToggleFrameLock(value)
+    self.LightsmithRites:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)
