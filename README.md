@@ -10,6 +10,7 @@ Currently Implemented:
 - Druid forms
 - Warrior stances
 - Paladin auras
+- Lightsmith rites
 - Rogue poisons
 - Grimoire of Sacrifice reminder
 - Lightning/Water Shield
