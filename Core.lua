@@ -310,6 +310,8 @@ function ToastyClassChores:SlashCommand(msg)
         end
     elseif msg == "lock" then
         self:ToggleFrameLock()
+    elseif msg == "" then
+        C_SettingsUtil.OpenSettingsPanel(self.optionsFrame.name)
     else
         self:Print("Hi! Please report any bugs you find!")
     end
