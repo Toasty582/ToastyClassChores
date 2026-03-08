@@ -492,6 +492,11 @@ local config = {
                     width = "full",
                     order = 1,
                 },
+                shamanShieldsSecretDisclaimer = {
+                    type = "description",
+                    name = "While it should not be possible, if your rite is removed early while secrets are active, it will not register until secrets deactivate. This is because blizzard desecreted the wrong spell IDs.",
+                    order = 2,
+                },
                 lightsmithRitesIconSize = {
                     type = "range",
                     name = "Icon Size",
@@ -657,6 +662,7 @@ local characterDefaults = {
     profile = {
         class = "",
         remainingShamanShieldTime = nil,
+        remainingLightsmithRiteTime = nil,
     },
 }
 

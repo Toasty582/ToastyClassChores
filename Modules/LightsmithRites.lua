@@ -8,6 +8,7 @@ local lightsmithRitesFrame
 local frameTexture
 local framesUnlocked = false
 
+local riteDuration
 local riteTimer
 
 local riteSpellIDs = {
@@ -87,6 +88,7 @@ function LightsmithRites:Initialize()
     if not framesUnlocked then
         lightsmithRitesFrame:Hide()
     end
+    self:CreateDurations()
     self:Update()
 end
 
@@ -100,7 +102,24 @@ function LightsmithRites:Update()
     if not lightsmithRitesFrame then
         self:Initialize()
     end
+    self:CheckDurations()
 
+    local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning
+    if PlayerIsInCombat() and ToastyClassChores.db.profile.lightsmithRitesEarlyWarningNoCombat then
+        earlyWarningThreshold = 0
+    end
+    if riteDuration:GetRemainingDuration() <= earlyWarningThreshold or riteDuration:GetRemainingDuration() == nil then
+        lightsmithRitesFrame:Show()
+        return
+    else
+        if not framesUnlocked then
+            lightsmithRitesFrame:Hide()
+        end
+        return
+    end
+
+    -- Blizz desecreted the wrong spellID lmao
+    --[[
     local riteTime = self:CheckRites()
 
     local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning
@@ -121,8 +140,70 @@ function LightsmithRites:Update()
             return
         end
     end
+    ]]
 end
 
+function LightsmithRites:CreateDurations()
+    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
+        return
+    end
+    riteDuration = C_DurationUtil.CreateDuration()
+end
+
+function LightsmithRites:CheckDurations()
+    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
+        return
+    end
+    if C_Secrets.ShouldAurasBeSecret() then
+        if not riteDuration:GetStartTime() then
+            riteDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingLightsmithRiteTime)
+            if riteTimer then
+                riteTimer:Cancel()
+            end
+            if riteDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning > 0 then
+                riteTimer = C_Timer.NewTimer(
+                    riteDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning,
+                    function() self:Update() end)
+            end
+        end
+    else
+        local buffFound = false
+        for _, spellID in pairs(riteAuraIDs) do
+            local aura = C_UnitAuras.GetPlayerAuraBySpellID(spellID)
+            if aura then
+                riteDuration:SetTimeFromEnd(aura.expirationTime, 3600)
+                if riteTimer then
+                    riteTimer:Cancel()
+                end
+                if riteDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning > 0 then
+                    riteTimer = C_Timer.NewTimer(
+                        riteDuration:GetRemainingDuration() -
+                        60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning,
+                        function() self:Update() end)
+                end
+                buffFound = true
+            end
+            if not buffFound then
+                riteDuration:Reset()
+            end
+        end
+    end
+    self:StoreDurations()
+end
+
+function LightsmithRites:StoreDurations()
+    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
+        return
+    end
+    if riteDuration then
+        ToastyClassChores.cdb.profile.remainingLightsmithRiteTime = riteDuration:GetRemainingDuration()
+    else
+        ToastyClassChores.cdb.profile.remainingLightsmithRiteTime = nil
+    end
+end
+
+-- Blizzard desecreted the wrong fucking spellID lmfao
+--[[
 function LightsmithRites:CheckRites()
     if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
         return nil
@@ -137,15 +218,16 @@ function LightsmithRites:CheckRites()
     end
 
     return riteTime
-end
+end]]
 
 function LightsmithRites:RiteCast(spellID)
-    local riteTime = self:CheckRites()
+    --local riteTime = self:CheckRites()
     if riteSpellIDs[spellID] then
+        riteDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
         if riteTimer then
             riteTimer:Cancel()
         end
-        riteTimer = C_Timer.NewTimer(riteTime - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning,
+        riteTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning,
             function() self:Update() end)
     else
         return
