@@ -232,9 +232,6 @@ function RaidBuff:CheckBuff(unit)
             end
         end
     end
-    for _, val in pairs(unitsMissingBuff) do
-        ToastyClassChores:Debug(val)
-    end
     self:Update()
 end
 

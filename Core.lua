@@ -82,6 +82,7 @@ function ToastyClassChores:OnEnable()
 
     if raidBuffClassList[playerClass] then
         self:RegisterEvent("PLAYER_FLAGS_CHANGED")
+        self:RegisterEvent("UNIT_DIED")
     end
 
     if raidBuffClassList[playerClass] then
@@ -274,6 +275,14 @@ end
 
 function ToastyClassChores:PLAYER_FLAGS_CHANGED(event, unitTarget)
     self.RaidBuff:CheckBuff(unitTarget)
+end
+
+function ToastyClassChores:UNIT_DIED(event, unitGUID)
+    if not issecretvalue(unitGUID) then
+        if C_PlayerInfo.GUIDIsPlayer(unitGUID) and IsGUIDInGroup(unitGUID) then
+            self.RaidBuff:CheckBuff(UnitTokenFromGUID(unitGUID))
+        end
+    end
 end
 
 function ToastyClassChores:GROUP_ROSTER_UPDATE()
