@@ -534,6 +534,55 @@ local config = {
                 }
             }
         },
+        sourceOfMagic = {
+            type = "group",
+            name = "Source of Magic",
+            args = {
+                sourceOfMagicTracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.sourceOfMagicTracking end,
+                    set = "SetSourceOfMagicTracking",
+                    width = "full",
+                    order = 1,
+                },
+                sourceOfMagicIconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    desc = "Input number for larger icons",
+                    get = function() return ToastyClassChores.db.profile.sourceOfMagicIconSize end,
+                    set = "SetSourceOfMagicIconSize",
+                },
+                sourceOfMagicOpacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.sourceOfMagicOpacity end,
+                    set = "SetSourceOfMagicOpacity",
+                },
+                sourceOfMagicEarlyWarning = {
+                    type = "range",
+                    name = "Early Warning",
+                    desc = "Time in minutes before expiration at which the alert appears.",
+                    min = 0,
+                    max = 60,
+                    step = 1,
+                    get = function() return ToastyClassChores.db.profile.sourceOfMagicEarlyWarning end,
+                    set = "SetSourceOfMagicEarlyWarning",
+                    order = 103,
+                },
+                sourceOfMagicEarlyWarningNoCombat = {
+                    type = "toggle",
+                    name = "Hide Early Warning During Combat",
+                    get = function() return ToastyClassChores.db.profile.sourceOfMagicEarlyWarningNoCombat end,
+                    set = "SetSourceOfMagicEarlyWarningNoCombat",
+                    width = "full",
+                    order = 104,
+                },
+            }
+        },
     },
 }
 
@@ -655,12 +704,24 @@ local defaults = {
             parentAnchorPoint = "CENTER",
             frameAnchorPoint = "CENTER",
         },
+        sourceOfMagicTracking = true,
+        sourceOfMagicIconSize = 100,
+        sourceOfMagicOpacity = 1,
+        sourceOfMagicEarlyWarning = 0,
+        sourceOfMagicEarlyWarningNoCombat = false,
+        sourceOfMagicLocation = {
+            xPos = 0,
+            yPos = 55,
+            parentAnchorPoint = "CENTER",
+            frameAnchorPoint = "CENTER",
+        },
     },
 }
 
 local characterDefaults = {
     profile = {
         class = "",
+        guid = "",
         remainingShamanShieldTime = nil,
         remainingLightsmithRiteTime = nil,
     },

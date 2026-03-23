@@ -37,6 +37,7 @@ local raidBuffClassList = {
 function ToastyClassChores:OnEnable()
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
+    self.cdb.profile.guid = UnitGUID("player")
 
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("LEGACY_LOOT_RULES_CHANGED")
@@ -56,7 +57,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_PET")
     end
 
-    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DRUID" or playerClass == "DEATHKNIGHT" or playerClass == "PALADIN" then
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DRUID" or playerClass == "DEATHKNIGHT" or playerClass == "PALADIN" or playerClass == "EVOKER" then
         self:RegisterEvent("SPELLS_CHANGED")
     end
 
@@ -99,6 +100,7 @@ function ToastyClassChores:OnEnable()
     self.RoguePoisons:Initialize()
     self.ShamanShields:Initialize()
     self.LightsmithRites:Initialize()
+    self.SourceOfMagic:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
 end
@@ -194,6 +196,9 @@ function ToastyClassChores:SPELLS_CHANGED()
         if playerClass == "PALADIN" then
             self.LightsmithRites:Update()
         end
+        if playerClass == "EVOKER" then
+            self.SourceOfMagic:CheckSourceOfMagicKnown()
+        end
     end
 end
 
@@ -223,6 +228,9 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 and self.db.profile.lightsmithRitesEarlyWarningNoCombat then
         self.LightsmithRites:Update()
     end
+    if playerClass == "EVOKER" and self.db.profile.sourceOfMagicEarlyWarningNoCombat then
+        self.SourceOfMagic:Update()
+    end
 end
 
 function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
@@ -238,6 +246,11 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     if raidBuffClassList[playerClass] then
         if UnitIsPlayer(unitTarget) then
             self.RaidBuff:CheckBuff(unitTarget)
+        end
+    end
+    if playerClass == "EVOKER" then
+        if UnitIsPlayer(unitTarget) then
+            self.SourceOfMagic:CheckBuff(unitTarget)
         end
     end
     if unitTarget == "player" then
@@ -287,6 +300,7 @@ end
 
 function ToastyClassChores:GROUP_ROSTER_UPDATE()
     self.RaidBuff:CheckWholeRaid()
+    self.SourceOfMagic:CheckGroup()
 end
 
 function ToastyClassChores:ToggleFrameLock()
@@ -307,6 +321,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.RoguePoisons:ToggleFrameLock(value)
     self.ShamanShields:ToggleFrameLock(value)
     self.LightsmithRites:ToggleFrameLock(value)
+    self.SourceOfMagic:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)
