@@ -193,6 +193,7 @@ function SourceOfMagic:CheckGroup()
     if currentGUID and not issecretvalue(currentGUID) then
         self:CheckBuff(UnitTokenFromGUID(currentGUID))
     end
+    self:Update()
 end
 
 function SourceOfMagic:CountHealers()
@@ -211,13 +212,15 @@ function SourceOfMagic:CountHealers()
         groupSize = GetNumSubgroupMembers() - 1
     end
     for i = 1, groupSize do
-        if UnitGroupRolesAssigned(groupType .. i) == "HEALER" then
+        if UnitGroupRolesAssigned(groupType .. i) == "HEALER" and UnitGUID(groupType .. i) ~= playerGUID then
             healerCount = healerCount + 1
             self:CheckBuff(groupType .. i)
         end
     end
     if healerCount > 0 then
         otherHealersInGroup = true
+    else
+        otherHealersInGroup = false
     end
 end
 
