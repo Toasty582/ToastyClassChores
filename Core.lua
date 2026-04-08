@@ -73,8 +73,12 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_AURA")
     end
 
-    if playerClass == "ROGUE" or playerClass == "PALADIN" or playerClass == "SHAMAN" or playerClass == "EVOKER" then
+    if playerClass == "ROGUE" or playerClass == "PALADIN" or playerClass == "SHAMAN" then
         self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+    end
+
+    if playerClass == "EVOKER" then
+        self:RegisterEvent("UNIT_SPELLCAST_SENT")
     end
 
     if playerClass == "SHAMAN" then
@@ -274,11 +278,16 @@ function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID,
         if playerClass == "SHAMAN" then
             self.ShamanShields:ShieldCast(spellID)
         end
-        if playerClass == "EVOKER" then
-            self.SourceOfMagic:RegisterBuff(spellID)
-        end
         if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
             RunNextFrame(function() self.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
+        end
+    end
+end
+
+function ToastyClassChores:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
+    if unitTarget == "player" then
+        if playerClass == "EVOKER" then
+            self.SourceOfMagic:RegisterBuff(spellID, target)
         end
     end
 end

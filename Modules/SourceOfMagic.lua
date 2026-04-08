@@ -90,6 +90,7 @@ function SourceOfMagic:Initialize()
 end
 
 function SourceOfMagic:Update()
+    ToastyClassChores:Debug("Update")
     if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
         return
     end
@@ -97,6 +98,7 @@ function SourceOfMagic:Update()
         self:Initialize()
     end
     if not otherHealersInGroup or not knowsSourceOfMagic then
+        ToastyClassChores:Debug("a")
         if not framesUnlocked then
             sourceOfMagicFrame:Hide()
         end
@@ -140,19 +142,19 @@ function SourceOfMagic:CheckBuff(unit)
         if aura then
             if UnitGUID(aura.sourceUnit) == playerGUID then
                 currentToken = unit
-            --[[else
+            else
                 if currentToken then
                     if UnitGUID(currentToken) == UnitGUID(unit) then
                         currentToken = nil
                     end
-                end]]
+                end
             end
-        --[[else
+        else
             if currentToken then
                 if UnitGUID(currentToken) == UnitGUID(unit) then
                     currentToken = nil
                 end
-            end]]
+            end
         end
     end
     self:Update()
@@ -177,7 +179,6 @@ function SourceOfMagic:VerifyBuff()
         local aura = C_UnitAuras.GetUnitAuraBySpellID(currentToken, buffSpellID)
         if aura then
             if UnitGUID(aura.sourceUnit) == playerGUID then
-                
                 return
             else
                 currentToken = nil
@@ -190,13 +191,28 @@ function SourceOfMagic:VerifyBuff()
     self:Update()
 end
 
-function SourceOfMagic:RegisterBuff(spellID)
+function SourceOfMagic:RegisterBuff(spellID, target)
     if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
         return
     end
     if spellID == buffSpellID then
-        self:CheckGroup()
-        return
+        local groupType
+        local groupSize
+        if IsInRaid() then
+            groupType = "raid"
+            groupSize = GetNumGroupMembers() - 1
+        else
+            groupType = "party"
+            groupSize = GetNumSubgroupMembers() - 1
+        end
+        for i = 1, groupSize do
+            if UnitGroupRolesAssigned(groupType .. i) == "HEALER" and UnitGUID(groupType .. i) ~= playerGUID then
+                if UnitGUID(target) == UnitGUID(groupType .. i) then
+                    ToastyClassChores:Debug("Checking " .. groupType .. i)
+                    RunNextFrame(function() self:CheckBuff(groupType .. i) end)
+                end
+            end
+        end
     end
 end
 
