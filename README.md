@@ -14,10 +14,7 @@ Currently Implemented:
 - Rogue poisons
 - Grimoire of Sacrifice reminder
 - Lightning/Water Shield
+- Source of Magic
 
 Planned Features:
 - Nothing high priority atm
-
-Am looking into:
-- Source of Magic
-- Earth Shield
