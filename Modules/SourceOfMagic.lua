@@ -14,7 +14,7 @@ local sourceOfMagicTimer
 
 local knowsSourceOfMagic
 local otherHealersInGroup
-local currentGUID
+local currentToken
 
 function ToastyClassChores:SetSourceOfMagicTracking(info, value)
     self.db.profile.sourceOfMagicTracking = value
@@ -45,7 +45,7 @@ end
 
 function ToastyClassChores:SetSourceOfMagicEarlyWarning(info, value)
     self.db.profile.sourceOfMagicEarlyWarning = value
-    SourceOfMagic:CheckBuff("player")
+    SourceOfMagic:VerifyBuff()
 end
 
 function ToastyClassChores:SetSourceOfMagicEarlyWarningNoCombat(info, value)
@@ -102,7 +102,8 @@ function SourceOfMagic:Update()
         end
         return
     end
-    if currentGUID then
+    ToastyClassChores:Debug(currentToken)
+    if currentToken then
         local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.sourceOfMagicEarlyWarning
         if PlayerIsInCombat() and ToastyClassChores.db.profile.sourceOfMagicEarlyWarningNoCombat then
             earlyWarningThreshold = 0
@@ -123,31 +124,80 @@ function SourceOfMagic:CheckBuff(unit)
     if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
         return
     end
-    local unitGUID = UnitGUID(unit)
     if not UnitIsPlayer(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit)) then
         return
     end
     if not UnitGroupRolesAssigned(unit) == "HEALER" then
-        if currentGUID == unitGUID then
-            currentGUID = nil
+        if currentToken then
+            if UnitGUID(currentToken) == UnitGUID(unit) then
+                currentToken = nil
+            end
         end
         return
     end
-    local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
-    if aura then
-        if UnitGUID(aura.sourceUnit) == playerGUID then
-            currentGUID = unitGUID
-        else
-            if currentGUID == unitGUID then
-                currentGUID = nil
+    if unit then
+        local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
+        if aura then
+            if UnitGUID(aura.sourceUnit) == playerGUID then
+                currentToken = unit
+            --[[else
+                if currentToken then
+                    if UnitGUID(currentToken) == UnitGUID(unit) then
+                        currentToken = nil
+                    end
+                end]]
             end
-        end
-    else
-        if currentGUID == unitGUID then
-            currentGUID = nil
+        --[[else
+            if currentToken then
+                if UnitGUID(currentToken) == UnitGUID(unit) then
+                    currentToken = nil
+                end
+            end]]
         end
     end
     self:Update()
+end
+
+function SourceOfMagic:VerifyBuff()
+    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+        return
+    end
+    if not UnitIsVisible(currentToken) then
+        return
+    end
+    if not UnitIsPlayer(currentToken) or not (UnitInRaid(currentToken) or UnitInParty(currentToken)) then
+        currentToken = nil
+        return
+    end
+    if not UnitGroupRolesAssigned(currentToken) == "HEALER" then
+        currentToken = nil
+        return
+    end
+    if currentToken then
+        local aura = C_UnitAuras.GetUnitAuraBySpellID(currentToken, buffSpellID)
+        if aura then
+            if UnitGUID(aura.sourceUnit) == playerGUID then
+                
+                return
+            else
+                currentToken = nil
+            end
+        else
+            currentToken = nil
+        end
+    end
+
+    self:Update()
+end
+
+function SourceOfMagic:RegisterBuff(spellID)
+    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+        return
+    end
+    if spellID == buffSpellID then
+        self:CheckGroup()
+        return
+    end
 end
 
 function SourceOfMagic:GetRemainingBuffTime()
@@ -155,14 +205,14 @@ function SourceOfMagic:GetRemainingBuffTime()
         return
     end
     local aura
-    if currentGUID and not issecretvalue(currentGUID) then
-        aura = C_UnitAuras.GetUnitAuraBySpellID(UnitTokenFromGUID(currentGUID), buffSpellID)
+    if currentToken then
+        aura = C_UnitAuras.GetUnitAuraBySpellID(currentToken, buffSpellID)
     end
     if aura then
         return (aura.expirationTime - GetTime())
     else
-        if currentGUID and not issecretvalue(currentGUID) then
-            self:CheckBuff(UnitTokenFromGUID(currentGUID))
+        if currentToken then
+            self:VerifyBuff()
         end
         return 0
     end
@@ -173,8 +223,8 @@ function SourceOfMagic:CheckSourceOfMagicKnown()
         return
     end
     knowsSourceOfMagic = C_SpellBook.IsSpellKnown(369459)
-    if currentGUID and not issecretvalue(currentGUID) then
-        self:CheckBuff(UnitTokenFromGUID(currentGUID))
+    if currentToken then
+        self:VerifyBuff()
     end
 end
 
@@ -183,15 +233,13 @@ function SourceOfMagic:CheckGroup()
         return
     end
     self:CountHealers()
-    if not issecretvalue(currentGUID) and currentGUID then
-        if not (UnitInParty(UnitTokenFromGUID(currentGUID)) or UnitInRaid(UnitTokenFromGUID(currentGUID))) then
-            currentGUID = nil
+    if currentToken then
+        if not (UnitInParty(currentToken) or UnitInRaid(currentToken)) then
+            currentToken = nil
         end
-    else
-        currentGUID = nil
     end
-    if currentGUID and not issecretvalue(currentGUID) then
-        self:CheckBuff(UnitTokenFromGUID(currentGUID))
+    if currentToken then
+        self:VerifyBuff()
     end
     self:Update()
 end

@@ -218,7 +218,7 @@ function RaidBuff:CheckBuff(unit)
             end
             if aura.expirationTime - GetTime() >= 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning then
                 raidBuffTimer = C_Timer.NewTimer(
-                aura.expirationTime - GetTime() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
+                    aura.expirationTime - GetTime() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
                     function() self:Update() end)
             end
         end
@@ -246,6 +246,27 @@ function RaidBuff:GetRemainingBuffTime(unit)
         return (aura.expirationTime - GetTime())
     else
         return 0
+    end
+end
+
+function RaidBuff:PlayerDeath(unitGUID)
+    self:CheckBuff("player")
+    if not IsInGroup() then
+        return
+    end
+    local groupType
+    local groupSize
+    if IsInRaid() then
+        groupType = "raid"
+        groupSize = GetNumGroupMembers() - 1
+    else
+        groupType = "party"
+        groupSize = GetNumSubgroupMembers() - 1
+    end
+    for i = 1, groupSize do
+        if UnitGUID(groupType .. i) == unitGUID then
+            self:CheckBuff(groupType .. i)
+        end
     end
 end
 

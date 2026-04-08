@@ -73,7 +73,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_AURA")
     end
 
-    if playerClass == "ROGUE" or playerClass == "PALADIN" or playerClass == "SHAMAN" then
+    if playerClass == "ROGUE" or playerClass == "PALADIN" or playerClass == "SHAMAN" or playerClass == "EVOKER" then
         self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     end
 
@@ -250,7 +250,7 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     end
     if playerClass == "EVOKER" then
         if UnitIsPlayer(unitTarget) then
-            self.SourceOfMagic:CheckBuff(unitTarget)
+            self.SourceOfMagic:VerifyBuff()
         end
     end
     if unitTarget == "player" then
@@ -274,6 +274,9 @@ function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID,
         if playerClass == "SHAMAN" then
             self.ShamanShields:ShieldCast(spellID)
         end
+        if playerClass == "EVOKER" then
+            self.SourceOfMagic:RegisterBuff(spellID)
+        end
         if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
             RunNextFrame(function() self.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
         end
@@ -293,7 +296,7 @@ end
 function ToastyClassChores:UNIT_DIED(event, unitGUID)
     if not issecretvalue(unitGUID) then
         if C_PlayerInfo.GUIDIsPlayer(unitGUID) and IsGUIDInGroup(unitGUID) then
-            self.RaidBuff:CheckBuff(UnitTokenFromGUID(unitGUID))
+            self.RaidBuff:PlayerDeath(unitGUID)
         end
     end
 end
