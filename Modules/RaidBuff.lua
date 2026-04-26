@@ -195,8 +195,12 @@ function RaidBuff:CheckBuff(unit)
     if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
         return
     end
+    if not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
+        return
+    end
     local unitGUID = UnitGUID(unit)
-    if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
+    --if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
+    if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) then
         if unitsMissingBuff[unitGUID] and unitGUID then
             unitsMissingBuff[unitGUID] = nil
         end

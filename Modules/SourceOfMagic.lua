@@ -196,17 +196,19 @@ function SourceOfMagic:RegisterBuff(spellID, target)
         return
     end
     if spellID == buffSpellID then
+        ToastyClassChores:Debug("a")
         local groupType
         local groupSize
         if IsInRaid() then
             groupType = "raid"
-            groupSize = GetNumGroupMembers() - 1
+            groupSize = GetNumGroupMembers()
         else
             groupType = "party"
-            groupSize = GetNumSubgroupMembers() - 1
+            groupSize = GetNumSubgroupMembers()
         end
         for i = 1, groupSize do
             if UnitGroupRolesAssigned(groupType .. i) == "HEALER" and UnitGUID(groupType .. i) ~= playerGUID then
+                ToastyClassChores:Debug("Seeing " .. groupType .. i)
                 if UnitGUID(target) == UnitGUID(groupType .. i) then
                     ToastyClassChores:Debug("Checking " .. groupType .. i)
                     RunNextFrame(function() self:CheckBuff(groupType .. i) end)
@@ -278,6 +280,7 @@ function SourceOfMagic:CountHealers()
     for i = 1, groupSize do
         if UnitGroupRolesAssigned(groupType .. i) == "HEALER" and UnitGUID(groupType .. i) ~= playerGUID then
             healerCount = healerCount + 1
+            ToastyClassChores:Debug(groupType .. i)
             self:CheckBuff(groupType .. i)
         end
     end
