@@ -14,6 +14,7 @@ local lethalTimerAssa
 local nonLethalTimerAssa
 
 local playerClass
+local doublePoison
 
 local lethalIDs = {
     [8679] = 8679,     -- Wound
@@ -96,6 +97,7 @@ function RoguePoisons:Initialize()
     if not framesUnlocked then
         roguePoisonsFrame:Hide()
     end
+    self:CheckDoublePoison()
     self:Update()
 end
 
@@ -114,7 +116,7 @@ function RoguePoisons:Update()
         earlyWarningThreshold = 0
     end
 
-    if C_SpecializationInfo.GetSpecialization() == 1 then
+    if (C_SpecializationInfo.GetSpecialization() == 1) and doublePoison then
         if lethalTime == nil or nonLethalTime == nil or lethalTimeAssa == nil or nonLethalTimeAssa == nil then
             roguePoisonsFrame:Show()
             return
@@ -210,6 +212,15 @@ function RoguePoisons:PoisonCast(spellID)
         end
     else
         return
+    end
+    self:Update()
+end
+
+function RoguePoisons:CheckDoublePoison()
+    if C_SpecializationInfo.GetSpecialization() == 1 then
+        doublePoison = C_SpellBook.IsSpellKnown(381801)
+    else
+        doublePoison = false
     end
     self:Update()
 end

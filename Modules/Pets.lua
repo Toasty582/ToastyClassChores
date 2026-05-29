@@ -152,17 +152,9 @@ end
 
 function Pets:CheckAnomaly()
     if playerClass == "HUNTER" and C_SpecializationInfo.GetSpecialization() == 2 then
-        if C_SpellBook.IsSpellKnown(1223323) then
-            isPetMarksman = true
-        else
-            isPetMarksman = false
-        end
+        isPetMarksman = C_SpellBook.IsSpellKnown(1223323)
     elseif playerClass == "WARLOCK" and C_SpecializationInfo.GetSpecialization() ~= 2 then
-        if C_SpellBook.IsSpellKnown(108503) then
-            isSacrificeGrimoire = true
-        else
-            isSacrificeGrimoire = false
-        end
+        isSacrificeGrimoire = C_SpellBook.IsSpellKnown(108503)
     end
     self:Update()
 end

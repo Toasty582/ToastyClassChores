@@ -57,7 +57,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_PET")
     end
 
-    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DRUID" or playerClass == "DEATHKNIGHT" or playerClass == "PALADIN" or playerClass == "EVOKER" then
+    if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DRUID" or playerClass == "DEATHKNIGHT" or playerClass == "PALADIN" or playerClass == "EVOKER" or playerClass == "ROGUE" then
         self:RegisterEvent("SPELLS_CHANGED")
     end
 
@@ -202,6 +202,9 @@ function ToastyClassChores:SPELLS_CHANGED()
         end
         if playerClass == "EVOKER" then
             self.SourceOfMagic:CheckSourceOfMagicKnown()
+        end
+        if playerClass == "ROGUE" then
+            self.RoguePoisons:CheckDoublePoison()
         end
     end
 end
