@@ -201,8 +201,10 @@ function RaidBuff:CheckBuff(unit)
     local unitGUID = UnitGUID(unit)
     --if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
     if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) then
-        if unitsMissingBuff[unitGUID] and unitGUID then
-            unitsMissingBuff[unitGUID] = nil
+        for key, token in pairs(unitsMissingBuff) do
+            if UnitGUID(token) == UnitGUID(unit) then
+                unitsMissingBuff[key] = nil
+            end
         end
         return
     end
@@ -213,8 +215,10 @@ function RaidBuff:CheckBuff(unit)
     end
     local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
     if aura then
-        if unitsMissingBuff[unitGUID] and unitGUID then
-            unitsMissingBuff[unitGUID] = nil
+        for key, token in pairs(unitsMissingBuff) do
+            if UnitGUID(token) == UnitGUID(unit) then
+                unitsMissingBuff[key] = nil
+            end
         end
         if unit == "player" then
             if raidBuffTimer then
@@ -227,12 +231,25 @@ function RaidBuff:CheckBuff(unit)
             end
         end
     else
-        if not unitsMissingBuff[unitGUID] and unitGUID then
-            unitsMissingBuff[unitGUID] = unitGUID
-        end
         if unit == "player" then
+            unitsMissingBuff["player"] = "player"
             if raidBuffTimer then
                 raidBuffTimer:Cancel()
+            end
+        else
+            local groupType
+            local groupSize
+            if IsInRaid() then
+                groupType = "raid"
+                groupSize = GetNumGroupMembers() - 1
+            else
+                groupType = "party"
+                groupSize = GetNumSubgroupMembers() - 1
+            end
+            for i = 1, groupSize do
+                if UnitGUID(groupType .. i) == UnitGUID(unit) then
+                    unitsMissingBuff[groupType .. i] = groupType .. i
+                end
             end
         end
     end
