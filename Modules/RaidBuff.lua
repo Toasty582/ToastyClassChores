@@ -202,7 +202,9 @@ function RaidBuff:CheckBuff(unit)
     --if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
     if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) then
         for key, token in pairs(unitsMissingBuff) do
-            if UnitIsUnit(token, unit) then
+            if issecretvalue(UnitIsUnit(token, unit)) then
+                unitsMissingBuff[key] = nil
+            elseif UnitIsUnit(token, unit) then
                 unitsMissingBuff[key] = nil
             end
         end
@@ -216,7 +218,9 @@ function RaidBuff:CheckBuff(unit)
     local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
     if aura then
         for key, token in pairs(unitsMissingBuff) do
-            if UnitIsUnit(token, unit) then
+            if issecretvalue(UnitIsUnit(token, unit)) then
+                unitsMissingBuff[key] = nil
+            elseif UnitIsUnit(token, unit) then
                 unitsMissingBuff[key] = nil
             end
         end
