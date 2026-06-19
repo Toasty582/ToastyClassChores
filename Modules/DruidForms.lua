@@ -144,11 +144,11 @@ function DruidForms:Update()
     
     local _, instanceType = IsInInstance()
     
-    if ToastyClassChores.db.profile.druidFormsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") then
+    if ToastyClassChores.db.profile.druidFormsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
         druidFormsFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.druidFormsNoLegacy and C_Loot.IsLegacyLootModeEnabled() then
+    if ToastyClassChores.db.profile.druidFormsNoLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
         druidFormsFrame:Hide()
         return
     end
@@ -161,7 +161,7 @@ function DruidForms:Update()
     frameTexture:SetTexture(formIcons[effectiveFormIndex])
     frameTexture:SetAllPoints()
 
-    if ToastyClassChores.db.profile.druidFormsInCombatOnly and not PlayerIsInCombat() then
+    if ToastyClassChores.db.profile.druidFormsInCombatOnly and not PlayerIsInCombat() and not framesUnlocked then
         druidFormsFrame:Hide()
         return
     end
@@ -171,7 +171,7 @@ function DruidForms:Update()
         return
     end
 
-    if (formIcons[effectiveFormIndex] == 132144 or formIcons[effectiveFormIndex] == 1394966) and ToastyClassChores.db.profile.druidFormsIgnoreTravel then
+    if (formIcons[effectiveFormIndex] == 132144 or formIcons[effectiveFormIndex] == 1394966) and ToastyClassChores.db.profile.druidFormsIgnoreTravel and not framesUnlocked then
         druidFormsFrame:Hide()
         return
     end
