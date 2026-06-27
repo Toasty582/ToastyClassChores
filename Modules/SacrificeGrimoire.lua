@@ -75,6 +75,9 @@ end
 
 function SacrificeGrimoire:Update()
     if not (sacrificeGrimoireDB.tracking and playerClass == "WARLOCK") then
+        if grimoireFrame and not framesUnlocked then
+            grimoireFrame:Hide()
+        end
         return
     end
     if not grimoireFrame then
