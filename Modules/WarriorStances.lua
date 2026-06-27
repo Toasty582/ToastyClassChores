@@ -101,6 +101,9 @@ end
 
 function WarriorStances:Update()
     if not (warriorStancesDB.tracking and playerClass == "WARRIOR") then
+        if warriorStancesFrame and not framesUnlocked then
+            warriorStancesFrame:Hide()
+        end
         return
     end
     if not warriorStancesFrame then
@@ -110,13 +113,21 @@ function WarriorStances:Update()
     local stanceIndex = GetShapeshiftForm()
 
     if specIndex == 2 then
-        frameTexture:SetTexture(stanceIcons[stanceIndex + 10])
+        if stanceIcons[stanceIndex + 10] then -- This should always be true but it's a good failsafe to have
+            frameTexture:SetTexture(stanceIcons[stanceIndex + 10])
+        else
+            frameTexture:SetTexture(134400) -- Fallback to question mark
+        end
     else
-        frameTexture:SetTexture(stanceIcons[stanceIndex])
+        if stanceIcons[stanceIndex] then -- Ditto
+            frameTexture:SetTexture(stanceIcons[stanceIndex])
+        else
+            frameTexture:SetTexture(134400)
+        end
     end
     frameTexture:SetAllPoints()
 
-    
+
     if warriorStancesDB.noCombatOnly and PlayerIsInCombat() and not framesUnlocked then
         warriorStancesFrame:Hide()
         return
