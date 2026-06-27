@@ -99,6 +99,9 @@ end
 
 function PaladinAuras:Update()
     if not (paladinAurasDB.tracking and playerClass == "PALADIN") then
+        if paladinAurasFrame and not framesUnlocked then
+            paladinAurasFrame:Hide()
+        end
         return
     end
     if not paladinAurasFrame then
@@ -121,7 +124,11 @@ function PaladinAuras:Update()
     end
 
     local auraIndex = GetShapeshiftForm()
-    frameTexture:SetTexture(auraIcons[auraIndex])
+    if auraIcons[auraIndex] then -- This should always be true but it's a good failsafe to have
+        frameTexture:SetTexture(auraIcons[auraIndex])
+    else
+        frameTexture:SetTexture(134400) -- Fallback to question mark icon
+    end
     frameTexture:SetAllPoints()
 
     if auraIndex ~= 2 then
