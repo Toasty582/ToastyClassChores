@@ -4,14 +4,15 @@ local ToastyClassChores = ns.Addon
 ToastyClassChores.Shadowform = ToastyClassChores.Shadowform or {}
 local Shadowform = ToastyClassChores.Shadowform
 
-local voidformQueued
 local shadowformFrame
-local playerClass
 local framesUnlocked = false
+
+local playerClass
+local shadowformDB
 
 
 function ToastyClassChores:SetShadowformTracking(info, value)
-    self.db.profile.shadowformTracking = value
+    shadowformDB.tracking = value
     if value then
         self:Print("Enabling Shadowform Tracking")
         Shadowform:Initialize()
@@ -24,29 +25,29 @@ function ToastyClassChores:SetShadowformTracking(info, value)
 end
 
 function ToastyClassChores:SetShadowformIconSize(info, value)
-    self.db.profile.shadowformIconSize = value
+    shadowformDB.iconSize = value
     if shadowformFrame then
         shadowformFrame:SetSize(value, value)
     end
 end
 
-function ToastyClassChores:SetShadowformInCombatOnly(info, value)
-    self.db.profile.shadowformInCombatOnly = value
+function ToastyClassChores:SetShadowformCombatOnly(info, value)
+    shadowformDB.combatOnly = value
     Shadowform:Update()
 end
 
 function ToastyClassChores:SetShadowformInstanceOnly(info, value)
-    self.db.profile.shadowformInstanceOnly = value
+    shadowformDB.instanceOnly = value
     Shadowform:Update()
 end
 
 function ToastyClassChores:SetShadowformNoLegacy(info, value)
-    self.db.profile.shadowformNoLegacy = value
+    shadowformDB.noLegacy = value
     Shadowform:Update()
 end
 
 function ToastyClassChores:SetShadowformOpacity(info, value)
-    self.db.profile.shadowformOpacity = value
+    shadowformDB.opacity = value
     if shadowformFrame then
         shadowformFrame:SetAlpha(value)
     end
@@ -54,16 +55,15 @@ end
 
 function Shadowform:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
+    shadowformDB = ToastyClassChores.db.profile.shadowform
+    if not (shadowformDB.tracking and playerClass == "PRIEST") then
         return
     end
     if not shadowformFrame then
         shadowformFrame = CreateFrame("Frame", "Shadowform Reminder", UIParent)
-        shadowformFrame:SetPoint(ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos)
-        shadowformFrame:SetSize(ToastyClassChores.db.profile.shadowformIconSize,
-            ToastyClassChores.db.profile.shadowformIconSize)
+        shadowformFrame:SetPoint(shadowformDB.location.frameAnchorPoint, UIParent,
+            shadowformDB.location.parentAnchorPoint, shadowformDB.location.xPos, shadowformDB.location.yPos)
+        shadowformFrame:SetSize(shadowformDB.iconSize, shadowformDB.iconSize)
         local frameTexture = shadowformFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(136200)
         frameTexture:SetAllPoints()
@@ -74,12 +74,12 @@ function Shadowform:Initialize()
         end)
         shadowformFrame:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
-            ToastyClassChores.db.profile.shadowformLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.shadowformLocation.parentAnchorPoint, ToastyClassChores.db.profile.shadowformLocation.xPos, ToastyClassChores.db.profile.shadowformLocation.yPos =
+            shadowformDB.location.frameAnchorPoint, _, shadowformDB.location.parentAnchorPoint, shadowformDB.location.xPos, shadowformDB.location.yPos =
                 shadowformFrame:GetPoint()
         end)
     end
 
-    shadowformFrame:SetAlpha(ToastyClassChores.db.profile.shadowformOpacity)
+    shadowformFrame:SetAlpha(shadowformDB.opacity)
     if not framesUnlocked then
         shadowformFrame:Hide()
     end
@@ -87,7 +87,7 @@ function Shadowform:Initialize()
 end
 
 function Shadowform:Update()
-    if not (ToastyClassChores.db.profile.shadowformTracking and playerClass == "PRIEST") then
+    if not (shadowformDB.tracking and playerClass == "PRIEST") then
         if shadowformFrame and not framesUnlocked then
             shadowformFrame:Hide()
         end
@@ -98,16 +98,16 @@ function Shadowform:Update()
     end
     local _, instanceType = IsInInstance()
 
-    if ToastyClassChores.db.profile.shadowformInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
+    if shadowformDB.instanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
         shadowformFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.shadowformNoLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
+    if shadowformDB.noLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
         shadowformFrame:Hide()
         return
     end
 
-    if ToastyClassChores.db.profile.shadowformInCombatOnly and not PlayerIsInCombat() and not framesUnlocked then
+    if shadowformDB.combatOnly and not PlayerIsInCombat() and not framesUnlocked then
         shadowformFrame:Hide()
         return
     end

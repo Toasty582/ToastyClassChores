@@ -9,6 +9,8 @@ local frameTexture
 local framesUnlocked = false
 
 local playerClass
+local druidformsDB
+
 local knowsMoonkinForm
 local knowsTreantForm
 local knowsWildpowerSurge
@@ -41,7 +43,7 @@ local formIcons = {
 }
 
 function ToastyClassChores:SetDruidFormsTracking(info, value)
-    self.db.profile.druidFormsTracking = value
+    druidformsDB.tracking = value
     if value then
         self:Print("Enabling Druid Form Tracking")
         DruidForms:Initialize()
@@ -54,45 +56,45 @@ function ToastyClassChores:SetDruidFormsTracking(info, value)
 end
 
 function ToastyClassChores:SetDruidFormsAlwaysShow(info, value)
-    self.db.profile.druidFormsAlwaysShow = value
+    druidformsDB.alwaysShow = value
     if value then
-        self.db.profile.druidFormsIgnoreTravel = false
+        druidformsDB.ignoreTravel = false
     end
     DruidForms:Update()
 end
 
 function ToastyClassChores:SetDruidFormsIconSize(info, value)
-    self.db.profile.druidFormsIconSize = value
+    druidformsDB.iconSize = value
     if druidFormsFrame then
         druidFormsFrame:SetSize(value, value)
     end
 end
 
-function ToastyClassChores:SetDruidFormsInCombatOnly(info, value)
-    self.db.profile.druidFormsInCombatOnly = value
+function ToastyClassChores:SetDruidFormsCombatOnly(info, value)
+    druidformsDB.combatOnly = value
     DruidForms:Update()
 end
 
 function ToastyClassChores:SetDruidFormsIgnoreTravel(info, value)
-    self.db.profile.druidFormsIgnoreTravel = value
+    druidformsDB.ignoreTravel = value
     if value then
-        self.db.profile.druidFormsAlwaysShow = false
+        druidformsDB.alwaysShow = false
     end
     DruidForms:Update()
 end
 
 function ToastyClassChores:SetDruidFormsInstanceOnly(info, value)
-    self.db.profile.druidFormsInstanceOnly = value
+    druidformsDB.instanceOnly = value
     DruidForms:Update()
 end
 
 function ToastyClassChores:SetDruidFormsNoLegacy(info, value)
-    self.db.profile.druidFormsNoLegacy = value
+    druidformsDB.noLegacy = value
     DruidForms:Update()
 end
 
 function ToastyClassChores:SetDruidFormsOpacity(info, value)
-    self.db.profile.druidFormsOpacity = value
+    druidformsDB.opacity = value
     if druidFormsFrame then
         druidFormsFrame:SetAlpha(value)
     end
@@ -100,17 +102,15 @@ end
 
 function DruidForms:Initialize()
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.druidFormsTracking and playerClass == "DRUID") then
+    druidformsDB = ToastyClassChores.db.profile.druidForms
+    if not (druidformsDB.tracking and playerClass == "DRUID") then
         return
     end
     if not druidFormsFrame then
         druidFormsFrame = CreateFrame("Frame", "Druid Forms Reminder", UIParent)
-        druidFormsFrame:SetPoint(ToastyClassChores.db.profile.druidFormsLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.druidFormsLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.druidFormsLocation.xPos,
-            ToastyClassChores.db.profile.druidFormsLocation.yPos)
-        druidFormsFrame:SetSize(ToastyClassChores.db.profile.druidFormsIconSize,
-            ToastyClassChores.db.profile.druidFormsIconSize)
+        druidFormsFrame:SetPoint(druidformsDB.location.frameAnchorPoint, UIParent,
+            druidformsDB.location.parentAnchorPoint, druidformsDB.location.xPos, druidformsDB.location.yPos)
+        druidFormsFrame:SetSize(druidformsDB.iconSize, druidformsDB.iconSize)
         frameTexture = druidFormsFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(134400) -- Question mark as default, if you see this something went wrong
         frameTexture:SetAllPoints()
@@ -121,11 +121,11 @@ function DruidForms:Initialize()
         end)
         druidFormsFrame:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
-            ToastyClassChores.db.profile.druidFormsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.druidFormsLocation.parentAnchorPoint, ToastyClassChores.db.profile.druidFormsLocation.xPos, ToastyClassChores.db.profile.druidFormsLocation.yPos =
+            druidformsDB.location.frameAnchorPoint, _, druidformsDB.location.parentAnchorPoint, druidformsDB.location.xPos, druidformsDB.location.yPos =
                 druidFormsFrame:GetPoint()
         end)
     end
-    druidFormsFrame:SetAlpha(ToastyClassChores.db.profile.druidFormsOpacity)
+    druidFormsFrame:SetAlpha(druidformsDB.opacity)
     if not framesUnlocked then
         druidFormsFrame:Hide()
     end
@@ -134,21 +134,21 @@ function DruidForms:Initialize()
 end
 
 function DruidForms:Update()
-    if not (ToastyClassChores.db.profile.druidFormsTracking and playerClass == "DRUID") then
+    if not (druidformsDB.tracking and playerClass == "DRUID") then
         return
     end
     local specIndex = C_SpecializationInfo.GetSpecialization()
     if not druidFormsFrame then
         self:Initialize()
     end
-    
+
     local _, instanceType = IsInInstance()
-    
-    if ToastyClassChores.db.profile.druidFormsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
+
+    if druidformsDB.instanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
         druidFormsFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.druidFormsNoLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
+    if druidformsDB.noLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
         druidFormsFrame:Hide()
         return
     end
@@ -161,17 +161,17 @@ function DruidForms:Update()
     frameTexture:SetTexture(formIcons[effectiveFormIndex])
     frameTexture:SetAllPoints()
 
-    if ToastyClassChores.db.profile.druidFormsInCombatOnly and not PlayerIsInCombat() and not framesUnlocked then
+    if druidformsDB.combatOnly and not PlayerIsInCombat() and not framesUnlocked then
         druidFormsFrame:Hide()
         return
     end
 
-    if ToastyClassChores.db.profile.druidFormsAlwaysShow then
+    if druidformsDB.alwaysShow then
         druidFormsFrame:Show()
         return
     end
 
-    if (formIcons[effectiveFormIndex] == 132144 or formIcons[effectiveFormIndex] == 1394966) and ToastyClassChores.db.profile.druidFormsIgnoreTravel and not framesUnlocked then
+    if (formIcons[effectiveFormIndex] == 132144 or formIcons[effectiveFormIndex] == 1394966) and druidformsDB.ignoreTravel and not framesUnlocked then
         druidFormsFrame:Hide()
         return
     end

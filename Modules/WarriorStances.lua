@@ -9,6 +9,7 @@ local frameTexture
 local framesUnlocked = false
 
 local playerClass
+local warriorStancesDB
 
 local preferredStance = {
     [1] = 2,
@@ -25,7 +26,7 @@ local stanceIcons = {
 }
 
 function ToastyClassChores:SetWarriorStancesTracking(info, value)
-    self.db.profile.warriorStancesTracking = value
+    warriorStancesDB.tracking = value
     if value then
         self:Print("Enabling Warrior Stance Tracking")
         WarriorStances:Initialize()
@@ -38,47 +39,45 @@ function ToastyClassChores:SetWarriorStancesTracking(info, value)
 end
 
 function ToastyClassChores:SetWarriorStancesIconSize(info, value)
-    self.db.profile.warriorStancesIconSize = value
+    warriorStancesDB.iconSize = value
     if warriorStancesFrame then
         warriorStancesFrame:SetSize(value, value)
     end
 end
 
 function ToastyClassChores:SetWarriorStancesNoCombatOnly(info, value)
-    self.db.profile.warriorStancesNoCombatOnly = value
+    warriorStancesDB.noCombatOnly = value
     WarriorStances:Update()
 end
 
 function ToastyClassChores:SetProtShowsDef(info, value)
-    self.db.profile.warriorStancesProtShowsDef = value
+    warriorStancesDB.protShowsDef = value
     WarriorStances:Update()
 end
 
 function ToastyClassChores:SetProtShowsBattle(info, value)
-    self.db.profile.warriorStancesProtShowsBattle = value
+    warriorStancesDB.protShowsBattle = value
     WarriorStances:Update()
 end
 
 function ToastyClassChores:SetWarriorStancesOpacity(info, value)
-    self.db.profile.warriorStancesOpacity = value
+    warriorStancesDB.opacity = value
     if warriorStancesFrame then
         warriorStancesFrame:SetAlpha(value)
     end
 end
 
 function WarriorStances:Initialize()
+    warriorStancesDB = ToastyClassChores.db.profile.warriorStances
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.warriorStancesTracking and playerClass == "WARRIOR") then
+    if not (warriorStancesDB.tracking and playerClass == "WARRIOR") then
         return
     end
     if not warriorStancesFrame then
         warriorStancesFrame = CreateFrame("Frame", "Warrior Stances Reminder", UIParent)
-        warriorStancesFrame:SetPoint(ToastyClassChores.db.profile.warriorStancesLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.warriorStancesLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.warriorStancesLocation.xPos,
-            ToastyClassChores.db.profile.warriorStancesLocation.yPos)
-        warriorStancesFrame:SetSize(ToastyClassChores.db.profile.warriorStancesIconSize,
-            ToastyClassChores.db.profile.warriorStancesIconSize)
+        warriorStancesFrame:SetPoint(warriorStancesDB.location.frameAnchorPoint, UIParent,
+            warriorStancesDB.location.parentAnchorPoint, warriorStancesDB.location.xPos, warriorStancesDB.location.yPos)
+        warriorStancesFrame:SetSize(warriorStancesDB.iconSize, warriorStancesDB.iconSize)
         frameTexture = warriorStancesFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(134400) -- Question mark as default, if you see this something went wrong
         frameTexture:SetAllPoints()
@@ -90,10 +89,10 @@ function WarriorStances:Initialize()
     end)
     warriorStancesFrame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
-        ToastyClassChores.db.profile.warriorStancesLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.warriorStancesLocation.parentAnchorPoint, ToastyClassChores.db.profile.warriorStancesLocation.xPos, ToastyClassChores.db.profile.warriorStancesLocation.yPos =
+        warriorStancesDB.location.frameAnchorPoint, _, warriorStancesDB.location.parentAnchorPoint, warriorStancesDB.location.xPos, warriorStancesDB.location.yPos =
             warriorStancesFrame:GetPoint()
     end)
-    warriorStancesFrame:SetAlpha(ToastyClassChores.db.profile.warriorStancesOpacity)
+    warriorStancesFrame:SetAlpha(warriorStancesDB.opacity)
     if not framesUnlocked then
         warriorStancesFrame:Hide()
     end
@@ -101,7 +100,7 @@ function WarriorStances:Initialize()
 end
 
 function WarriorStances:Update()
-    if not (ToastyClassChores.db.profile.warriorStancesTracking and playerClass == "WARRIOR") then
+    if not (warriorStancesDB.tracking and playerClass == "WARRIOR") then
         return
     end
     if not warriorStancesFrame then
@@ -118,7 +117,7 @@ function WarriorStances:Update()
     frameTexture:SetAllPoints()
 
     
-    if ToastyClassChores.db.profile.warriorStancesNoCombatOnly and PlayerIsInCombat() and not framesUnlocked then
+    if warriorStancesDB.noCombatOnly and PlayerIsInCombat() and not framesUnlocked then
         warriorStancesFrame:Hide()
         return
     end
@@ -132,9 +131,9 @@ function WarriorStances:Update()
             end
         end
     else
-        if stanceIndex == 1 and ToastyClassChores.db.profile.warriorStancesProtShowsDef then
+        if stanceIndex == 1 and warriorStancesDB.protShowsDef then
             warriorStancesFrame:Show()
-        elseif stanceIndex == 2 and ToastyClassChores.db.profile.warriorStancesProtShowsBattle then
+        elseif stanceIndex == 2 and warriorStancesDB.protShowsBattle then
             warriorStancesFrame:Show()
         else
             if not framesUnlocked then

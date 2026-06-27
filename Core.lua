@@ -17,6 +17,10 @@ function ToastyClassChores:OnInitialize()
     ns.db = self.db
     ns.cdb = self.cdb
 
+    if self.db.profile.needsConfigMigration then
+        self.Config:MigrateDB()
+    end
+
     LibStub("AceConfig-3.0"):RegisterOptionsTable("ToastyClassChores", config)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ToastyClassChores", "Toasty Class Chores")
 
@@ -110,16 +114,16 @@ function ToastyClassChores:OnEnable()
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
-    if playerClass == "PRIEST" and self.db.profile.shadowformInstanceOnly then
+    if playerClass == "PRIEST" and self.db.profile.shadowform.instanceOnly then
         self.Shadowform:Update()
     end
-    if playerClass == "PALADIN" and self.db.profile.paladinAurasInstanceOnly then
+    if playerClass == "PALADIN" and self.db.profile.paladinAuras.instanceOnly then
         self.PaladinAuras:Update()
     end
-    if playerClass == "DRUID" and self.db.profile.druidFormsInstanceOnly then
+    if playerClass == "DRUID" and self.db.profile.druidForms.instanceOnly then
         self.DruidForms:Update()
     end
-    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.petsInstanceOnly then
+    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.pets.instanceOnly then
         self.Pets:Update()
     end
     -- Because for some reason durationObjects do not load properly until a frame after PLAYER_ENTERING_WORLD
@@ -138,16 +142,16 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
 end
 
 function ToastyClassChores:LEGACY_LOOT_RULES_CHANGED()
-    if playerClass == "PRIEST" and self.db.profile.shadowformNoLegacy then
+    if playerClass == "PRIEST" and self.db.profile.shadowform.noLegacy then
         self.Shadowform:Update()
     end
-    if playerClass == "PALADIN" and self.db.profile.paladinAurasNoLegacy then
+    if playerClass == "PALADIN" and self.db.profile.paladinAuras.noLegacy then
         self.PaladinAuras:Update()
     end
-    if playerClass == "DRUID" and self.db.profile.druidFormsNoLegacy then
+    if playerClass == "DRUID" and self.db.profile.druidForms.noLegacy then
         self.DruidForms:Update()
     end
-    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.petsNoLegacy then
+    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.pets.noLegacy then
         self.Pets:Update()
     end
 end
@@ -210,32 +214,32 @@ function ToastyClassChores:SPELLS_CHANGED()
 end
 
 function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
-    if playerClass == "PRIEST" and self.db.profile.shadowformInCombatOnly then
+    if playerClass == "PRIEST" and self.db.profile.shadowform.combatOnly then
         self.Shadowform:Update()
     end
-    if playerClass == "DRUID" and self.db.profile.druidFormsInCombatOnly then
+    if playerClass == "DRUID" and self.db.profile.druidForms.combatOnly then
         self.DruidForms:Update()
     end
-    if playerClass == "PALADIN" and self.db.profile.paladinAurasInCombatOnly then
+    if playerClass == "PALADIN" and self.db.profile.paladinAuras.combatOnly then
         self.PaladinAuras:Update()
     end
-    if playerClass == "WARRIOR" and self.db.profile.warriorStancesInCombatOnly then
+    if playerClass == "WARRIOR" and self.db.profile.warriorStances.noCombatOnly then
         self.WarriorStances:Update()
     end
 
-    if playerClass == "ROGUE" and self.db.profile.roguePoisonsEarlyWarningNoCombat then
+    if playerClass == "ROGUE" and self.db.profile.roguePoisons.earlyWarningNoCombat then
         self.RoguePoisons:Update()
     end
-    if raidBuffClassList[playerClass] and self.db.profile.raidBuffEarlyWarningNoCombat then
+    if raidBuffClassList[playerClass] and self.db.profile.raidBuff.earlyWarningNoCombat then
         self.RaidBuff:Update()
     end
     if playerClass == "SHAMAN" then
         self.ShamanShields:Update()
     end
-    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 and self.db.profile.lightsmithRitesEarlyWarningNoCombat then
+    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 and self.db.profile.lightsmithRites.earlyWarningNoCombat then
         self.LightsmithRites:Update()
     end
-    if playerClass == "EVOKER" and self.db.profile.sourceOfMagicEarlyWarningNoCombat then
+    if playerClass == "EVOKER" and self.db.profile.sourceOfMagic.earlyWarningNoCombat then
         self.SourceOfMagic:Update()
     end
 end

@@ -8,6 +8,8 @@ local lightsmithRitesFrame
 local frameTexture
 local framesUnlocked = false
 
+local lightsmithRitesDB
+
 local riteDuration
 local riteTimer
 
@@ -22,7 +24,7 @@ local riteAuraIDs = {
 }
 
 function ToastyClassChores:SetLightsmithRitesTracking(info, value)
-    self.db.profile.lightsmithRitesTracking = value
+    lightsmithRitesDB.tracking = value
     if value then
         self:Print("Enabling Lightsmith Rite Tracking")
         LightsmithRites:Initialize()
@@ -35,41 +37,39 @@ function ToastyClassChores:SetLightsmithRitesTracking(info, value)
 end
 
 function ToastyClassChores:SetLightsmithRitesIconSize(info, value)
-    self.db.profile.lightsmithRitesIconSize = value
+    lightsmithRitesDB.iconSize = value
     if lightsmithRitesFrame then
         lightsmithRitesFrame:SetSize(value, value)
     end
 end
 
 function ToastyClassChores:SetLightsmithRitesOpacity(info, value)
-    self.db.profile.lightsmithRitesOpacity = value
+    lightsmithRitesDB.opacity = value
     if lightsmithRitesFrame then
         lightsmithRitesFrame:SetAlpha(value)
     end
 end
 
 function ToastyClassChores:SetLightsmithRitesEarlyWarning(info, value)
-    self.db.profile.lightsmithRitesEarlyWarning = value
+    lightsmithRitesDB.earlyWarning = value
     LightsmithRites:Update()
 end
 
 function ToastyClassChores:SetLightsmithRitesEarlyWarningNoCombat(info, value)
-    self.db.profile.lightsmithRitesEarlyWarningNoCombat = value
+    lightsmithRitesDB.earlyWarningNoCombat = value
     LightsmithRites:Update()
 end
 
 function LightsmithRites:Initialize()
-    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
+    lightsmithRitesDB = ToastyClassChores.db.profile.lightsmithRites
+    if not (lightsmithRitesDB.tracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
         return
     end
     if not lightsmithRitesFrame then
         lightsmithRitesFrame = CreateFrame("Frame", "Lightsmith Rites Reminder", UIParent)
-        lightsmithRitesFrame:SetPoint(ToastyClassChores.db.profile.lightsmithRitesLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.lightsmithRitesLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.lightsmithRitesLocation.xPos,
-            ToastyClassChores.db.profile.lightsmithRitesLocation.yPos)
-        lightsmithRitesFrame:SetSize(ToastyClassChores.db.profile.lightsmithRitesIconSize,
-            ToastyClassChores.db.profile.lightsmithRitesIconSize)
+        lightsmithRitesFrame:SetPoint(lightsmithRitesDB.location.frameAnchorPoint, UIParent,
+            lightsmithRitesDB.location.parentAnchorPoint, lightsmithRitesDB.location.xPos, lightsmithRitesDB.location.yPos)
+        lightsmithRitesFrame:SetSize(lightsmithRitesDB.iconSize, lightsmithRitesDB.iconSize)
         frameTexture = lightsmithRitesFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(237172) -- Defaults to Sanctification icon
         frameTexture:SetAllPoints()
@@ -81,10 +81,10 @@ function LightsmithRites:Initialize()
     end)
     lightsmithRitesFrame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
-        ToastyClassChores.db.profile.lightsmithRitesLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.lightsmithRitesLocation.parentAnchorPoint, ToastyClassChores.db.profile.lightsmithRitesLocation.xPos, ToastyClassChores.db.profile.lightsmithRitesLocation.yPos =
+        lightsmithRitesDB.location.frameAnchorPoint, _, lightsmithRitesDB.location.parentAnchorPoint, lightsmithRitesDB.location.xPos, lightsmithRitesDB.location.yPos =
             lightsmithRitesFrame:GetPoint()
     end)
-    lightsmithRitesFrame:SetAlpha(ToastyClassChores.db.profile.lightsmithRitesOpacity)
+    lightsmithRitesFrame:SetAlpha(lightsmithRitesDB.opacity)
     if not framesUnlocked then
         lightsmithRitesFrame:Hide()
     end
@@ -93,7 +93,7 @@ function LightsmithRites:Initialize()
 end
 
 function LightsmithRites:Update()
-    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
+    if not (lightsmithRitesDB.tracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
         if lightsmithRitesFrame and not framesUnlocked then
             lightsmithRitesFrame:Hide()
         end
@@ -104,8 +104,8 @@ function LightsmithRites:Update()
     end
     self:CheckDurations()
 
-    local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning
-    if PlayerIsInCombat() and ToastyClassChores.db.profile.lightsmithRitesEarlyWarningNoCombat then
+    local earlyWarningThreshold = 60 * lightsmithRitesDB.earlyWarning
+    if PlayerIsInCombat() and lightsmithRitesDB.earlyWarningNoCombat then
         earlyWarningThreshold = 0
     end
     if riteDuration:GetRemainingDuration() <= earlyWarningThreshold or riteDuration:GetRemainingDuration() == nil then
@@ -117,41 +117,17 @@ function LightsmithRites:Update()
         end
         return
     end
-
-    -- Blizz desecreted the wrong spellID lmao
-    --[[
-    local riteTime = self:CheckRites()
-
-    local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning
-    if PlayerIsInCombat() and ToastyClassChores.db.profile.lightsmithRitesEarlyWarningNoCombat then
-        earlyWarningThreshold = 0
-    end
-
-    if riteTime == nil then
-        lightsmithRitesFrame:Show()
-        return
-    end
-    if riteTime <= earlyWarningThreshold then
-        lightsmithRitesFrame:Show()
-        return
-    else
-        if not framesUnlocked then
-            lightsmithRitesFrame:Hide()
-            return
-        end
-    end
-    ]]
 end
 
 function LightsmithRites:CreateDurations()
-    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
+    if not (lightsmithRitesDB.tracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
         return
     end
     riteDuration = C_DurationUtil.CreateDuration()
 end
 
 function LightsmithRites:CheckDurations()
-    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
+    if not (lightsmithRitesDB.tracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
         return
     end
     if C_Secrets.ShouldAurasBeSecret() then
@@ -160,9 +136,9 @@ function LightsmithRites:CheckDurations()
             if riteTimer then
                 riteTimer:Cancel()
             end
-            if riteDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning > 0 then
+            if riteDuration:GetRemainingDuration() - 60 * lightsmithRitesDB.earlyWarning > 0 then
                 riteTimer = C_Timer.NewTimer(
-                    riteDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning,
+                    riteDuration:GetRemainingDuration() - 60 * lightsmithRitesDB.earlyWarning,
                     function() self:Update() end)
             end
         end
@@ -175,10 +151,10 @@ function LightsmithRites:CheckDurations()
                 if riteTimer then
                     riteTimer:Cancel()
                 end
-                if riteDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning > 0 then
+                if riteDuration:GetRemainingDuration() - 60 * lightsmithRitesDB.earlyWarning > 0 then
                     riteTimer = C_Timer.NewTimer(
                         riteDuration:GetRemainingDuration() -
-                        60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning,
+                        60 * lightsmithRitesDB.earlyWarning,
                         function() self:Update() end)
                 end
                 buffFound = true
@@ -192,7 +168,7 @@ function LightsmithRites:CheckDurations()
 end
 
 function LightsmithRites:StoreDurations()
-    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
+    if not (lightsmithRitesDB.tracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
         return
     end
     if riteDuration then
@@ -202,32 +178,13 @@ function LightsmithRites:StoreDurations()
     end
 end
 
--- Blizzard desecreted the wrong fucking spellID lmfao
---[[
-function LightsmithRites:CheckRites()
-    if not (ToastyClassChores.db.profile.lightsmithRitesTracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
-        return nil
-    end
-    local riteTime
-
-    for _, spellID in pairs(riteAuraIDs) do
-        local aura = C_UnitAuras.GetPlayerAuraBySpellID(spellID)
-        if aura then
-            riteTime = aura.expirationTime - GetTime()
-        end
-    end
-
-    return riteTime
-end]]
-
 function LightsmithRites:RiteCast(spellID)
-    --local riteTime = self:CheckRites()
     if riteSpellIDs[spellID] then
         riteDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
         if riteTimer then
             riteTimer:Cancel()
         end
-        riteTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.lightsmithRitesEarlyWarning,
+        riteTimer = C_Timer.NewTimer(3600 - 60 * lightsmithRitesDB.earlyWarning,
             function() self:Update() end)
     else
         return

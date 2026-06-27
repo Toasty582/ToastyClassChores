@@ -7,6 +7,7 @@ local SourceOfMagic = ToastyClassChores.SourceOfMagic
 local sourceOfMagicFrame
 local playerClass
 local playerGUID
+local sourceOfMagicDB
 local framesUnlocked = false
 local buffSpellID = 369459
 
@@ -17,7 +18,7 @@ local otherHealersInGroup
 local currentToken
 
 function ToastyClassChores:SetSourceOfMagicTracking(info, value)
-    self.db.profile.sourceOfMagicTracking = value
+    sourceOfMagicDB.tracking = value
     if value then
         self:Print("Enabling Source of Magic Tracking")
         SourceOfMagic:Initialize()
@@ -30,30 +31,31 @@ function ToastyClassChores:SetSourceOfMagicTracking(info, value)
 end
 
 function ToastyClassChores:SetSourceOfMagicIconSize(info, value)
-    self.db.profile.sourceOfMagicIconSize = value
+    sourceOfMagicDB.iconSize = value
     if sourceOfMagicFrame then
         sourceOfMagicFrame:SetSize(value, value)
     end
 end
 
 function ToastyClassChores:SetSourceOfMagicOpacity(info, value)
-    self.db.profile.sourceOfMagicOpacity = value
+    sourceOfMagicDB.opacity = value
     if sourceOfMagicFrame then
         sourceOfMagicFrame:SetAlpha(value)
     end
 end
 
 function ToastyClassChores:SetSourceOfMagicEarlyWarning(info, value)
-    self.db.profile.sourceOfMagicEarlyWarning = value
+    sourceOfMagicDB.earlyWarning = value
     SourceOfMagic:VerifyBuff()
 end
 
 function ToastyClassChores:SetSourceOfMagicEarlyWarningNoCombat(info, value)
-    self.db.profile.sourceOfMagicEarlyWarningNoCombat = value
+    sourceOfMagicDB.earlyWarningNoCombat = value
     SourceOfMagic:Update()
 end
 
 function SourceOfMagic:Initialize()
+    sourceOfMagicDB = ToastyClassChores.db.profile.sourceOfMagic
     playerClass = ToastyClassChores.cdb.profile.class
     playerGUID = ToastyClassChores.cdb.profile.guid
     if not playerClass == "EVOKER" then
@@ -61,12 +63,9 @@ function SourceOfMagic:Initialize()
     end
     if not sourceOfMagicFrame then
         sourceOfMagicFrame = CreateFrame("Frame", "Source of Magic Reminder", UIParent)
-        sourceOfMagicFrame:SetPoint(ToastyClassChores.db.profile.sourceOfMagicLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.sourceOfMagicLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.sourceOfMagicLocation.xPos,
-            ToastyClassChores.db.profile.sourceOfMagicLocation.yPos)
-        sourceOfMagicFrame:SetSize(ToastyClassChores.db.profile.sourceOfMagicIconSize,
-            ToastyClassChores.db.profile.sourceOfMagicIconSize)
+        sourceOfMagicFrame:SetPoint(sourceOfMagicDB.location.frameAnchorPoint, UIParent,
+            sourceOfMagicDB.location.parentAnchorPoint, sourceOfMagicDB.location.xPos, sourceOfMagicDB.location.yPos)
+        sourceOfMagicFrame:SetSize(sourceOfMagicDB.iconSize, sourceOfMagicDB.iconSize)
         local frameTexture = sourceOfMagicFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(4630412)
         frameTexture:SetAllPoints()
@@ -77,11 +76,11 @@ function SourceOfMagic:Initialize()
         end)
         sourceOfMagicFrame:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
-            ToastyClassChores.db.profile.sourceOfMagicLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.sourceOfMagicLocation.parentAnchorPoint, ToastyClassChores.db.profile.sourceOfMagicLocation.xPos, ToastyClassChores.db.profile.sourceOfMagicLocation.yPos =
+            sourceOfMagicDB.location.frameAnchorPoint, _, sourceOfMagicDB.location.parentAnchorPoint, sourceOfMagicDB.location.xPos, sourceOfMagicDB.location.yPos =
                 sourceOfMagicFrame:GetPoint()
         end)
     end
-    sourceOfMagicFrame:SetAlpha(ToastyClassChores.db.profile.sourceOfMagicOpacity)
+    sourceOfMagicFrame:SetAlpha(sourceOfMagicDB.opacity)
     if not framesUnlocked then
         sourceOfMagicFrame:Hide()
     end
@@ -91,7 +90,7 @@ end
 
 function SourceOfMagic:Update()
     ToastyClassChores:Debug("Update")
-    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     if not sourceOfMagicFrame then
@@ -106,8 +105,8 @@ function SourceOfMagic:Update()
     end
     ToastyClassChores:Debug(currentToken)
     if currentToken then
-        local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.sourceOfMagicEarlyWarning
-        if PlayerIsInCombat() and ToastyClassChores.db.profile.sourceOfMagicEarlyWarningNoCombat then
+        local earlyWarningThreshold = 60 * sourceOfMagicDB.earlyWarning
+        if PlayerIsInCombat() and sourceOfMagicDB.earlyWarningNoCombat then
             earlyWarningThreshold = 0
         end
         if self:GetRemainingBuffTime() <= earlyWarningThreshold then
@@ -123,7 +122,7 @@ function SourceOfMagic:Update()
 end
 
 function SourceOfMagic:CheckBuff(unit)
-    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     if not UnitIsPlayer(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit)) then
@@ -161,7 +160,7 @@ function SourceOfMagic:CheckBuff(unit)
 end
 
 function SourceOfMagic:VerifyBuff()
-    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     if not UnitIsVisible(currentToken) then
@@ -192,7 +191,7 @@ function SourceOfMagic:VerifyBuff()
 end
 
 function SourceOfMagic:RegisterBuff(spellID, target)
-    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     if spellID == buffSpellID then
@@ -219,7 +218,7 @@ function SourceOfMagic:RegisterBuff(spellID, target)
 end
 
 function SourceOfMagic:GetRemainingBuffTime()
-    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     local aura
@@ -237,7 +236,7 @@ function SourceOfMagic:GetRemainingBuffTime()
 end
 
 function SourceOfMagic:CheckSourceOfMagicKnown()
-    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     knowsSourceOfMagic = C_SpellBook.IsSpellKnown(369459)
@@ -247,7 +246,7 @@ function SourceOfMagic:CheckSourceOfMagicKnown()
 end
 
 function SourceOfMagic:CheckGroup()
-    if not (ToastyClassChores.db.profile.sourceOfMagicTracking and playerClass == "EVOKER") then
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     self:CountHealers()

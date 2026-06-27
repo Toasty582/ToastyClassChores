@@ -5,9 +5,11 @@ ToastyClassChores.Pets = ToastyClassChores.Pets or {}
 local Pets = ToastyClassChores.Pets
 
 local petsFrame
-
 local framesUnlocked = false
+
 local playerClass
+local petsDB
+
 local isPetMarksman
 local isSacrificeGrimoire
 
@@ -20,7 +22,7 @@ local petClasses = {
 }
 
 function ToastyClassChores:SetPetsTracking(info, value)
-    self.db.profile.petsTracking = value
+    petsDB.tracking = value
     if value then
         self:Print("Enabling Pet Tracking")
         Pets:Initialize()
@@ -33,40 +35,40 @@ function ToastyClassChores:SetPetsTracking(info, value)
 end
 
 function ToastyClassChores:SetPetsIconSize(info, value)
-    self.db.profile.petsIconSize = value
+    petsDB.iconSize = value
     if petsFrame then
         petsFrame:SetSize(value, value)
     end
 end
 
 function ToastyClassChores:SetPetsInstanceOnly(info, value)
-    self.db.profile.petsInstanceOnly = value
+    petsDB.instanceOnly = value
     Pets:Update()
 end
 
 function ToastyClassChores:SetPetsNoLegacy(info, value)
-    self.db.profile.petsNoLegacy = value
+    petsDB.noLegacy = value
     Pets:Update()
 end
 
 function ToastyClassChores:SetPetsOpacity(info, value)
-    self.db.profile.petsOpacity = value
+    petsDB.opacity = value
     if petsFrame then
         petsFrame:SetAlpha(value)
     end
 end
 
 function Pets:Initialize()
+    petsDB = ToastyClassChores.db.profile.pets
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.petsTracking and petClasses[playerClass]) then
+    if not (petsDB.tracking and petClasses[playerClass]) then
         return
     end
     if not petsFrame then
         petsFrame = CreateFrame("Frame", "Pet Reminder", UIParent)
-        petsFrame:SetPoint(ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos,
-            ToastyClassChores.db.profile.petsLocation.yPos)
-        petsFrame:SetSize(ToastyClassChores.db.profile.petsIconSize, ToastyClassChores.db.profile.petsIconSize)
+        petsFrame:SetPoint(petsDB.location.frameAnchorPoint, UIParent, petsDB.location.parentAnchorPoint,
+            petsDB.location.xPos, petsDB.location.yPos)
+        petsFrame:SetSize(petsDB.iconSize, petsDB.iconSize)
         local frameTexture = petsFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(petClasses[ToastyClassChores.cdb.profile.class])
         frameTexture:SetAllPoints()
@@ -77,11 +79,11 @@ function Pets:Initialize()
         end)
         petsFrame:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
-            ToastyClassChores.db.profile.petsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.petsLocation.parentAnchorPoint, ToastyClassChores.db.profile.petsLocation.xPos, ToastyClassChores.db.profile.petsLocation.yPos =
+            petsDB.location.frameAnchorPoint, _, petsDB.location.parentAnchorPoint, petsDB.location.xPos, petsDB.location.yPos =
                 petsFrame:GetPoint()
         end)
     end
-    petsFrame:SetAlpha(ToastyClassChores.db.profile.petsOpacity)
+    petsFrame:SetAlpha(petsDB.opacity)
     if not framesUnlocked then
         petsFrame:Hide()
     end
@@ -90,7 +92,7 @@ function Pets:Initialize()
 end
 
 function Pets:Update()
-    if not (ToastyClassChores.db.profile.petsTracking and petClasses[playerClass]) then
+    if not (petsDB.tracking and petClasses[playerClass]) then
         if petsFrame and not framesUnlocked then
             petsFrame:Hide()
         end
@@ -102,11 +104,11 @@ function Pets:Update()
 
     local _, instanceType = IsInInstance()
 
-    if ToastyClassChores.db.profile.petsInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
+    if petsDB.instanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
         petsFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.petsNoLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
+    if petsDB.noLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
         petsFrame:Hide()
         return
     end
@@ -160,7 +162,7 @@ function Pets:CheckAnomaly()
 end
 
 function Pets:MountCheck()
-    if not ToastyClassChores.db.profile.petsTracking then
+    if not petsDB.tracking then
         if petsFrame and not framesUnlocked then
             petsFrame:Hide()
         end

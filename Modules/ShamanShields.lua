@@ -14,9 +14,10 @@ local shieldDuration
 local shieldTimer
 
 local playerClass
+local shamanShieldsDB
 
 function ToastyClassChores:SetShamanShieldsTracking(info, value)
-    self.db.profile.shamanShieldsTracking = value
+    shamanShieldsDB.tracking = value
     if value then
         self:Print("Enabling Shaman Shield Tracking")
         ShamanShields:Initialize()
@@ -29,42 +30,40 @@ function ToastyClassChores:SetShamanShieldsTracking(info, value)
 end
 
 function ToastyClassChores:SetShamanShieldsIconSize(info, value)
-    self.db.profile.shamanShieldsIconSize = value
+    shamanShieldsDB.iconSize = value
     if shamanShieldsFrame then
         shamanShieldsFrame:SetSize(value, value)
     end
 end
 
 function ToastyClassChores:SetShamanShieldsOpacity(info, value)
-    self.db.profile.shamanShieldsOpacity = value
+    shamanShieldsDB.opacity = value
     if shamanShieldsFrame then
         shamanShieldsFrame:SetAlpha(value)
     end
 end
 
 function ToastyClassChores:SetShamanShieldsEarlyWarning(info, value)
-    self.db.profile.shamanShieldsEarlyWarning = value
+    shamanShieldsDB.earlyWarning = value
     ShamanShields:Update()
 end
 
 function ToastyClassChores:SetShamanShieldsEarlyWarningNoCombat(info, value)
-    self.db.profile.shamanShieldsEarlyWarningNoCombat = value
+    shamanShieldsDB.earlyWarningNoCombat = value
     ShamanShields:Update()
 end
 
 function ShamanShields:Initialize()
+    shamanShieldsDB = ToastyClassChores.db.profile.shamanShields
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.shamanShieldsTracking and playerClass == "SHAMAN") then
+    if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
         return
     end
     if not shamanShieldsFrame then
         shamanShieldsFrame = CreateFrame("Frame", "Shaman Shield Reminder", UIParent)
-        shamanShieldsFrame:SetPoint(ToastyClassChores.db.profile.shamanShieldsLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.shamanShieldsLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.shamanShieldsLocation.xPos,
-            ToastyClassChores.db.profile.shamanShieldsLocation.yPos)
-        shamanShieldsFrame:SetSize(ToastyClassChores.db.profile.shamanShieldsIconSize,
-            ToastyClassChores.db.profile.shamanShieldsIconSize)
+        shamanShieldsFrame:SetPoint(shamanShieldsDB.location.frameAnchorPoint, UIParent,
+            shamanShieldsDB.location.parentAnchorPoint, shamanShieldsDB.location.xPos, shamanShieldsDB.location.yPos)
+        shamanShieldsFrame:SetSize(shamanShieldsDB.iconSize, shamanShieldsDB.iconSize)
         frameTexture = shamanShieldsFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(136051)
         frameTexture:SetAllPoints()
@@ -76,10 +75,10 @@ function ShamanShields:Initialize()
     end)
     shamanShieldsFrame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
-        ToastyClassChores.db.profile.shamanShieldsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.shamanShieldsLocation.parentAnchorPoint, ToastyClassChores.db.profile.shamanShieldsLocation.xPos, ToastyClassChores.db.profile.shamanShieldsLocation.yPos =
+        shamanShieldsDB.location.frameAnchorPoint, _, shamanShieldsDB.location.parentAnchorPoint, shamanShieldsDB.location.xPos, shamanShieldsDB.location.yPos =
             shamanShieldsFrame:GetPoint()
     end)
-    shamanShieldsFrame:SetAlpha(ToastyClassChores.db.profile.shamanShieldsOpacity)
+    shamanShieldsFrame:SetAlpha(shamanShieldsDB.opacity)
     if not framesUnlocked then
         shamanShieldsFrame:Hide()
     end
@@ -88,7 +87,7 @@ function ShamanShields:Initialize()
 end
 
 function ShamanShields:Update()
-    if not (ToastyClassChores.db.profile.shamanShieldsTracking and playerClass == "SHAMAN") then
+    if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
         return
     end
     if not shamanShieldsFrame then
@@ -96,8 +95,8 @@ function ShamanShields:Update()
     end
     self:CheckDurations()
 
-    local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning
-    if PlayerIsInCombat() and ToastyClassChores.db.profile.shamanShieldsEarlyWarningNoCombat then
+    local earlyWarningThreshold = 60 * shamanShieldsDB.earlyWarning
+    if PlayerIsInCombat() and shamanShieldsDB.earlyWarningNoCombat then
         earlyWarningThreshold = 0
     end
     if shieldDuration:GetRemainingDuration() <= earlyWarningThreshold or shieldDuration:GetRemainingDuration() == nil then
@@ -112,14 +111,14 @@ function ShamanShields:Update()
 end
 
 function ShamanShields:CreateDurations()
-    if not (ToastyClassChores.db.profile.shamanShieldsTracking and playerClass == "SHAMAN") then
+    if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
         return
     end
     shieldDuration = C_DurationUtil.CreateDuration()
 end
 
 function ShamanShields:CheckDurations()
-    if not (ToastyClassChores.db.profile.shamanShieldsTracking and playerClass == "SHAMAN") then
+    if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
         return
     end
     if C_SpecializationInfo.GetSpecialization() == 3 then
@@ -137,9 +136,9 @@ function ShamanShields:CheckDurations()
             if shieldTimer then
                 shieldTimer:Cancel()
             end
-            if shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning > 0 then
+            if shieldDuration:GetRemainingDuration() - 60 * shamanShieldsDB.earlyWarning > 0 then
                 shieldTimer = C_Timer.NewTimer(
-                    shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning,
+                    shieldDuration:GetRemainingDuration() - 60 * shamanShieldsDB.earlyWarning,
                     function() self:Update() end)
             end
         end
@@ -151,9 +150,9 @@ function ShamanShields:CheckDurations()
             if shieldTimer then
                 shieldTimer:Cancel()
             end
-            if shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning > 0 then
+            if shieldDuration:GetRemainingDuration() - 60 * shamanShieldsDB.earlyWarning > 0 then
                 shieldTimer = C_Timer.NewTimer(
-                    shieldDuration:GetRemainingDuration() - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning,
+                    shieldDuration:GetRemainingDuration() - 60 * shamanShieldsDB.earlyWarning,
                     function() self:Update() end)
             end
             buffFound = true
@@ -166,7 +165,7 @@ function ShamanShields:CheckDurations()
 end
 
 function ShamanShields:StoreDurations()
-    if not (ToastyClassChores.db.profile.shamanShieldsTracking and playerClass == "SHAMAN") then
+    if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
         return
     end
     if shieldDuration then
@@ -177,7 +176,7 @@ function ShamanShields:StoreDurations()
 end
 
 function ShamanShields:ShieldCast(spellID)
-    if not (ToastyClassChores.db.profile.shamanShieldsTracking and playerClass == "SHAMAN") then
+    if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
         return
     end
     if spellID == 192106 or spellID == 52127 then
@@ -185,7 +184,7 @@ function ShamanShields:ShieldCast(spellID)
         if shieldTimer then
             shieldTimer:Cancel()
         end
-        shieldTimer = C_Timer.NewTimer(3600 - 60 * ToastyClassChores.db.profile.shamanShieldsEarlyWarning,
+        shieldTimer = C_Timer.NewTimer(3600 - 60 * shamanShieldsDB.earlyWarning,
             function() self:Update() end)
     end
     self:Update()
