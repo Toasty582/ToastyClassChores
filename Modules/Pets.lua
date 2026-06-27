@@ -114,19 +114,17 @@ function Pets:Update()
     end
 
     if IsMounted() and not framesUnlocked then
-        petsFrame:Hide()
-        return
-    end
-    if petExistsBeforeMounting then
-        petExistsBeforeMounting = false
-        return
+        if petExistsBeforeMounting then -- Pets despawn when you start flying, this will pretend they don't
+            petsFrame:Hide()
+            return
+        end
     end
     local hasUI, isHunterPet = HasPetUI()
-    if playerClass == "HUNTER" and not isPetMarksman and C_SpecializationInfo.GetSpecialization() == 2 and not framesUnlocked then
+    if playerClass == "HUNTER" and not isPetMarksman and not framesUnlocked then
         petsFrame:Hide()
         return
     end
-    if playerClass == "WARLOCK" and isSacrificeGrimoire and C_SpecializationInfo.GetSpecialization() ~= 2 and not framesUnlocked then
+    if playerClass == "WARLOCK" and isSacrificeGrimoire and not framesUnlocked then
         petsFrame:Hide()
         return
     end
@@ -136,27 +134,33 @@ function Pets:Update()
     end
     if not hasUI then
         petsFrame:Show()
-        return
     else
         if playerClass == "HUNTER" and isHunterPet and not framesUnlocked then
             petsFrame:Hide()
-            return
         elseif (playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and not isHunterPet and not framesUnlocked then
             petsFrame:Hide()
-            return
+        else
+            ToastyClassChores:Print("Invalid pet detected, hiding pet reminder")
+            if not framesUnlocked then
+                petsFrame:Hide()
+            end
         end
-    end
-    ToastyClassChores:Print("Invalid pet detected, hiding pet reminder")
-    if not framesUnlocked then
-        petsFrame:Hide()
     end
 end
 
 function Pets:CheckAnomaly()
-    if playerClass == "HUNTER" and C_SpecializationInfo.GetSpecialization() == 2 then
-        isPetMarksman = C_SpellBook.IsSpellKnown(1223323)
-    elseif playerClass == "WARLOCK" and C_SpecializationInfo.GetSpecialization() ~= 2 then
-        isSacrificeGrimoire = C_SpellBook.IsSpellKnown(108503)
+    if playerClass == "HUNTER" then
+        if C_SpecializationInfo.GetSpecialization() == 2 then
+            isPetMarksman = C_SpellBook.IsSpellKnown(1223323)
+        else
+            isPetMarksman = false
+        end
+    elseif playerClass == "WARLOCK" then
+        if C_SpecializationInfo.GetSpecialization() ~= 2 then
+            isSacrificeGrimoire = C_SpellBook.IsSpellKnown(108503)
+        else
+            isSacrificeGrimoire = false
+        end
     end
     self:Update()
 end
@@ -172,7 +176,8 @@ function Pets:MountCheck()
         local hasUI, _ = HasPetUI()
         petExistsBeforeMounting = hasUI
     else
-        self:Update()
+        petExistsBeforeMounting = false
+        C_Timer.After(0.5, function() self:Update() end) -- Wait to update until pet has had time to spawn in after dismounting
     end
 end
 
