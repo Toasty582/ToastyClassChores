@@ -26,6 +26,12 @@ function ToastyClassChores:SetShamanShieldsTracking(info, value)
         if shamanShieldsFrame then
             shamanShieldsFrame:Hide()
         end
+        if shieldDuration then
+            shieldDuration:Reset()
+        end
+        if shieldTimer then
+            shieldTimer:Cancel()
+        end
     end
 end
 
@@ -82,18 +88,30 @@ function ShamanShields:Initialize()
     if not framesUnlocked then
         shamanShieldsFrame:Hide()
     end
-    self:CreateDurations()
+    shieldDuration = C_DurationUtil.CreateDuration()
     self:Update()
 end
 
 function ShamanShields:Update()
     if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
+        if shamanShieldsFrame and not framesUnlocked then
+            shamanShieldsFrame:Hide()
+        end
         return
     end
     if not shamanShieldsFrame then
         self:Initialize()
     end
-    self:CheckDurations()
+    if C_SpecializationInfo.GetSpecialization() == 3 then
+        preferredShield = 52127 -- Water Shield
+        frameTexture:SetTexture(132315)
+        frameTexture:SetAllPoints()
+    else
+        preferredShield = 192106 -- Lightning Shield
+        frameTexture:SetTexture(136051)
+        frameTexture:SetAllPoints()
+    end
+    self:CheckDurations() -- Checks the buff to see if the duration has desynced for whatever reason
 
     local earlyWarningThreshold = 60 * shamanShieldsDB.earlyWarning
     if PlayerIsInCombat() and shamanShieldsDB.earlyWarningNoCombat then
@@ -110,25 +128,9 @@ function ShamanShields:Update()
     end
 end
 
-function ShamanShields:CreateDurations()
-    if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
-        return
-    end
-    shieldDuration = C_DurationUtil.CreateDuration()
-end
-
 function ShamanShields:CheckDurations()
     if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
         return
-    end
-    if C_SpecializationInfo.GetSpecialization() == 3 then
-        preferredShield = 52127
-        frameTexture:SetTexture(132315)
-        frameTexture:SetAllPoints()
-    else
-        preferredShield = 192106
-        frameTexture:SetTexture(136051)
-        frameTexture:SetAllPoints()
     end
     if C_Secrets.ShouldAurasBeSecret() then
         if not shieldDuration:GetStartTime() then
@@ -159,6 +161,9 @@ function ShamanShields:CheckDurations()
         end
         if not buffFound then
             shieldDuration:Reset()
+            if shieldTimer then
+                shieldTimer:Cancel()
+            end
         end
     end
     self:StoreDurations()
@@ -169,9 +174,9 @@ function ShamanShields:StoreDurations()
         return
     end
     if shieldDuration then
-        ToastyClassChores.cdb.profile.remainingshamanShieldTime = shieldDuration:GetRemainingDuration()
+        ToastyClassChores.cdb.profile.remainingShamanShieldTime = shieldDuration:GetRemainingDuration()
     else
-        ToastyClassChores.cdb.profile.remainingshamanShieldTime = nil
+        ToastyClassChores.cdb.profile.remainingShamanShieldTime = nil
     end
 end
 
@@ -179,7 +184,7 @@ function ShamanShields:ShieldCast(spellID)
     if not (shamanShieldsDB.tracking and playerClass == "SHAMAN") then
         return
     end
-    if spellID == 192106 or spellID == 52127 then
+    if spellID == preferredShield then
         shieldDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
         if shieldTimer then
             shieldTimer:Cancel()
