@@ -33,6 +33,12 @@ function ToastyClassChores:SetLightsmithRitesTracking(info, value)
         if lightsmithRitesFrame then
             lightsmithRitesFrame:Hide()
         end
+        if riteDuration then
+            riteDuration:Reset()
+        end
+        if riteTimer then
+            riteTimer:Cancel()
+        end
     end
 end
 
@@ -88,7 +94,7 @@ function LightsmithRites:Initialize()
     if not framesUnlocked then
         lightsmithRitesFrame:Hide()
     end
-    self:CreateDurations()
+    riteDuration = C_DurationUtil.CreateDuration()
     self:Update()
 end
 
@@ -102,7 +108,7 @@ function LightsmithRites:Update()
     if not lightsmithRitesFrame then
         self:Initialize()
     end
-    self:CheckDurations()
+    self:CheckDurations() -- Checks the buff to see if the duration has desynced for whatever reason
 
     local earlyWarningThreshold = 60 * lightsmithRitesDB.earlyWarning
     if PlayerIsInCombat() and lightsmithRitesDB.earlyWarningNoCombat then
@@ -117,13 +123,6 @@ function LightsmithRites:Update()
         end
         return
     end
-end
-
-function LightsmithRites:CreateDurations()
-    if not (lightsmithRitesDB.tracking and C_ClassTalents.GetActiveHeroTalentSpec() == 49) then
-        return
-    end
-    riteDuration = C_DurationUtil.CreateDuration()
 end
 
 function LightsmithRites:CheckDurations()
@@ -161,6 +160,9 @@ function LightsmithRites:CheckDurations()
             end
             if not buffFound then
                 riteDuration:Reset()
+                if riteTimer then
+                    riteTimer:Cancel()
+                end
             end
         end
     end
