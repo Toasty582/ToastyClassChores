@@ -135,6 +135,9 @@ end
 
 function DruidForms:Update()
     if not (druidformsDB.tracking and playerClass == "DRUID") then
+        if druidFormsFrame and not framesUnlocked then
+            druidFormsFrame:Hide()
+        end
         return
     end
     local specIndex = C_SpecializationInfo.GetSpecialization()
@@ -158,7 +161,11 @@ function DruidForms:Update()
     if formIndex > 3 then
         effectiveFormIndex = formIndex + 10 * knowsTreantForm + 20 * knowsMoonkinForm
     end
-    frameTexture:SetTexture(formIcons[effectiveFormIndex])
+    if formIcons[effectiveFormIndex] then -- Should always be true but decent failsafe
+        frameTexture:SetTexture(formIcons[effectiveFormIndex])
+    else
+        frameTexture:SetTexture(134400) -- Fallback to question mark
+    end
     frameTexture:SetAllPoints()
 
     if druidformsDB.combatOnly and not PlayerIsInCombat() and not framesUnlocked then
