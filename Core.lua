@@ -265,10 +265,10 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
         end
     end
     if unitTarget == "player" then
-        if playerClass == "ROGUE" and updateInfo.removedAuraInstanceIDs then
+        if playerClass == "ROGUE" then
             self.RoguePoisons:Update()
         end
-        if playerClass == "SHAMAN" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
+        if playerClass == "SHAMAN" then
             self.ShamanShields:Update()
         end
         if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
@@ -365,4 +365,31 @@ function ToastyClassChores:Debug(msg)
     if self.db.profile.debug then
         self:Print(msg)
     end
+end
+
+function ToastyClassChores:ForceSecrets()
+    SetCVar("addonChatRestrictionsForced", 1)
+    SetCVar("addonChallengeModeRestrictionsForced", 1)
+    SetCVar("addonCombatRestrictionsForced", 1)
+    SetCVar("addonEncounterRestrictionsForced", 1)
+    SetCVar("addonMapRestrictionsForced", 1)
+    SetCVar("addonPvPMatchRestrictionsForced", 1)
+end
+
+function ToastyClassChores:UnForceSecrets()
+    SetCVar("addonChatRestrictionsForced", 0)
+    SetCVar("addonChallengeModeRestrictionsForced", 0)
+    SetCVar("addonCombatRestrictionsForced", 0)
+    SetCVar("addonEncounterRestrictionsForced", 0)
+    SetCVar("addonMapRestrictionsForced", 0)
+    SetCVar("addonPvPMatchRestrictionsForced", 0)
+end
+
+function ToastyClassChores:AreSecretsForced()
+    print(GetCVar("addonChatRestrictionsForced"))
+    print(GetCVar("addonChallengeModeRestrictionsForced"))
+    print(GetCVar("addonCombatRestrictionsForced"))
+    print(GetCVar("addonEncounterRestrictionsForced"))
+    print(GetCVar("addonMapRestrictionsForced"))
+    print(GetCVar("addonPvPMatchRestrictionsForced"))
 end
