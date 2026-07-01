@@ -6,7 +6,6 @@ local SourceOfMagic = ToastyClassChores.SourceOfMagic
 
 local sourceOfMagicFrame
 local playerClass
-local playerGUID
 local sourceOfMagicDB
 local framesUnlocked = false
 local buffSpellID = 369459
@@ -46,7 +45,7 @@ end
 
 function ToastyClassChores:SetSourceOfMagicEarlyWarning(info, value)
     sourceOfMagicDB.earlyWarning = value
-    SourceOfMagic:VerifyBuff()
+    SourceOfMagic:Update()
 end
 
 function ToastyClassChores:SetSourceOfMagicEarlyWarningNoCombat(info, value)
@@ -54,10 +53,17 @@ function ToastyClassChores:SetSourceOfMagicEarlyWarningNoCombat(info, value)
     SourceOfMagic:Update()
 end
 
+function sourceOfMagicFrame:OnPlayerEvent(event, ...)
+    self[event](self, event, ...)
+end
+
+function sourceOfMagicFrame:UNIT_AURA()
+    SourceOfMagic:Update()
+end
+
 function SourceOfMagic:Initialize()
     sourceOfMagicDB = ToastyClassChores.db.profile.sourceOfMagic
     playerClass = ToastyClassChores.cdb.profile.class
-    playerGUID = ToastyClassChores.cdb.profile.guid
     if not playerClass == "EVOKER" then
         return
     end
@@ -69,6 +75,8 @@ function SourceOfMagic:Initialize()
         local frameTexture = sourceOfMagicFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(4630412)
         frameTexture:SetAllPoints()
+
+        sourceOfMagicFrame:SetScript("OnEvent", sourceOfMagicFrame.OnPlayerEvent)
 
         sourceOfMagicFrame:RegisterForDrag("LeftButton")
         sourceOfMagicFrame:SetScript("OnDragStart", function(self)
@@ -91,13 +99,17 @@ end
 function SourceOfMagic:Update()
     ToastyClassChores:Debug("Update")
     if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
+        if sourceOfMagicFrame and not framesUnlocked then
+            sourceOfMagicFrame:Hide()
+        end
         return
     end
     if not sourceOfMagicFrame then
         self:Initialize()
     end
     if not otherHealersInGroup or not knowsSourceOfMagic then
-        ToastyClassChores:Debug("a")
+        currentToken = nil
+        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         if not framesUnlocked then
             sourceOfMagicFrame:Hide()
         end
@@ -109,7 +121,7 @@ function SourceOfMagic:Update()
         if PlayerIsInCombat() and sourceOfMagicDB.earlyWarningNoCombat then
             earlyWarningThreshold = 0
         end
-        if self:GetRemainingBuffTime() <= earlyWarningThreshold then
+        if self:VerifyBuff() <= earlyWarningThreshold then
             sourceOfMagicFrame:Show()
         else
             if not framesUnlocked then
@@ -130,8 +142,9 @@ function SourceOfMagic:CheckBuff(unit)
     end
     if not UnitGroupRolesAssigned(unit) == "HEALER" then
         if currentToken then
-            if UnitGUID(currentToken) == UnitGUID(unit) then
+            if UnitIsUnit(unit, currentToken) then
                 currentToken = nil
+                sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
             end
         end
         return
@@ -139,24 +152,29 @@ function SourceOfMagic:CheckBuff(unit)
     if unit then
         local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
         if aura then
-            if UnitGUID(aura.sourceUnit) == playerGUID then
+            if UnitIsUnit(aura.sourceUnit, "player") then
+                if not UnitIsUnit(unit, currentToken) then
+                    sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
+                    sourceOfMagicFrame:RegisterUnitEvent("UNIT_AURA", unit)
+                end
                 currentToken = unit
             else
                 if currentToken then
-                    if UnitGUID(currentToken) == UnitGUID(unit) then
+                    if UnitIsUnit(unit, currentToken) then
                         currentToken = nil
+                        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
                     end
                 end
             end
         else
             if currentToken then
-                if UnitGUID(currentToken) == UnitGUID(unit) then
+                if UnitIsUnit(unit, currentToken) then
                     currentToken = nil
+                    sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
                 end
             end
         end
     end
-    self:Update()
 end
 
 function SourceOfMagic:VerifyBuff()
@@ -168,34 +186,36 @@ function SourceOfMagic:VerifyBuff()
     end
     if not UnitIsPlayer(currentToken) or not (UnitInRaid(currentToken) or UnitInParty(currentToken)) then
         currentToken = nil
+        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         return
     end
     if not UnitGroupRolesAssigned(currentToken) == "HEALER" then
         currentToken = nil
+        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         return
     end
     if currentToken then
         local aura = C_UnitAuras.GetUnitAuraBySpellID(currentToken, buffSpellID)
         if aura then
-            if UnitGUID(aura.sourceUnit) == playerGUID then
-                return
+            if UnitIsUnit(aura.sourceUnit, "player") then
+                return (aura.expirationTime - GetTime())
             else
                 currentToken = nil
+                sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
             end
         else
             currentToken = nil
+            sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         end
     end
-
-    self:Update()
+    return 0
 end
 
-function SourceOfMagic:RegisterBuff(spellID, target)
+function SourceOfMagic:RegisterCast(spellID, target)
     if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     if spellID == buffSpellID then
-        ToastyClassChores:Debug("a")
         local groupType
         local groupSize
         if IsInRaid() then
@@ -206,32 +226,14 @@ function SourceOfMagic:RegisterBuff(spellID, target)
             groupSize = GetNumSubgroupMembers()
         end
         for i = 1, groupSize do
-            if UnitGroupRolesAssigned(groupType .. i) == "HEALER" and UnitGUID(groupType .. i) ~= playerGUID then
+            if UnitGroupRolesAssigned(groupType .. i) == "HEALER" and not UnitIsUnit("player", groupType .. i) then
                 ToastyClassChores:Debug("Seeing " .. groupType .. i)
-                if UnitGUID(target) == UnitGUID(groupType .. i) then
+                if UnitIsUnit(target, groupType .. i) then
                     ToastyClassChores:Debug("Checking " .. groupType .. i)
-                    RunNextFrame(function() self:CheckBuff(groupType .. i) end)
+                    self:CheckBuff(groupType .. i)
                 end
             end
         end
-    end
-end
-
-function SourceOfMagic:GetRemainingBuffTime()
-    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
-        return
-    end
-    local aura
-    if currentToken then
-        aura = C_UnitAuras.GetUnitAuraBySpellID(currentToken, buffSpellID)
-    end
-    if aura then
-        return (aura.expirationTime - GetTime())
-    else
-        if currentToken then
-            self:VerifyBuff()
-        end
-        return 0
     end
 end
 
@@ -241,7 +243,7 @@ function SourceOfMagic:CheckSourceOfMagicKnown()
     end
     knowsSourceOfMagic = C_SpellBook.IsSpellKnown(369459)
     if currentToken then
-        self:VerifyBuff()
+        self:Update()
     end
 end
 
@@ -249,21 +251,10 @@ function SourceOfMagic:CheckGroup()
     if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
-    self:CountHealers()
-    if currentToken then
-        if not (UnitInParty(currentToken) or UnitInRaid(currentToken)) then
-            currentToken = nil
-        end
-    end
-    if currentToken then
-        self:VerifyBuff()
-    end
-    self:Update()
-end
-
-function SourceOfMagic:CountHealers()
     if not IsInGroup() then
         otherHealersInGroup = false
+        currentToken = nil
+        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         return
     end
     local healerCount = 0
@@ -277,7 +268,7 @@ function SourceOfMagic:CountHealers()
         groupSize = GetNumSubgroupMembers() - 1
     end
     for i = 1, groupSize do
-        if UnitGroupRolesAssigned(groupType .. i) == "HEALER" and UnitGUID(groupType .. i) ~= playerGUID then
+        if UnitGroupRolesAssigned(groupType .. i) == "HEALER" and not UnitIsUnit("player", groupType .. i) then
             healerCount = healerCount + 1
             ToastyClassChores:Debug(groupType .. i)
             self:CheckBuff(groupType .. i)
@@ -288,6 +279,13 @@ function SourceOfMagic:CountHealers()
     else
         otherHealersInGroup = false
     end
+    if currentToken then
+        if not (UnitInParty(currentToken) or UnitInRaid(currentToken)) then
+            currentToken = nil
+            sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
+        end
+    end
+    self:Update()
 end
 
 function SourceOfMagic:ToggleFrameLock(value)

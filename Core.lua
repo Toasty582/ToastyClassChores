@@ -87,7 +87,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     end
 
-    if playerClass == "ROGUE" or raidBuffClassList[playerClass] or playerClass == "PALADIN" then
+    if raidBuffClassList[playerClass] then
         self:RegisterEvent("UNIT_AURA")
     end
 --[[
@@ -268,16 +268,19 @@ function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
+    -- Will likely need a full rework for PTR 4
     if raidBuffClassList[playerClass] then
         if UnitIsPlayer(unitTarget) then
             self.RaidBuff:CheckBuff(unitTarget)
         end
     end
+    
+    --[[ Source of Magic UNIT_AURA handling now in SourceOfMagic.lua
     if playerClass == "EVOKER" then
         if UnitIsPlayer(unitTarget) then
             self.SourceOfMagic:VerifyBuff()
         end
-    end
+    end]]
 end
 
 function playerEventFrame:UNIT_AURA()
@@ -306,7 +309,7 @@ end
 
 function playerEventFrame:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
     if playerClass == "EVOKER" then
-        ToastyClassChores.SourceOfMagic:RegisterBuff(spellID, target)
+        ToastyClassChores.SourceOfMagic:RegisterCast(spellID, target)
     end
 end
 
