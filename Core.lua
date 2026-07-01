@@ -38,6 +38,20 @@ local raidBuffClassList = {
     WARRIOR = 132333
 }
 
+-- Ace3 not supporting RegisterUnitEvent is REALLY annoying
+
+local playerEventFrame = CreateFrame("Frame")
+
+function playerEventFrame:OnPlayerEvent(event, ...)
+    self[event](self, event, ...)
+end
+
+playerEventFrame:SetScript("OnEvent", playerEventFrame.OnPlayerEvent)
+playerEventFrame:RegisterUnitEvent("UNIT_AURA", "player")
+playerEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+playerEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_SENT", "player")
+
+
 function ToastyClassChores:OnEnable()
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
@@ -76,14 +90,14 @@ function ToastyClassChores:OnEnable()
     if playerClass == "ROGUE" or raidBuffClassList[playerClass] or playerClass == "PALADIN" then
         self:RegisterEvent("UNIT_AURA")
     end
-
+--[[
     if playerClass == "ROGUE" or playerClass == "PALADIN" or playerClass == "SHAMAN" then
         self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     end
 
     if playerClass == "EVOKER" then
         self:RegisterEvent("UNIT_SPELLCAST_SENT")
-    end
+    end]]
 
     if playerClass == "SHAMAN" then
         self:RegisterEvent("PLAYER_LOGOUT")
@@ -264,38 +278,35 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
             self.SourceOfMagic:VerifyBuff()
         end
     end
-    if unitTarget == "player" then
-        if playerClass == "ROGUE" then
-            self.RoguePoisons:Update()
-        end
-        if playerClass == "SHAMAN" then
-            self.ShamanShields:Update()
-        end
-        if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
-            self.LightsmithRites:Update()
-        end
+end
+
+function playerEventFrame:UNIT_AURA()
+    if playerClass == "ROGUE" then
+        ToastyClassChores.RoguePoisons:Update()
+    end
+    if playerClass == "SHAMAN" then
+        ToastyClassChores.ShamanShields:Update()
+    end
+    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
+        ToastyClassChores.LightsmithRites:Update()
     end
 end
 
-function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
-    if unitTarget == "player" then
-        if playerClass == "ROGUE" then
-            self.RoguePoisons:PoisonCast(spellID)
-        end
-        if playerClass == "SHAMAN" then
-            self.ShamanShields:ShieldCast(spellID)
-        end
-        if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
-            RunNextFrame(function() self.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
-        end
+function playerEventFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
+    if playerClass == "ROGUE" then
+        ToastyClassChores.RoguePoisons:PoisonCast(spellID)
+    end
+    if playerClass == "SHAMAN" then
+        ToastyClassChores.ShamanShields:ShieldCast(spellID)
+    end
+    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
+        RunNextFrame(function() ToastyClassChores.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
     end
 end
 
-function ToastyClassChores:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
-    if unitTarget == "player" then
-        if playerClass == "EVOKER" then
-            self.SourceOfMagic:RegisterBuff(spellID, target)
-        end
+function playerEventFrame:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
+    if playerClass == "EVOKER" then
+        ToastyClassChores.SourceOfMagic:RegisterBuff(spellID, target)
     end
 end
 
