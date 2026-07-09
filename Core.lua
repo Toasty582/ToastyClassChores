@@ -40,6 +40,7 @@ local raidBuffClassList = {
 
 -- Ace3 not supporting RegisterUnitEvent is REALLY annoying
 
+
 local playerEventFrame = CreateFrame("Frame")
 
 function playerEventFrame:OnPlayerEvent(event, ...)
@@ -51,11 +52,11 @@ playerEventFrame:RegisterUnitEvent("UNIT_AURA", "player")
 playerEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
 playerEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_SENT", "player")
 
-
 function ToastyClassChores:OnEnable()
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
     self.cdb.profile.guid = UnitGUID("player")
+
 
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("LEGACY_LOOT_RULES_CHANGED")
@@ -90,7 +91,7 @@ function ToastyClassChores:OnEnable()
     if raidBuffClassList[playerClass] then
         self:RegisterEvent("UNIT_AURA")
     end
---[[
+    --[[
     if playerClass == "ROGUE" or playerClass == "PALADIN" or playerClass == "SHAMAN" then
         self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     end
@@ -268,19 +269,16 @@ function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
-    -- Will likely need a full rework for PTR 4
     if raidBuffClassList[playerClass] then
         if UnitIsPlayer(unitTarget) then
             self.RaidBuff:CheckBuff(unitTarget)
         end
     end
-    
-    --[[ Source of Magic UNIT_AURA handling now in SourceOfMagic.lua
     if playerClass == "EVOKER" then
         if UnitIsPlayer(unitTarget) then
             self.SourceOfMagic:VerifyBuff()
         end
-    end]]
+    end
 end
 
 function playerEventFrame:UNIT_AURA()

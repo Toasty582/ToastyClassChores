@@ -5,6 +5,7 @@ ToastyClassChores.SourceOfMagic = ToastyClassChores.SourceOfMagic or {}
 local SourceOfMagic = ToastyClassChores.SourceOfMagic
 
 local sourceOfMagicFrame
+
 local playerClass
 local sourceOfMagicDB
 local framesUnlocked = false
@@ -53,14 +54,6 @@ function ToastyClassChores:SetSourceOfMagicEarlyWarningNoCombat(info, value)
     SourceOfMagic:Update()
 end
 
-function sourceOfMagicFrame:OnPlayerEvent(event, ...)
-    self[event](self, event, ...)
-end
-
-function sourceOfMagicFrame:UNIT_AURA()
-    SourceOfMagic:Update()
-end
-
 function SourceOfMagic:Initialize()
     sourceOfMagicDB = ToastyClassChores.db.profile.sourceOfMagic
     playerClass = ToastyClassChores.cdb.profile.class
@@ -76,7 +69,6 @@ function SourceOfMagic:Initialize()
         frameTexture:SetTexture(4630412)
         frameTexture:SetAllPoints()
 
-        sourceOfMagicFrame:SetScript("OnEvent", sourceOfMagicFrame.OnPlayerEvent)
 
         sourceOfMagicFrame:RegisterForDrag("LeftButton")
         sourceOfMagicFrame:SetScript("OnDragStart", function(self)
@@ -109,7 +101,6 @@ function SourceOfMagic:Update()
     end
     if not otherHealersInGroup or not knowsSourceOfMagic then
         currentToken = nil
-        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         if not framesUnlocked then
             sourceOfMagicFrame:Hide()
         end
@@ -144,7 +135,6 @@ function SourceOfMagic:CheckBuff(unit)
         if currentToken then
             if UnitIsUnit(unit, currentToken) then
                 currentToken = nil
-                sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
             end
         end
         return
@@ -153,16 +143,11 @@ function SourceOfMagic:CheckBuff(unit)
         local aura = C_UnitAuras.GetUnitAuraBySpellID(unit, buffSpellID)
         if aura then
             if UnitIsUnit(aura.sourceUnit, "player") then
-                if not UnitIsUnit(unit, currentToken) then
-                    sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
-                    sourceOfMagicFrame:RegisterUnitEvent("UNIT_AURA", unit)
-                end
                 currentToken = unit
             else
                 if currentToken then
                     if UnitIsUnit(unit, currentToken) then
                         currentToken = nil
-                        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
                     end
                 end
             end
@@ -170,7 +155,6 @@ function SourceOfMagic:CheckBuff(unit)
             if currentToken then
                 if UnitIsUnit(unit, currentToken) then
                     currentToken = nil
-                    sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
                 end
             end
         end
@@ -186,12 +170,10 @@ function SourceOfMagic:VerifyBuff()
     end
     if not UnitIsPlayer(currentToken) or not (UnitInRaid(currentToken) or UnitInParty(currentToken)) then
         currentToken = nil
-        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         return
     end
     if not UnitGroupRolesAssigned(currentToken) == "HEALER" then
         currentToken = nil
-        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         return
     end
     if currentToken then
@@ -201,11 +183,9 @@ function SourceOfMagic:VerifyBuff()
                 return (aura.expirationTime - GetTime())
             else
                 currentToken = nil
-                sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
             end
         else
             currentToken = nil
-            sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         end
     end
     return 0
@@ -254,7 +234,6 @@ function SourceOfMagic:CheckGroup()
     if not IsInGroup() then
         otherHealersInGroup = false
         currentToken = nil
-        sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         return
     end
     local healerCount = 0
@@ -282,7 +261,6 @@ function SourceOfMagic:CheckGroup()
     if currentToken then
         if not (UnitInParty(currentToken) or UnitInRaid(currentToken)) then
             currentToken = nil
-            sourceOfMagicFrame:UnregisterEvent("UNIT_AURA")
         end
     end
     self:Update()
