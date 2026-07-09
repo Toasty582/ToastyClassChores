@@ -3,6 +3,11 @@ local ADDON_NAME, ns = ...
 ToastyClassChores = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0")
 ns.Addon = ToastyClassChores
 
+ToastyClassChores.versionString = C_AddOns.GetAddOnMetadata(ToastyClassChores.name, "Version")
+local major, minor, patch = ToastyClassChores.versionString:match("^(%d+)%.(%d+)%.(%d+)$")
+ToastyClassChores.version = tonumber(string.format("%02d%02d%02d", major, minor, patch))
+
+
 local playerClass
 
 function ToastyClassChores:OnInitialize()
@@ -23,6 +28,14 @@ function ToastyClassChores:OnInitialize()
 
     LibStub("AceConfig-3.0"):RegisterOptionsTable("ToastyClassChores", config)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ToastyClassChores", "Toasty Class Chores")
+    local versionDisplay = self.optionsFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    versionDisplay:SetPoint("TOPRIGHT", self.optionsFrame, "TOPRIGHT", -15, -55)
+    versionDisplay:SetText("|cffffffffVersion " .. self.versionString .. "|r")
+
+    if self.db.profile.lastVersion ~= self.version then
+        self:CheckUpdateMessages(self.db.profile.lastVersion)
+        self.db.profile.lastVersion = self.version
+    end
 
     if not ToastyClassChores.db.profile.frameLock then
         self:ToggleFrameLock()
@@ -404,4 +417,13 @@ function ToastyClassChores:AreSecretsForced()
     print(GetCVar("addonEncounterRestrictionsForced"))
     print(GetCVar("addonMapRestrictionsForced"))
     print(GetCVar("addonPvPMatchRestrictionsForced"))
+end
+
+function ToastyClassChores:CheckUpdateMessages(lastVersion)
+    if self.versionString == "@project-version@" then
+        return
+    end
+    if lastVersion < 20000 then
+        self:Print("Welcome to Toasty Class Chores version " .. self.versionString .. "! Due to some fairly significant under the hood changes, some of your settings may have been reset to default. Apologies for the inconvenience!")
+    end
 end
