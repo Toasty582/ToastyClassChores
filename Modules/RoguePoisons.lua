@@ -8,11 +8,6 @@ local roguePoisonsFrame
 local frameTexture
 local framesUnlocked = false
 
-local lethalTimer
-local nonLethalTimer
-local lethalTimerAssa
-local nonLethalTimerAssa
-
 local playerClass
 local doublePoison
 
@@ -103,6 +98,9 @@ end
 
 function RoguePoisons:Update()
     if not (roguePoisonsDB.tracking and playerClass == "ROGUE") then
+        if roguePoisonsFrame and not framesUnlocked then
+            roguePoisonsFrame:Hide()
+        end
         return
     end
     if not roguePoisonsFrame then
@@ -178,42 +176,6 @@ function RoguePoisons:CheckPoisons()
     end
 
     return lethalTime, nonLethalTime, lethalTimeAssa, nonLethalTimeAssa
-end
-
-function RoguePoisons:PoisonCast(spellID)
-    local lethalTime, nonLethalTime, lethalTimeAssa, nonLethalTimeAssa = self:CheckPoisons()
-    if lethalIDs[spellID] then
-        if lethalTimer then
-            lethalTimer:Cancel()
-        end
-        lethalTimer = C_Timer.NewTimer(lethalTime - 60 * roguePoisonsDB.earlyWarning,
-            function() self:Update() end)
-        if lethalTimeAssa then
-            if lethalTimerAssa then
-                lethalTimerAssa:Cancel()
-            end
-            lethalTimerAssa = C_Timer.NewTimer(
-                lethalTimeAssa - 60 * roguePoisonsDB.earlyWarning,
-                function() self:Update() end)
-        end
-    elseif nonLethalIDs[spellID] then
-        if nonLethalTimer then
-            nonLethalTimer:Cancel()
-        end
-        nonLethalTimer = C_Timer.NewTimer(nonLethalTime - 60 * roguePoisonsDB.earlyWarning,
-            function() self:Update() end)
-        if nonLethalTimeAssa then
-            if nonLethalTimerAssa then
-                nonLethalTimerAssa:Cancel()
-            end
-            nonLethalTimerAssa = C_Timer.NewTimer(
-                nonLethalTimeAssa - 60 * roguePoisonsDB.earlyWarning,
-                function() self:Update() end)
-        end
-    else
-        return
-    end
-    self:Update()
 end
 
 function RoguePoisons:CheckDoublePoison()

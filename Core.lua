@@ -307,9 +307,6 @@ function playerEventFrame:UNIT_AURA()
 end
 
 function playerEventFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
-    if playerClass == "ROGUE" then
-        ToastyClassChores.RoguePoisons:PoisonCast(spellID)
-    end
     if playerClass == "SHAMAN" then
         ToastyClassChores.ShamanShields:ShieldCast(spellID)
     end
