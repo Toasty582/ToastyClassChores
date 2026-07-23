@@ -83,6 +83,7 @@ function SourceOfMagic:Initialize()
         sourceOfMagicFrame:Hide()
     end
 
+    self:CheckSourceOfMagicKnown()
     self:CheckGroup()
 end
 
@@ -104,7 +105,6 @@ function SourceOfMagic:Update()
         end
         return
     end
-    ToastyClassChores:Debug(currentToken)
     if currentToken then
         local earlyWarningThreshold = 60 * sourceOfMagicDB.earlyWarning
         if PlayerIsInCombat() and sourceOfMagicDB.earlyWarningNoCombat then
@@ -129,9 +129,10 @@ function SourceOfMagic:VerifyBuff()
     if not UnitIsVisible(currentToken) then
         return 0
     end
-    
+
     -- This is a remnant from old code that shouldn't ever actually trigger but I'm keeping it as a failsafe
-    if not UnitIsPlayer(currentToken) or not (UnitInRaid(currentToken) or UnitInParty(currentToken)) then
+    -- Ok actually follower dungeon healers trip the UnitIsPlayer check so I'm just skipping this check if you're in a follower dungeon
+    if not (UnitIsPlayer(currentToken) or C_LFGInfo.IsInLFGFollowerDungeon()) or not (UnitInRaid(currentToken) or UnitInParty(currentToken)) then
         currentToken = nil
         return 0
     end
@@ -158,12 +159,13 @@ function SourceOfMagic:CheckBuff(unit)
     if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
-    
-    if not UnitIsVisible(currentToken) then
+
+    if not UnitIsVisible(unit) then
         return
     end
     -- This is a remnant from old code that shouldn't ever actually trigger but I'm keeping it as a failsafe
-    if not UnitIsPlayer(unit) or not (UnitInRaid(unit) or UnitInParty(unit)) then
+    -- Ok actually follower dungeon healers trip the UnitIsPlayer check so I'm just skipping this check if you're in a follower dungeon
+    if not (UnitIsPlayer(unit) or C_LFGInfo.IsInLFGFollowerDungeon()) or not (UnitInRaid(unit) or UnitInParty(unit)) then
         if currentToken then
             if UnitIsUnit(unit, currentToken) then
                 currentToken = nil

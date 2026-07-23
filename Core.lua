@@ -116,7 +116,7 @@ function ToastyClassChores:OnEnable()
     end
 
     if raidBuffClassList[playerClass] then
-        self:RegisterEvent("PLAYER_FLAGS_CHANGED")
+        --self:RegisterEvent("PLAYER_FLAGS_CHANGED")
         self:RegisterEvent("UNIT_DIED")
     end
 
