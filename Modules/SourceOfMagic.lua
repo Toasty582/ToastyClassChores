@@ -11,8 +11,6 @@ local sourceOfMagicDB
 local framesUnlocked = false
 local buffSpellID = 369459
 
-local sourceOfMagicTimer
-
 local knowsSourceOfMagic
 local otherHealersInGroup
 local currentToken
@@ -124,11 +122,53 @@ function SourceOfMagic:Update()
     end
 end
 
+function SourceOfMagic:VerifyBuff()
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
+        return 0
+    end
+    if not UnitIsVisible(currentToken) then
+        return 0
+    end
+    
+    -- This is a remnant from old code that shouldn't ever actually trigger but I'm keeping it as a failsafe
+    if not UnitIsPlayer(currentToken) or not (UnitInRaid(currentToken) or UnitInParty(currentToken)) then
+        currentToken = nil
+        return 0
+    end
+    if not UnitGroupRolesAssigned(currentToken) == "HEALER" then
+        currentToken = nil
+        return 0
+    end
+    if currentToken then
+        local aura = C_UnitAuras.GetUnitAuraBySpellID(currentToken, buffSpellID)
+        if aura then
+            if UnitIsUnit(aura.sourceUnit, "player") then
+                return (aura.expirationTime - GetTime())
+            else
+                currentToken = nil
+            end
+        else
+            currentToken = nil
+        end
+    end
+    return 0
+end
+
 function SourceOfMagic:CheckBuff(unit)
     if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
-    if not UnitIsPlayer(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit)) then
+    
+    if not UnitIsVisible(currentToken) then
+        return
+    end
+    -- This is a remnant from old code that shouldn't ever actually trigger but I'm keeping it as a failsafe
+    if not UnitIsPlayer(unit) or not (UnitInRaid(unit) or UnitInParty(unit)) then
+        if currentToken then
+            if UnitIsUnit(unit, currentToken) then
+                currentToken = nil
+            end
+        end
         return
     end
     if not UnitGroupRolesAssigned(unit) == "HEALER" then
@@ -161,36 +201,6 @@ function SourceOfMagic:CheckBuff(unit)
     end
 end
 
-function SourceOfMagic:VerifyBuff()
-    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
-        return
-    end
-    if not UnitIsVisible(currentToken) then
-        return
-    end
-    if not UnitIsPlayer(currentToken) or not (UnitInRaid(currentToken) or UnitInParty(currentToken)) then
-        currentToken = nil
-        return
-    end
-    if not UnitGroupRolesAssigned(currentToken) == "HEALER" then
-        currentToken = nil
-        return
-    end
-    if currentToken then
-        local aura = C_UnitAuras.GetUnitAuraBySpellID(currentToken, buffSpellID)
-        if aura then
-            if UnitIsUnit(aura.sourceUnit, "player") then
-                return (aura.expirationTime - GetTime())
-            else
-                currentToken = nil
-            end
-        else
-            currentToken = nil
-        end
-    end
-    return 0
-end
-
 function SourceOfMagic:RegisterCast(spellID, target)
     if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
@@ -214,16 +224,6 @@ function SourceOfMagic:RegisterCast(spellID, target)
                 end
             end
         end
-    end
-end
-
-function SourceOfMagic:CheckSourceOfMagicKnown()
-    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
-        return
-    end
-    knowsSourceOfMagic = C_SpellBook.IsSpellKnown(369459)
-    if currentToken then
-        self:Update()
     end
 end
 
@@ -264,6 +264,16 @@ function SourceOfMagic:CheckGroup()
         end
     end
     self:Update()
+end
+
+function SourceOfMagic:CheckSourceOfMagicKnown()
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
+        return
+    end
+    knowsSourceOfMagic = C_SpellBook.IsSpellKnown(369459)
+    if currentToken then
+        self:Update()
+    end
 end
 
 function SourceOfMagic:ToggleFrameLock(value)
