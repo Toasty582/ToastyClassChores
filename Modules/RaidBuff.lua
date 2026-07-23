@@ -9,10 +9,7 @@ local raidBuffFrame
 local playerClass
 local raidBuffDB
 
-local glowing = false
 local framesUnlocked = false
-
-local raidBuffTimer
 
 local unitsMissingBuff = {}
 function RaidBuff:CountUnitsMissingBuff()
@@ -26,16 +23,6 @@ end
 local raidBuffSpellList = {
     [1126] = "DRUID",
     [364342] = "EVOKER",
-    [1459] = "MAGE",
-    [21562] = "PRIEST",
-    [462854] = "SHAMAN",
-    [6673] = "WARRIOR"
-}
-
--- Evoker has a different spellID for the aura and the spell
-local raidBuffAuraList = {
-    [1126] = "DRUID",
-    [381748] = "EVOKER",
     [1459] = "MAGE",
     [21562] = "PRIEST",
     [462854] = "SHAMAN",
@@ -151,46 +138,22 @@ function RaidBuff:Update()
     if not raidBuffFrame then
         self:Initialize()
     end
-    if glowing then
+    local earlyWarningThreshold = 60 * raidBuffDB.earlyWarning
+    if PlayerIsInCombat() and raidBuffDB.earlyWarningNoCombat then
+        earlyWarningThreshold = 0
+    end
+    if self:CountUnitsMissingBuff() > 0 then
         raidBuffFrame:Show()
     else
-        local earlyWarningThreshold = 60 * raidBuffDB.earlyWarning
-        if PlayerIsInCombat() and raidBuffDB.earlyWarningNoCombat then
-            earlyWarningThreshold = 0
-        end
-        if self:CountUnitsMissingBuff() > 0 then
+        if self:GetRemainingBuffTime("player") <= earlyWarningThreshold then
             raidBuffFrame:Show()
         else
-            if self:GetRemainingBuffTime("player") <= earlyWarningThreshold then
-                raidBuffFrame:Show()
-            else
-                if not framesUnlocked then
-                    raidBuffFrame:Hide()
-                end
-                return
+            if not framesUnlocked then
+                raidBuffFrame:Hide()
             end
+            return
         end
     end
-end
-
-function RaidBuff:GlowShow(spellID)
-    if not (raidBuffDB.tracking and raidBuffIconList[playerClass]) then
-        return
-    end
-    if raidBuffSpellList[spellID] then
-        glowing = true
-    end
-    self:Update()
-end
-
-function RaidBuff:GlowHide(spellID)
-    if not (raidBuffDB.tracking and raidBuffIconList[playerClass]) then
-        return
-    end
-    if raidBuffSpellList[spellID] then
-        glowing = false
-    end
-    self:Update()
 end
 
 function RaidBuff:CheckBuff(unit)
@@ -200,8 +163,6 @@ function RaidBuff:CheckBuff(unit)
     if not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
         return
     end
-    local unitGUID = UnitGUID(unit)
-    --if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
     if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) then
         for key, token in pairs(unitsMissingBuff) do
             if issecretvalue(UnitIsUnit(token, unit)) then
@@ -226,22 +187,9 @@ function RaidBuff:CheckBuff(unit)
                 unitsMissingBuff[key] = nil
             end
         end
-        if unit == "player" then
-            if raidBuffTimer then
-                raidBuffTimer:Cancel()
-            end
-            if aura.expirationTime - GetTime() >= 60 * raidBuffDB.earlyWarning then
-                raidBuffTimer = C_Timer.NewTimer(
-                    aura.expirationTime - GetTime() - 60 * raidBuffDB.earlyWarning,
-                    function() self:Update() end)
-            end
-        end
     else
         if unit == "player" then
             unitsMissingBuff["player"] = "player"
-            if raidBuffTimer then
-                raidBuffTimer:Cancel()
-            end
         else
             local groupType
             local groupSize
@@ -277,8 +225,8 @@ function RaidBuff:GetRemainingBuffTime(unit)
 end
 
 function RaidBuff:PlayerDeath(unitGUID)
-    self:CheckBuff("player")
     if not IsInGroup() then
+        self:CheckBuff("player")
         return
     end
     local groupType

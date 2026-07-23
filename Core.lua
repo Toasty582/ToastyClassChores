@@ -74,8 +74,6 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("LEGACY_LOOT_RULES_CHANGED")
     self:RegisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
-    self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
-    self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 
     if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" then
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
@@ -203,14 +201,6 @@ function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
     end
 end
 
-function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_SHOW(event, spellID)
-    self.RaidBuff:GlowShow(spellID)
-end
-
-function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_HIDE(event, spellID)
-    self.RaidBuff:GlowHide(spellID)
-end
-
 function ToastyClassChores:UNIT_PET()
     if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
         self.Pets:Update()
@@ -273,9 +263,6 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
 end
 
 function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
-    if raidBuffClassList[playerClass] then
-        self.RaidBuff:Update()
-    end
     if playerClass == "SHAMAN" then
         self.ShamanShields:Update()
     end
@@ -327,9 +314,9 @@ function ToastyClassChores:PLAYER_LOGOUT()
     end
 end
 
-function ToastyClassChores:PLAYER_FLAGS_CHANGED(event, unitTarget)
+--[[function ToastyClassChores:PLAYER_FLAGS_CHANGED(event, unitTarget)
     self.RaidBuff:CheckBuff(unitTarget)
-end
+end]]
 
 function ToastyClassChores:UNIT_DIED(event, unitGUID)
     if not issecretvalue(unitGUID) then
