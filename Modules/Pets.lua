@@ -10,7 +10,7 @@ local framesUnlocked = false
 local playerClass
 local petsDB
 
-local isPetMarksman
+local noPetHunter
 local isSacrificeGrimoire
 
 local petExistsBeforeMounting
@@ -120,7 +120,7 @@ function Pets:Update()
         end
     end
     local hasUI, isHunterPet = HasPetUI()
-    if playerClass == "HUNTER" and not isPetMarksman and not framesUnlocked then
+    if playerClass == "HUNTER" and noPetHunter and not framesUnlocked then
         petsFrame:Hide()
         return
     end
@@ -151,9 +151,9 @@ end
 function Pets:CheckAnomaly()
     if playerClass == "HUNTER" then
         if C_SpecializationInfo.GetSpecialization() == 2 then
-            isPetMarksman = C_SpellBook.IsSpellKnown(1223323)
+            noPetHunter = not C_SpellBook.IsSpellKnown(1223323)
         else
-            isPetMarksman = false
+            noPetHunter = false
         end
     elseif playerClass == "WARLOCK" then
         if C_SpecializationInfo.GetSpecialization() ~= 2 then

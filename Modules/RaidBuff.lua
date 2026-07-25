@@ -5,6 +5,7 @@ ToastyClassChores.RaidBuff = ToastyClassChores.RaidBuff or {}
 local RaidBuff = ToastyClassChores.RaidBuff
 
 local raidBuffFrame
+local updateTimer
 
 local playerClass
 local raidBuffDB
@@ -18,6 +19,13 @@ function RaidBuff:CountUnitsMissingBuff()
         count = count + 1
     end
     return count
+end
+
+-- Purely a debug function, separate so as to not make debug mode unusable
+function RaidBuff:PrintUnitsMissingBuff()
+    for key, _ in pairs(unitsMissingBuff) do
+        ToastyClassChores:Debug(key)
+    end
 end
 
 local raidBuffSpellList = {
@@ -129,6 +137,12 @@ function RaidBuff:Initialize()
     end
 
     self:CheckWholeRaid()
+    -- Hard code to check every 3 seconds for the case where the player is just sitting around without throwing UNIT_AURA
+    updateTimer = ToastyClassChores:ScheduleRepeatingTimer("ForceRaidBuffUpdate", 5)
+end
+
+function ToastyClassChores:ForceRaidBuffUpdate()
+    RaidBuff:Update()
 end
 
 function RaidBuff:Update()
@@ -163,6 +177,8 @@ function RaidBuff:CheckBuff(unit)
     if not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
         return
     end
+    -- NPCs in follower dungeons or delves will trip this, I'm not skipping it like I do in Source of Magic because in my testing the aura check 
+    -- didn't work properly on them, they seem to use different spellIDs for raid buffs. Regardless it's a small enough thing that I don't really care
     if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) then
         for key, token in pairs(unitsMissingBuff) do
             if issecretvalue(UnitIsUnit(token, unit)) then

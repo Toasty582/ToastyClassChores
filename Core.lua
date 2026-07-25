@@ -1,6 +1,6 @@
 local ADDON_NAME, ns = ...
 
-ToastyClassChores = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0")
+ToastyClassChores = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
 ns.Addon = ToastyClassChores
 
 ToastyClassChores.versionString = C_AddOns.GetAddOnMetadata(ToastyClassChores.name, "Version")
@@ -276,7 +276,7 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     end
     if playerClass == "EVOKER" then
         if UnitIsPlayer(unitTarget) then
-            self.SourceOfMagic:VerifyBuff()
+            self.SourceOfMagic:Update()
         end
     end
 end

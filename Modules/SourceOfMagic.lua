@@ -5,6 +5,7 @@ ToastyClassChores.SourceOfMagic = ToastyClassChores.SourceOfMagic or {}
 local SourceOfMagic = ToastyClassChores.SourceOfMagic
 
 local sourceOfMagicFrame
+local updateTimer
 
 local playerClass
 local sourceOfMagicDB
@@ -55,7 +56,7 @@ end
 function SourceOfMagic:Initialize()
     sourceOfMagicDB = ToastyClassChores.db.profile.sourceOfMagic
     playerClass = ToastyClassChores.cdb.profile.class
-    if not playerClass == "EVOKER" then
+    if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         return
     end
     if not sourceOfMagicFrame then
@@ -85,10 +86,15 @@ function SourceOfMagic:Initialize()
 
     self:CheckSourceOfMagicKnown()
     self:CheckGroup()
+    -- Hard code to check every 3 seconds for the case where the player is just sitting around without casting or throwing UNIT_AURA
+    updateTimer = ToastyClassChores:ScheduleRepeatingTimer("ForceSourceOfMagicUpdate", 3)
+end
+
+function ToastyClassChores:ForceSourceOfMagicUpdate()
+    SourceOfMagic:Update()
 end
 
 function SourceOfMagic:Update()
-    ToastyClassChores:Debug("Update")
     if not (sourceOfMagicDB.tracking and playerClass == "EVOKER") then
         if sourceOfMagicFrame and not framesUnlocked then
             sourceOfMagicFrame:Hide()
@@ -105,12 +111,13 @@ function SourceOfMagic:Update()
         end
         return
     end
+    local remainingTime = self:VerifyBuff()
     if currentToken then
         local earlyWarningThreshold = 60 * sourceOfMagicDB.earlyWarning
         if PlayerIsInCombat() and sourceOfMagicDB.earlyWarningNoCombat then
             earlyWarningThreshold = 0
         end
-        if self:VerifyBuff() <= earlyWarningThreshold then
+        if remainingTime <= earlyWarningThreshold then
             sourceOfMagicFrame:Show()
         else
             if not framesUnlocked then
@@ -226,6 +233,7 @@ function SourceOfMagic:RegisterCast(spellID, target)
                 end
             end
         end
+        self:Update()
     end
 end
 
