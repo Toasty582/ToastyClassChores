@@ -233,6 +233,7 @@ function SourceOfMagic:RegisterCast(spellID, target)
                 end
             end
         end
+        ToastyClassChores:Debug(currentToken)
         self:Update()
     end
 end

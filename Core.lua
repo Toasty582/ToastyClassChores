@@ -304,7 +304,7 @@ end
 
 function playerEventFrame:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
     if playerClass == "EVOKER" then
-        ToastyClassChores.SourceOfMagic:RegisterCast(spellID, target)
+        RunNextFrame(function() ToastyClassChores.SourceOfMagic:RegisterCast(spellID, target) end)
     end
 end
 
