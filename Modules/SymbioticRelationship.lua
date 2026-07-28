@@ -110,7 +110,7 @@ function SymbioticRelationship:Update()
             symbioticDuration:Reset()
         end
         if symbioticTimer then
-            symbioticTimer:Reset()
+            symbioticTimer:Cancel()
         end
         ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime = 0
         if symbioticRelationshipFrame and not framesUnlocked then
@@ -119,8 +119,7 @@ function SymbioticRelationship:Update()
         return
     end
 
-    self:CheckDurations() -- Checks the buff to see if the duration has desynced for whatever reason
-    ToastyClassChores:Debug("----")
+    self:CheckDurations()
     local earlyWarningThreshold = 60 * symbioticRelationshipDB.earlyWarning
     if PlayerIsInCombat() and symbioticRelationshipDB.earlyWarningNoCombat then
         earlyWarningThreshold = 0
@@ -140,9 +139,6 @@ function SymbioticRelationship:CheckDurations()
     if not (symbioticRelationshipDB.tracking and playerClass == "DRUID") then
         return
     end
-    ToastyClassChores:Debug(symbioticDuration:GetRemainingDuration())
-    ToastyClassChores:Debug(GetTime() + ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime)
-    ToastyClassChores:Debug(not symbioticDuration:GetStartTime())
     if C_Secrets.ShouldAurasBeSecret() then
         if symbioticDuration:GetStartTime() == 0 then
             symbioticDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime, ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime)
@@ -177,8 +173,6 @@ function SymbioticRelationship:CheckDurations()
             end
         end
     end
-    ToastyClassChores:Debug("--+--")
-    ToastyClassChores:Debug(symbioticDuration:GetRemainingDuration())
     self:StoreDurations()
 end
 
@@ -191,7 +185,6 @@ function SymbioticRelationship:StoreDurations()
     else
         ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime = 0
     end
-    ToastyClassChores:Debug(ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime)
 end
 
 function SymbioticRelationship:RegisterCast(spellID)
