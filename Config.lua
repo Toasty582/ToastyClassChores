@@ -602,6 +602,12 @@ local config = {
                     width = "full",
                     order = 1,
                 },
+                secretDisclaimer = {
+                    type = "description",
+                    name =
+                    "If your symbiotic relationship buff is removed early while secrets are active, it will not register until secrets deactivate.",
+                    order = 2,
+                },
                 iconSize = {
                     type = "range",
                     name = "Icon Size",

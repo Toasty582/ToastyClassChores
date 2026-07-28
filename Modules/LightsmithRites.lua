@@ -130,8 +130,8 @@ function LightsmithRites:CheckDurations()
         return
     end
     if C_Secrets.ShouldAurasBeSecret() then
-        if not riteDuration:GetStartTime() then
-            riteDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingLightsmithRiteTime)
+        if riteDuration:GetStartTime() == 0 then
+            riteDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingLightsmithRiteTime, ToastyClassChores.cdb.profile.remainingLightsmithRiteTime)
             if riteTimer then
                 riteTimer:Cancel()
             end
@@ -176,7 +176,7 @@ function LightsmithRites:StoreDurations()
     if riteDuration then
         ToastyClassChores.cdb.profile.remainingLightsmithRiteTime = riteDuration:GetRemainingDuration()
     else
-        ToastyClassChores.cdb.profile.remainingLightsmithRiteTime = nil
+        ToastyClassChores.cdb.profile.remainingLightsmithRiteTime = 0
     end
 end
 

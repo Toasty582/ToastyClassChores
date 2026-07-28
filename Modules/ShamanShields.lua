@@ -133,8 +133,8 @@ function ShamanShields:CheckDurations()
         return
     end
     if C_Secrets.ShouldAurasBeSecret() then
-        if not shieldDuration:GetStartTime() then
-            shieldDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingshamanShieldTime)
+        if shieldDuration:GetStartTime() == 0 then
+            shieldDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingShamanShieldTime, ToastyClassChores.cdb.profile.remainingShamanShieldTime)
             if shieldTimer then
                 shieldTimer:Cancel()
             end
@@ -176,7 +176,7 @@ function ShamanShields:StoreDurations()
     if shieldDuration then
         ToastyClassChores.cdb.profile.remainingShamanShieldTime = shieldDuration:GetRemainingDuration()
     else
-        ToastyClassChores.cdb.profile.remainingShamanShieldTime = nil
+        ToastyClassChores.cdb.profile.remainingShamanShieldTime = 0
     end
 end
 
