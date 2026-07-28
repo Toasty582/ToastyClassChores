@@ -111,7 +111,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_SPELLCAST_SENT")
     end]]
 
-    if playerClass == "SHAMAN" then
+    if playerClass == "SHAMAN" or playerClass == "DRUID" then
         self:RegisterEvent("PLAYER_LOGOUT")
     end
 
@@ -135,6 +135,7 @@ function ToastyClassChores:OnEnable()
     self.ShamanShields:Initialize()
     self.LightsmithRites:Initialize()
     self.SourceOfMagic:Initialize()
+    self.SymbioticRelationship:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
 end
@@ -164,6 +165,9 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     end
     if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
         RunNextFrame(function() self.LightsmithRites:Update() end)
+    end
+    if playerClass == "DRUID" then
+        RunNextFrame(function() self.SymbioticRelationship:Update() end)
     end
 end
 
@@ -214,6 +218,7 @@ function ToastyClassChores:SPELLS_CHANGED()
         end
         if playerClass == "DRUID" then
             self.DruidForms:CheckForms()
+            self.SymbioticRelationship:CheckSymbioticRelationshipKnown()
         end
         if playerClass == "WARLOCK" then
             self.Pets:CheckAnomaly()
@@ -251,7 +256,7 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     if raidBuffClassList[playerClass] and self.db.profile.raidBuff.earlyWarningNoCombat then
         self.RaidBuff:Update()
     end
-    if playerClass == "SHAMAN" then
+    if playerClass == "SHAMAN" and self.db.profile.shamanShields.earlyWarningNoCombat then
         self.ShamanShields:Update()
     end
     if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 and self.db.profile.lightsmithRites.earlyWarningNoCombat then
@@ -260,11 +265,17 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     if playerClass == "EVOKER" and self.db.profile.sourceOfMagic.earlyWarningNoCombat then
         self.SourceOfMagic:Update()
     end
+    if playerClass == "DRUID" and self.db.profile.symbioticRelationship.earlyWarningNoCombat then
+        self.SymbioticRelationship:Update()
+    end
 end
 
 function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
     if playerClass == "SHAMAN" then
         self.ShamanShields:Update()
+    end
+    if playerClass == "DRUID" then
+        self.SymbioticRelationship:Update()
     end
 end
 
@@ -291,6 +302,9 @@ function playerEventFrame:UNIT_AURA()
     if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
         ToastyClassChores.LightsmithRites:Update()
     end
+    if playerClass == "DRUID" then
+        ToastyClassChores.SymbioticRelationship:Update()
+    end
 end
 
 function playerEventFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
@@ -299,6 +313,9 @@ function playerEventFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, 
     end
     if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
         RunNextFrame(function() ToastyClassChores.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
+    end
+    if playerClass == "DRUID" then
+        ToastyClassChores.SymbioticRelationship:RegisterCast(spellID)
     end
 end
 
@@ -311,6 +328,9 @@ end
 function ToastyClassChores:PLAYER_LOGOUT()
     if playerClass == "SHAMAN" then
         self.ShamanShields:StoreDurations()
+    end
+    if playerClass == "DRUID" then
+        self.SymbioticRelationship:StoreDurations()
     end
 end
 
@@ -350,6 +370,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.ShamanShields:ToggleFrameLock(value)
     self.LightsmithRites:ToggleFrameLock(value)
     self.SourceOfMagic:ToggleFrameLock(value)
+    self.SymbioticRelationship:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)

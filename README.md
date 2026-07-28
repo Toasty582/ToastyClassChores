@@ -15,6 +15,7 @@ Currently Implemented:
 - Grimoire of Sacrifice reminder
 - Lightning/Water Shield
 - Source of Magic
+- Symbiotic Relationship
 
 Planned Features:
 - Nothing high priority atm

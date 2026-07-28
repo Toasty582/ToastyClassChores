@@ -590,6 +590,55 @@ local config = {
                 },
             }
         },
+        symbioticRelationship = {
+            type = "group",
+            name = "Symbiotic Relationship",
+            args = {
+                tracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.symbioticRelationship.tracking end,
+                    set = "SetSymbioticRelationshipTracking",
+                    width = "full",
+                    order = 1,
+                },
+                iconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    desc = "Input number for larger icons",
+                    get = function() return ToastyClassChores.db.profile.symbioticRelationship.iconSize end,
+                    set = "SetSymbioticRelationshipIconSize",
+                },
+                opacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.symbioticRelationship.opacity end,
+                    set = "SetSymbioticRelationshipOpacity",
+                },
+                earlyWarning = {
+                    type = "range",
+                    name = "Early Warning",
+                    desc = "Time in minutes before expiration at which the alert appears.",
+                    min = 0,
+                    max = 60,
+                    step = 1,
+                    get = function() return ToastyClassChores.db.profile.symbioticRelationship.earlyWarning end,
+                    set = "SetSymbioticRelationshipEarlyWarning",
+                    order = 103,
+                },
+                earlyWarningNoCombat = {
+                    type = "toggle",
+                    name = "Hide Early Warning During Combat",
+                    get = function() return ToastyClassChores.db.profile.symbioticRelationship.earlyWarningNoCombat end,
+                    set = "SetSymbioticRelationshipEarlyWarningNoCombat",
+                    width = "full",
+                    order = 104,
+                },
+            }
+        },
     },
 }
 
@@ -746,6 +795,19 @@ local defaults = {
                 frameAnchorPoint = "CENTER",
             },
         },
+        symbioticRelationship = {
+            tracking = true,
+            iconSize = 100,
+            opacity = 1,
+            earlyWarning = 0,
+            earlyWarningNoCombat = false,
+            location = {
+                xPos = 105,
+                yPos = 0,
+                parentAnchorPoint = "CENTER",
+                frameAnchorPoint = "CENTER",
+            },
+        },
     },
 }
 
@@ -753,8 +815,9 @@ local characterDefaults = {
     profile = {
         class = "",
         guid = "",
-        remainingShamanShieldTime = nil,
-        remainingLightsmithRiteTime = nil,
+        remainingShamanShieldTime = 0,
+        remainingLightsmithRiteTime = 0,
+        remainingSymbioticRelationshipTime = 0,
     },
 }
 

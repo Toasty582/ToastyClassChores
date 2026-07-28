@@ -35,3 +35,4 @@ Modules\RoguePoisons.lua
 Modules\ShamanShields.lua
 Modules\LightsmithRites.lua
 Modules\SourceOfMagic.lua
+Modules\SymbioticRelationship.lua
