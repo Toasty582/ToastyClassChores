@@ -36,3 +36,4 @@ Modules\ShamanShields.lua
 Modules\LightsmithRites.lua
 Modules\SourceOfMagic.lua
 Modules\SymbioticRelationship.lua
+Modules\AugAttunements.lua

@@ -75,7 +75,7 @@ function ToastyClassChores:OnEnable()
     self:RegisterEvent("LEGACY_LOOT_RULES_CHANGED")
     self:RegisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
 
-    if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" then
+    if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" or playerClass == "EVOKER" then
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
     end
 
@@ -136,6 +136,7 @@ function ToastyClassChores:OnEnable()
     self.LightsmithRites:Initialize()
     self.SourceOfMagic:Initialize()
     self.SymbioticRelationship:Initialize()
+    self.AugAttunements:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
 end
@@ -191,12 +192,14 @@ function ToastyClassChores:UPDATE_SHAPESHIFT_FORM()
     self.DruidForms:Update()
     self.WarriorStances:Update()
     self.PaladinAuras:Update()
+    self.AugAttunements:Update()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
     self.Shadowform:Update()
     self.WarriorStances:Update()
     self.ShamanShields:Update()
+    self.AugAttunements:Update()
 end
 
 function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
@@ -229,6 +232,7 @@ function ToastyClassChores:SPELLS_CHANGED()
         end
         if playerClass == "EVOKER" then
             self.SourceOfMagic:CheckSourceOfMagicKnown()
+            self.AugAttunements:CheckAttunementsKnown()
         end
         if playerClass == "ROGUE" then
             self.RoguePoisons:CheckDoublePoison()
@@ -267,6 +271,10 @@ function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
     end
     if playerClass == "DRUID" and self.db.profile.symbioticRelationship.earlyWarningNoCombat then
         self.SymbioticRelationship:Update()
+    end
+    
+    if playerClass == "EVOKER" and self.db.profile.augAttunements.noCombatOnly or self.db.profile.augAttunements.combatOnly then
+        self.AugAttunements:Update()
     end
 end
 
@@ -371,6 +379,7 @@ function ToastyClassChores:ToggleFrameLock()
     self.LightsmithRites:ToggleFrameLock(value)
     self.SourceOfMagic:ToggleFrameLock(value)
     self.SymbioticRelationship:ToggleFrameLock(value)
+    self.AugAttunements:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)

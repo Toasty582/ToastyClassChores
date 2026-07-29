@@ -264,6 +264,13 @@ local config = {
                     get = function() return ToastyClassChores.db.profile.warriorStances.opacity end,
                     set = "SetWarriorStancesOpacity",
                 },
+                alwaysShow = {
+                    type = "toggle",
+                    name = "Always Show",
+                    get = function() return ToastyClassChores.db.profile.warriorStances.alwaysShow end,
+                    set = "SetWarriorStancesAlwaysShow",
+                    order = -4
+                },
                 noCombatOnly = {
                     type = "toggle",
                     name = "Out of Combat Only",
@@ -645,6 +652,65 @@ local config = {
                 },
             }
         },
+        augAttunements = {
+            type = "group",
+            name = "Augmentation Attunements",
+            args = {
+                tracking = {
+                    type = "toggle",
+                    name = "Enable Tracking",
+                    get = function() return ToastyClassChores.db.profile.augAttunements.tracking end,
+                    set = "SetAugAttunementsTracking",
+                    width = "full"
+                },
+                iconSize = {
+                    type = "range",
+                    name = "Icon Size",
+                    softMax = 200,
+                    desc = "Input number for larger icons",
+                    get = function() return ToastyClassChores.db.profile.augAttunements.iconSize end,
+                    set = "SetAugAttunementsIconSize",
+                },
+                opacity = {
+                    type = "range",
+                    name = "Opacity",
+                    min = 0,
+                    max = 1,
+                    get = function() return ToastyClassChores.db.profile.augAttunements.opacity end,
+                    set = "SetAugAttunementsOpacity",
+                },
+                combatOnly = {
+                    type = "toggle",
+                    name = "In Combat Only",
+                    get = function() return ToastyClassChores.db.profile.augAttunements.combatOnly end,
+                    set = "SetAugAttunementsCombatOnly",
+                    order = -4,
+                },
+                noCombatOnly = {
+                    type = "toggle",
+                    name = "Out of Combat Only",
+                    get = function() return ToastyClassChores.db.profile.augAttunements.noCombatOnly end,
+                    set = "SetAugAttunementsNoCombatOnly",
+                    order = -3,
+                },
+                showBlack = {
+                    type = "toggle",
+                    name = "Show Black Attunement",
+                    width = "full",
+                    get = function() return ToastyClassChores.db.profile.augAttunements.showBlack end,
+                    set = "SetAugAttunementsShowBlack",
+                    order = -2,
+                },
+                showBronze = {
+                    type = "toggle",
+                    name = "Show Bronze Attunement",
+                    width = "full",
+                    get = function() return ToastyClassChores.db.profile.augAttunements.showBronze end,
+                    set = "SetAugAttunementsShowBronze",
+                    order = -1,
+                },
+            }
+        },
     },
 }
 
@@ -695,6 +761,7 @@ local defaults = {
             },
         },
         druidForms = {
+            alwaysShow = false,
             tracking = true,
             iconSize = 100,
             combatOnly = false,
@@ -725,6 +792,7 @@ local defaults = {
             },
         },
         paladinAuras = {
+            alwaysShow = false,
             tracking = true,
             iconSize = 100,
             combatOnly = false,
@@ -814,6 +882,21 @@ local defaults = {
                 frameAnchorPoint = "CENTER",
             },
         },
+        augAttunements = {
+            tracking = true,
+            iconSize = 100,
+            combatOnly = false,
+            noCombatOnly = false,
+            showBlack = false,
+            showBronze = true,
+            opacity = 1,
+            location = {
+                xPos = 105,
+                yPos = 0,
+                parentAnchorPoint = "CENTER",
+                frameAnchorPoint = "CENTER",
+            },
+        },
     },
 }
 
@@ -879,6 +962,7 @@ function Config:MigrateDB()
     }
     db.petsTracking, db.petsIconSize, db.petsInstanceOnly, db.petsNoLegacy, db.petsOpacity, db.petsLocation = nil
     db.druidForms = {
+        alwaysShow = db.druidFormsAlwaysShow or db.druidForms.alwaysShow,
         tracking = db.druidFormsTracking or db.druidForms.tracking,
         iconSize = db.druidFormsIconSize or db.druidForms.iconSize,
         combatOnly = db.druidFormsInCombatOnly or db.druidForms.combatOnly,
@@ -893,7 +977,7 @@ function Config:MigrateDB()
             frameAnchorPoint = db.druidFormsLocation.frameAnchorPoint or db.druidForms.location.frameAnchorPoint,
         }
     }
-    db.druidFormsTracking, db.druidFormsIconSize, db.druidFormsInCombatOnly, db.druidFormsIgnoreTravel, db.druidFormsInstanceOnly, db.druidFormsNoLegacy, db.druidFormsOpacity, db.druidFormsLocation = nil
+    db.druidFormsAlwaysShow, db.druidFormsTracking, db.druidFormsIconSize, db.druidFormsInCombatOnly, db.druidFormsIgnoreTravel, db.druidFormsInstanceOnly, db.druidFormsNoLegacy, db.druidFormsOpacity, db.druidFormsLocation = nil
     db.warriorStances = {
         alwaysShow = db.warriorStancesAlwaysShow or db.warriorStances.alwaysShow,
         tracking = db.warriorStancesTracking or db.warriorStances.tracking,
@@ -911,6 +995,7 @@ function Config:MigrateDB()
     }
     db.warriorStancesAlwaysShow, db.warriorStancesTracking, db.warriorStancesIconSize, db.warriorStancesNoCombatOnly, db.warriorStancesProtShowsBattle, db.warriorStancesProtShowsDef, db.warriorStancesOpacity, db.warriorStancesLocation = nil
     db.paladinAuras = {
+        alwaysShow = db.paladinAurasAlwaysShow or db.paladinAuras.alwaysShow,
         tracking = db.paladinAurasTracking or db.paladinAuras.tracking,
         iconSize = db.paladinAurasIconSize or db.paladinAuras.iconSize,
         combatOnly = db.paladinAurasInCombatOnly or db.paladinAuras.combatOnly,
@@ -924,7 +1009,7 @@ function Config:MigrateDB()
             frameAnchorPoint = db.paladinAurasLocation.frameAnchorPoint or db.paladinAuras.location.frameAnchorPoint,
         }
     }
-    db.paladinAurasTracking, db.paladinAurasIconSize, db.paladinAurasInCombatOnly, db.paladinAurasInstanceOnly, db.paladinAurasNoLegacy, db.paladinAurasOpacity, db.paladinAurasLocation = nil
+    db.paladinAurasAlwaysShow, db.paladinAurasTracking, db.paladinAurasIconSize, db.paladinAurasInCombatOnly, db.paladinAurasInstanceOnly, db.paladinAurasNoLegacy, db.paladinAurasOpacity, db.paladinAurasLocation = nil
     db.sacrificeGrimoire = {
         tracking = db.sacrificeGrimoireTracking or db.sacrificeGrimoire.tracking,
         iconSize = db.sacrificeGrimoireIconSize or db.sacrificeGrimoire.iconSize,

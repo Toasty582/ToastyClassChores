@@ -50,6 +50,12 @@ function ToastyClassChores:SetWarriorStancesNoCombatOnly(info, value)
     WarriorStances:Update()
 end
 
+
+function ToastyClassChores:SetWarriorStancesAlwaysShow(info, value)
+    warriorStancesDB.alwaysShow = value
+    WarriorStances:Update()
+end
+
 function ToastyClassChores:SetProtShowsDef(info, value)
     warriorStancesDB.protShowsDef = value
     WarriorStances:Update()
@@ -130,6 +136,11 @@ function WarriorStances:Update()
 
     if warriorStancesDB.noCombatOnly and PlayerIsInCombat() and not framesUnlocked then
         warriorStancesFrame:Hide()
+        return
+    end
+
+    if warriorStancesDB.alwaysShow then
+        warriorStancesFrame:Show()
         return
     end
 

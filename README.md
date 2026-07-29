@@ -16,6 +16,7 @@ Currently Implemented:
 - Lightning/Water Shield
 - Source of Magic
 - Symbiotic Relationship
+- Augmentation Attunements
 
 Planned Features:
 - Nothing high priority atm
