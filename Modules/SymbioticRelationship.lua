@@ -8,11 +8,9 @@ local symbioticRelationshipFrame
 local frameTexture
 local framesUnlocked = false
 
-local symbioticDuration
-local symbioticTimer
-
 local playerClass
 local symbioticRelationshipDB
+local updateTimer
 
 local knowsSymbioticRelationship
 local relationshipSpellID = 474750
@@ -27,12 +25,6 @@ function ToastyClassChores:SetSymbioticRelationshipTracking(info, value)
         self:Print("Disabling Symbiotic Relationship Tracking")
         if symbioticRelationshipFrame then
             symbioticRelationshipFrame:Hide()
-        end
-        if symbioticDuration then
-            symbioticDuration:Reset()
-        end
-        if symbioticTimer then
-            symbioticTimer:Cancel()
         end
     end
 end
@@ -90,8 +82,14 @@ function SymbioticRelationship:Initialize()
     if not framesUnlocked then
         symbioticRelationshipFrame:Hide()
     end
-    symbioticDuration = C_DurationUtil.CreateDuration()
     self:CheckSymbioticRelationshipKnown()
+
+    -- Hard code to check every 3 seconds for the case where the player is just sitting around without throwing UNIT_AURA
+    updateTimer = ToastyClassChores:ScheduleRepeatingTimer("ForceSymbioticRelationshipUpdate", 3)
+end
+
+function ToastyClassChores:ForceSymbioticRelationshipUpdate()
+    SymbioticRelationship:Update()
 end
 
 function SymbioticRelationship:Update()
@@ -106,25 +104,23 @@ function SymbioticRelationship:Update()
     end
 
     if not IsInGroup() or not knowsSymbioticRelationship then
-        if symbioticDuration then
-            symbioticDuration:Reset()
-        end
-        if symbioticTimer then
-            symbioticTimer:Cancel()
-        end
-        ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime = 0
         if symbioticRelationshipFrame and not framesUnlocked then
             symbioticRelationshipFrame:Hide()
         end
         return
     end
 
-    self:CheckDurations()
+    local remainingTime = 0
+    local aura = C_UnitAuras.GetPlayerAuraBySpellID(relationshipAuraID)
+    if aura then
+        remainingTime = aura.expirationTime - GetTime()
+    end
+
     local earlyWarningThreshold = 60 * symbioticRelationshipDB.earlyWarning
     if PlayerIsInCombat() and symbioticRelationshipDB.earlyWarningNoCombat then
         earlyWarningThreshold = 0
     end
-    if symbioticDuration:GetRemainingDuration() <= earlyWarningThreshold or symbioticDuration:GetRemainingDuration() == nil then
+    if remainingTime <= earlyWarningThreshold then
         symbioticRelationshipFrame:Show()
         return
     else
@@ -133,73 +129,6 @@ function SymbioticRelationship:Update()
         end
         return
     end
-end
-
-function SymbioticRelationship:CheckDurations()
-    if not (symbioticRelationshipDB.tracking and playerClass == "DRUID") then
-        return
-    end
-    if C_Secrets.ShouldAurasBeSecret() then
-        if symbioticDuration:GetStartTime() == 0 then
-            symbioticDuration:SetTimeFromEnd(GetTime() + ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime, ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime)
-            if symbioticTimer then
-                symbioticTimer:Cancel()
-            end
-            if symbioticDuration:GetRemainingDuration() - 60 * symbioticRelationshipDB.earlyWarning > 0 then
-                symbioticTimer = C_Timer.NewTimer(
-                    symbioticDuration:GetRemainingDuration() - 60 * symbioticRelationshipDB.earlyWarning,
-                    function() self:Update() end)
-            end
-        end
-    else
-        local buffFound = false
-        local aura = C_UnitAuras.GetPlayerAuraBySpellID(relationshipAuraID)
-        if aura then
-            symbioticDuration:SetTimeFromEnd(aura.expirationTime, 3600)
-            if symbioticTimer then
-                symbioticTimer:Cancel()
-            end
-            if symbioticDuration:GetRemainingDuration() - 60 * symbioticRelationshipDB.earlyWarning > 0 then
-                symbioticTimer = C_Timer.NewTimer(
-                    symbioticDuration:GetRemainingDuration() - 60 * symbioticRelationshipDB.earlyWarning,
-                    function() self:Update() end)
-            end
-            buffFound = true
-        end
-        if not buffFound then
-            symbioticDuration:Reset()
-            if symbioticTimer then
-                symbioticTimer:Cancel()
-            end
-        end
-    end
-    self:StoreDurations()
-end
-
-function SymbioticRelationship:StoreDurations()
-    if not (symbioticRelationshipDB.tracking and playerClass == "DRUID") then
-        return
-    end
-    if symbioticDuration then
-        ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime = symbioticDuration:GetRemainingDuration()
-    else
-        ToastyClassChores.cdb.profile.remainingSymbioticRelationshipTime = 0
-    end
-end
-
-function SymbioticRelationship:RegisterCast(spellID)
-    if not (symbioticRelationshipDB.tracking and playerClass == "DRUID") then
-        return
-    end
-    if spellID == relationshipSpellID then
-        symbioticDuration:SetTimeFromEnd(GetTime() + 3600, 3600)
-        if symbioticTimer then
-            symbioticTimer:Cancel()
-        end
-        symbioticTimer = C_Timer.NewTimer(3600 - 60 * symbioticRelationshipDB.earlyWarning,
-            function() self:Update() end)
-    end
-    self:Update()
 end
 
 function SymbioticRelationship:CheckSymbioticRelationshipKnown()

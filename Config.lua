@@ -609,12 +609,6 @@ local config = {
                     width = "full",
                     order = 1,
                 },
-                secretDisclaimer = {
-                    type = "description",
-                    name =
-                    "If your symbiotic relationship buff is removed early while secrets are active, it will not register until secrets deactivate.",
-                    order = 2,
-                },
                 iconSize = {
                     type = "range",
                     name = "Icon Size",
@@ -654,7 +648,7 @@ local config = {
         },
         augAttunements = {
             type = "group",
-            name = "Augmentation Attunements",
+            name = "Aug Attunements",
             args = {
                 tracking = {
                     type = "toggle",
@@ -906,7 +900,6 @@ local characterDefaults = {
         guid = "",
         remainingShamanShieldTime = 0,
         remainingLightsmithRiteTime = 0,
-        remainingSymbioticRelationshipTime = 0,
     },
 }
 

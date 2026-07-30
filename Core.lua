@@ -111,7 +111,7 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("UNIT_SPELLCAST_SENT")
     end]]
 
-    if playerClass == "SHAMAN" or playerClass == "DRUID" then
+    if playerClass == "SHAMAN" then
         self:RegisterEvent("PLAYER_LOGOUT")
     end
 
@@ -282,9 +282,6 @@ function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
     if playerClass == "SHAMAN" then
         self.ShamanShields:Update()
     end
-    if playerClass == "DRUID" then
-        self.SymbioticRelationship:Update()
-    end
 end
 
 function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
@@ -322,9 +319,6 @@ function playerEventFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, 
     if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
         RunNextFrame(function() ToastyClassChores.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
     end
-    if playerClass == "DRUID" then
-        ToastyClassChores.SymbioticRelationship:RegisterCast(spellID)
-    end
 end
 
 function playerEventFrame:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
@@ -336,9 +330,6 @@ end
 function ToastyClassChores:PLAYER_LOGOUT()
     if playerClass == "SHAMAN" then
         self.ShamanShields:StoreDurations()
-    end
-    if playerClass == "DRUID" then
-        self.SymbioticRelationship:StoreDurations()
     end
 end
 
