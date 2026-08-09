@@ -8,13 +8,10 @@ local roguePoisonsFrame
 local frameTexture
 local framesUnlocked = false
 
-local lethalTimer
-local nonLethalTimer
-local lethalTimerAssa
-local nonLethalTimerAssa
-
 local playerClass
 local doublePoison
+
+local roguePoisonsDB
 
 local lethalIDs = {
     [8679] = 8679,     -- Wound
@@ -30,7 +27,7 @@ local nonLethalIDs = {
 }
 
 function ToastyClassChores:SetRoguePoisonsTracking(info, value)
-    self.db.profile.roguePoisonsTracking = value
+    roguePoisonsDB.tracking = value
     if value then
         self:Print("Enabling Rogue Poison Tracking")
         RoguePoisons:Initialize()
@@ -43,42 +40,40 @@ function ToastyClassChores:SetRoguePoisonsTracking(info, value)
 end
 
 function ToastyClassChores:SetRoguePoisonsIconSize(info, value)
-    self.db.profile.roguePoisonsIconSize = value
+    roguePoisonsDB.iconSize = value
     if roguePoisonsFrame then
         roguePoisonsFrame:SetSize(value, value)
     end
 end
 
 function ToastyClassChores:SetRoguePoisonsOpacity(info, value)
-    self.db.profile.roguePoisonsOpacity = value
+    roguePoisonsDB.opacity = value
     if roguePoisonsFrame then
         roguePoisonsFrame:SetAlpha(value)
     end
 end
 
 function ToastyClassChores:SetRoguePoisonsEarlyWarning(info, value)
-    self.db.profile.roguePoisonsEarlyWarning = value
+    roguePoisonsDB.earlyWarning = value
     RoguePoisons:Update()
 end
 
 function ToastyClassChores:SetRoguePoisonsEarlyWarningNoCombat(info, value)
-    self.db.profile.roguePoisonsEarlyWarningNoCombat = value
+    roguePoisonsDB.earlyWarningNoCombat = value
     RoguePoisons:Update()
 end
 
 function RoguePoisons:Initialize()
+    roguePoisonsDB = ToastyClassChores.db.profile.roguePoisons
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.roguePoisonsTracking and playerClass == "ROGUE") then
+    if not (roguePoisonsDB.tracking and playerClass == "ROGUE") then
         return
     end
     if not roguePoisonsFrame then
         roguePoisonsFrame = CreateFrame("Frame", "Rogue Poisons Reminder", UIParent)
-        roguePoisonsFrame:SetPoint(ToastyClassChores.db.profile.roguePoisonsLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.roguePoisonsLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.roguePoisonsLocation.xPos,
-            ToastyClassChores.db.profile.roguePoisonsLocation.yPos)
-        roguePoisonsFrame:SetSize(ToastyClassChores.db.profile.roguePoisonsIconSize,
-            ToastyClassChores.db.profile.roguePoisonsIconSize)
+        roguePoisonsFrame:SetPoint(roguePoisonsDB.location.frameAnchorPoint, UIParent,
+            roguePoisonsDB.location.parentAnchorPoint, roguePoisonsDB.location.xPos, roguePoisonsDB.location.yPos)
+        roguePoisonsFrame:SetSize(roguePoisonsDB.iconSize, roguePoisonsDB.iconSize)
         frameTexture = roguePoisonsFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(132273)
         frameTexture:SetAllPoints()
@@ -90,10 +85,10 @@ function RoguePoisons:Initialize()
     end)
     roguePoisonsFrame:SetScript("OnDragStop", function(self)
         self:StopMovingOrSizing()
-        ToastyClassChores.db.profile.roguePoisonsLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.roguePoisonsLocation.parentAnchorPoint, ToastyClassChores.db.profile.roguePoisonsLocation.xPos, ToastyClassChores.db.profile.roguePoisonsLocation.yPos =
+        roguePoisonsDB.location.frameAnchorPoint, _, roguePoisonsDB.location.parentAnchorPoint, roguePoisonsDB.location.xPos, roguePoisonsDB.location.yPos =
             roguePoisonsFrame:GetPoint()
     end)
-    roguePoisonsFrame:SetAlpha(ToastyClassChores.db.profile.roguePoisonsOpacity)
+    roguePoisonsFrame:SetAlpha(roguePoisonsDB.opacity)
     if not framesUnlocked then
         roguePoisonsFrame:Hide()
     end
@@ -102,7 +97,10 @@ function RoguePoisons:Initialize()
 end
 
 function RoguePoisons:Update()
-    if not (ToastyClassChores.db.profile.roguePoisonsTracking and playerClass == "ROGUE") then
+    if not (roguePoisonsDB.tracking and playerClass == "ROGUE") then
+        if roguePoisonsFrame and not framesUnlocked then
+            roguePoisonsFrame:Hide()
+        end
         return
     end
     if not roguePoisonsFrame then
@@ -111,8 +109,8 @@ function RoguePoisons:Update()
 
     local lethalTime, nonLethalTime, lethalTimeAssa, nonLethalTimeAssa = self:CheckPoisons()
 
-    local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning
-    if PlayerIsInCombat() and ToastyClassChores.db.profile.roguePoisonsEarlyWarningNoCombat then
+    local earlyWarningThreshold = 60 * roguePoisonsDB.earlyWarning
+    if PlayerIsInCombat() and roguePoisonsDB.earlyWarningNoCombat then
         earlyWarningThreshold = 0
     end
 
@@ -148,7 +146,7 @@ function RoguePoisons:Update()
 end
 
 function RoguePoisons:CheckPoisons()
-    if not (ToastyClassChores.db.profile.roguePoisonsTracking and playerClass == "ROGUE") then
+    if not (roguePoisonsDB.tracking and playerClass == "ROGUE") then
         return nil, nil, nil, nil
     end
     local lethalTime
@@ -178,42 +176,6 @@ function RoguePoisons:CheckPoisons()
     end
 
     return lethalTime, nonLethalTime, lethalTimeAssa, nonLethalTimeAssa
-end
-
-function RoguePoisons:PoisonCast(spellID)
-    local lethalTime, nonLethalTime, lethalTimeAssa, nonLethalTimeAssa = self:CheckPoisons()
-    if lethalIDs[spellID] then
-        if lethalTimer then
-            lethalTimer:Cancel()
-        end
-        lethalTimer = C_Timer.NewTimer(lethalTime - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-            function() self:Update() end)
-        if lethalTimeAssa then
-            if lethalTimerAssa then
-                lethalTimerAssa:Cancel()
-            end
-            lethalTimerAssa = C_Timer.NewTimer(
-                lethalTimeAssa - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                function() self:Update() end)
-        end
-    elseif nonLethalIDs[spellID] then
-        if nonLethalTimer then
-            nonLethalTimer:Cancel()
-        end
-        nonLethalTimer = C_Timer.NewTimer(nonLethalTime - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-            function() self:Update() end)
-        if nonLethalTimeAssa then
-            if nonLethalTimerAssa then
-                nonLethalTimerAssa:Cancel()
-            end
-            nonLethalTimerAssa = C_Timer.NewTimer(
-                nonLethalTimeAssa - 60 * ToastyClassChores.db.profile.roguePoisonsEarlyWarning,
-                function() self:Update() end)
-        end
-    else
-        return
-    end
-    self:Update()
 end
 
 function RoguePoisons:CheckDoublePoison()

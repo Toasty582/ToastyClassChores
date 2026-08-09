@@ -5,6 +5,8 @@ ToastyClassChores.PaladinAuras = ToastyClassChores.PaladinAuras or {}
 local PaladinAuras = ToastyClassChores.PaladinAuras
 
 local playerClass
+local paladinAurasDB
+
 local paladinAurasFrame
 local frameTexture
 local framesUnlocked = false
@@ -17,7 +19,7 @@ local auraIcons = {
 }
 
 function ToastyClassChores:SetPaladinAurasTracking(info, value)
-    self.db.profile.paladinAurasTracking = value
+    paladinAurasDB.tracking = value
     if value then
         self:Print("Enabling Paladin Aura Tracking")
         PaladinAuras:Initialize()
@@ -30,52 +32,50 @@ function ToastyClassChores:SetPaladinAurasTracking(info, value)
 end
 
 function ToastyClassChores:SetPaladinAurasAlwaysShow(info, value)
-    self.db.profile.paladinAurasAlwaysShow = value
+    paladinAurasDB.alwaysShow = value
     PaladinAuras:Update()
 end
 
 function ToastyClassChores:SetPaladinAurasIconSize(info, value)
-    self.db.profile.paladinAurasIconSize = value
+    paladinAurasDB.iconSize = value
     if paladinAurasFrame then
         paladinAurasFrame:SetSize(value, value)
     end
 end
 
-function ToastyClassChores:SetPaladinAurasInCombatOnly(info, value)
-    self.db.profile.paladinAurasInCombatOnly = value
+function ToastyClassChores:SetPaladinAurasCombatOnly(info, value)
+    paladinAurasDB.combatOnly = value
     PaladinAuras:Update()
 end
 
 function ToastyClassChores:SetPaladinAurasInstanceOnly(info, value)
-    self.db.profile.paladinAurasInstanceOnly = value
+    paladinAurasDB.instanceOnly = value
     PaladinAuras:Update()
 end
 
 function ToastyClassChores:SetPaladinAurasNoLegacy(info, value)
-    self.db.profile.paladinAurasNoLegacy = value
+    paladinAurasDB.noLegacy = value
     PaladinAuras:Update()
 end
 
 function ToastyClassChores:SetPaladinAurasOpacity(info, value)
-    self.db.profile.paladinAurasOpacity = value
+    paladinAurasDB.opacity = value
     if paladinAurasFrame then
         paladinAurasFrame:SetAlpha(value)
     end
 end
 
 function PaladinAuras:Initialize()
+    paladinAurasDB = ToastyClassChores.db.profile.paladinAuras
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.paladinAurasTracking and playerClass == "PALADIN") then
+    if not (paladinAurasDB.tracking and playerClass == "PALADIN") then
         return
     end
     if not paladinAurasFrame then
         paladinAurasFrame = CreateFrame("Frame", "Paladin Auras Reminder", UIParent)
-        paladinAurasFrame:SetPoint(ToastyClassChores.db.profile.paladinAurasLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.paladinAurasLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.paladinAurasLocation.xPos,
-            ToastyClassChores.db.profile.paladinAurasLocation.yPos)
-        paladinAurasFrame:SetSize(ToastyClassChores.db.profile.paladinAurasIconSize,
-            ToastyClassChores.db.profile.paladinAurasIconSize)
+        paladinAurasFrame:SetPoint(paladinAurasDB.location.frameAnchorPoint, UIParent,
+            paladinAurasDB.location.parentAnchorPoint, paladinAurasDB.location.xPos, paladinAurasDB.location.yPos)
+        paladinAurasFrame:SetSize(paladinAurasDB.iconSize, paladinAurasDB.iconSize)
         frameTexture = paladinAurasFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(134400) -- Question mark as default, if you see this something went wrong
         frameTexture:SetAllPoints()
@@ -86,11 +86,11 @@ function PaladinAuras:Initialize()
         end)
         paladinAurasFrame:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
-            ToastyClassChores.db.profile.paladinAurasLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.paladinAurasLocation.parentAnchorPoint, ToastyClassChores.db.profile.paladinAurasLocation.xPos, ToastyClassChores.db.profile.paladinAurasLocation.yPos =
+            paladinAurasDB.location.frameAnchorPoint, _, paladinAurasDB.location.parentAnchorPoint, paladinAurasDB.location.xPos, paladinAurasDB.location.yPos =
                 paladinAurasFrame:GetPoint()
         end)
     end
-    paladinAurasFrame:SetAlpha(ToastyClassChores.db.profile.paladinAurasOpacity)
+    paladinAurasFrame:SetAlpha(paladinAurasDB.opacity)
     if not framesUnlocked then
         paladinAurasFrame:Hide()
     end
@@ -98,7 +98,10 @@ function PaladinAuras:Initialize()
 end
 
 function PaladinAuras:Update()
-    if not (ToastyClassChores.db.profile.paladinAurasTracking and playerClass == "PALADIN") then
+    if not (paladinAurasDB.tracking and playerClass == "PALADIN") then
+        if paladinAurasFrame and not framesUnlocked then
+            paladinAurasFrame:Hide()
+        end
         return
     end
     if not paladinAurasFrame then
@@ -107,27 +110,31 @@ function PaladinAuras:Update()
 
     local _, instanceType = IsInInstance()
 
-    if ToastyClassChores.db.profile.paladinAurasInstanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
+    if paladinAurasDB.instanceOnly and not (instanceType == "pvp" or instanceType == "arena" or instanceType == "party" or instanceType == "raid" or instanceType == "scenario") and not framesUnlocked then
         paladinAurasFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.paladinAurasNoLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
+    if paladinAurasDB.noLegacy and C_Loot.IsLegacyLootModeEnabled() and not framesUnlocked then
         paladinAurasFrame:Hide()
         return
     end
-    if ToastyClassChores.db.profile.paladinAurasInCombatOnly and not PlayerIsInCombat() and not framesUnlocked then
+    if paladinAurasDB.combatOnly and not PlayerIsInCombat() and not framesUnlocked then
         paladinAurasFrame:Hide()
         return
     end
 
     local auraIndex = GetShapeshiftForm()
-    frameTexture:SetTexture(auraIcons[auraIndex])
+    if auraIcons[auraIndex] then -- This should always be true but it's a good failsafe to have
+        frameTexture:SetTexture(auraIcons[auraIndex])
+    else
+        frameTexture:SetTexture(134400) -- Fallback to question mark icon
+    end
     frameTexture:SetAllPoints()
 
     if auraIndex ~= 2 then
         paladinAurasFrame:Show()
     else
-        if framesUnlocked or ToastyClassChores.db.profile.paladinAurasAlwaysShow then
+        if framesUnlocked or paladinAurasDB.alwaysShow then
             paladinAurasFrame:Show()
         else
             paladinAurasFrame:Hide()

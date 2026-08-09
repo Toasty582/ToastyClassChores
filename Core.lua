@@ -1,7 +1,12 @@
 local ADDON_NAME, ns = ...
 
-ToastyClassChores = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0")
+ToastyClassChores = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
 ns.Addon = ToastyClassChores
+
+ToastyClassChores.versionString = C_AddOns.GetAddOnMetadata(ToastyClassChores.name, "Version")
+local major, minor, patch = ToastyClassChores.versionString:match("^(%d+)%.(%d+)%.(%d+)$")
+ToastyClassChores.version = tonumber(string.format("%02d%02d%02d", major, minor, patch))
+
 
 local playerClass
 
@@ -17,8 +22,20 @@ function ToastyClassChores:OnInitialize()
     ns.db = self.db
     ns.cdb = self.cdb
 
+    if self.db.profile.needsConfigMigration then
+        self.Config:MigrateDB()
+    end
+
     LibStub("AceConfig-3.0"):RegisterOptionsTable("ToastyClassChores", config)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("ToastyClassChores", "Toasty Class Chores")
+    local versionDisplay = self.optionsFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    versionDisplay:SetPoint("TOPRIGHT", self.optionsFrame, "TOPRIGHT", -15, -55)
+    versionDisplay:SetText("|cffffffffVersion " .. self.versionString .. "|r")
+
+    if self.db.profile.lastVersion ~= self.version then
+        self:CheckUpdateMessages(self.db.profile.lastVersion)
+        self.db.profile.lastVersion = self.version
+    end
 
     if not ToastyClassChores.db.profile.frameLock then
         self:ToggleFrameLock()
@@ -34,22 +51,35 @@ local raidBuffClassList = {
     WARRIOR = 132333
 }
 
+-- Ace3 not supporting RegisterUnitEvent is REALLY annoying
+
+
+local playerEventFrame = CreateFrame("Frame")
+
+function playerEventFrame:OnPlayerEvent(event, ...)
+    self[event](self, event, ...)
+end
+
+playerEventFrame:SetScript("OnEvent", playerEventFrame.OnPlayerEvent)
+playerEventFrame:RegisterUnitEvent("UNIT_AURA", "player")
+playerEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
+playerEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_SENT", "player")
+
 function ToastyClassChores:OnEnable()
     _, self.cdb.profile.class, _ = UnitClass("player")
     playerClass = self.cdb.profile.class
     self.cdb.profile.guid = UnitGUID("player")
 
+
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
     self:RegisterEvent("LEGACY_LOOT_RULES_CHANGED")
     self:RegisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
-    self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW")
-    self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE")
 
-    if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" then
+    if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "PALADIN" or playerClass == "DRUID" or playerClass == "EVOKER" then
         self:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
     end
 
-    if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "SHAMAN" then
+    if playerClass == "WARRIOR" or playerClass == "PRIEST" or playerClass == "SHAMAN" or playerClass == "DRUID" or playerClass == "EVOKER" then
         self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
     end
 
@@ -69,24 +99,24 @@ function ToastyClassChores:OnEnable()
         self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED")
     end
 
-    if playerClass == "ROGUE" or raidBuffClassList[playerClass] or playerClass == "PALADIN" then
+    if raidBuffClassList[playerClass] then
         self:RegisterEvent("UNIT_AURA")
     end
-
+    --[[
     if playerClass == "ROGUE" or playerClass == "PALADIN" or playerClass == "SHAMAN" then
         self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     end
 
     if playerClass == "EVOKER" then
         self:RegisterEvent("UNIT_SPELLCAST_SENT")
-    end
+    end]]
 
     if playerClass == "SHAMAN" then
         self:RegisterEvent("PLAYER_LOGOUT")
     end
 
     if raidBuffClassList[playerClass] then
-        self:RegisterEvent("PLAYER_FLAGS_CHANGED")
+        --self:RegisterEvent("PLAYER_FLAGS_CHANGED")
         self:RegisterEvent("UNIT_DIED")
     end
 
@@ -105,21 +135,23 @@ function ToastyClassChores:OnEnable()
     self.ShamanShields:Initialize()
     self.LightsmithRites:Initialize()
     self.SourceOfMagic:Initialize()
+    self.SymbioticRelationship:Initialize()
+    self.AugAttunements:Initialize()
 
     self:RegisterChatCommand("tcc", "SlashCommand")
 end
 
 function ToastyClassChores:PLAYER_ENTERING_WORLD()
-    if playerClass == "PRIEST" and self.db.profile.shadowformInstanceOnly then
+    if playerClass == "PRIEST" and self.db.profile.shadowform.instanceOnly then
         self.Shadowform:Update()
     end
-    if playerClass == "PALADIN" and self.db.profile.paladinAurasInstanceOnly then
+    if playerClass == "PALADIN" and self.db.profile.paladinAuras.instanceOnly then
         self.PaladinAuras:Update()
     end
-    if playerClass == "DRUID" and self.db.profile.druidFormsInstanceOnly then
+    if playerClass == "DRUID" and self.db.profile.druidForms.instanceOnly then
         self.DruidForms:Update()
     end
-    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.petsInstanceOnly then
+    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.pets.instanceOnly then
         self.Pets:Update()
     end
     -- Because for some reason durationObjects do not load properly until a frame after PLAYER_ENTERING_WORLD
@@ -135,19 +167,22 @@ function ToastyClassChores:PLAYER_ENTERING_WORLD()
     if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
         RunNextFrame(function() self.LightsmithRites:Update() end)
     end
+    if playerClass == "DRUID" then
+        RunNextFrame(function() self.SymbioticRelationship:Update() end)
+    end
 end
 
 function ToastyClassChores:LEGACY_LOOT_RULES_CHANGED()
-    if playerClass == "PRIEST" and self.db.profile.shadowformNoLegacy then
+    if playerClass == "PRIEST" and self.db.profile.shadowform.noLegacy then
         self.Shadowform:Update()
     end
-    if playerClass == "PALADIN" and self.db.profile.paladinAurasNoLegacy then
+    if playerClass == "PALADIN" and self.db.profile.paladinAuras.noLegacy then
         self.PaladinAuras:Update()
     end
-    if playerClass == "DRUID" and self.db.profile.druidFormsNoLegacy then
+    if playerClass == "DRUID" and self.db.profile.druidForms.noLegacy then
         self.DruidForms:Update()
     end
-    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.petsNoLegacy then
+    if (playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT") and self.db.profile.pets.noLegacy then
         self.Pets:Update()
     end
 end
@@ -157,26 +192,21 @@ function ToastyClassChores:UPDATE_SHAPESHIFT_FORM()
     self.DruidForms:Update()
     self.WarriorStances:Update()
     self.PaladinAuras:Update()
+    self.AugAttunements:Update()
 end
 
 function ToastyClassChores:PLAYER_SPECIALIZATION_CHANGED()
     self.Shadowform:Update()
+    self.DruidForms:Update()
     self.WarriorStances:Update()
     self.ShamanShields:Update()
+    self.AugAttunements:Update()
 end
 
 function ToastyClassChores:PLAYER_MOUNT_DISPLAY_CHANGED()
     if playerClass == "HUNTER" or playerClass == "WARLOCK" or playerClass == "DEATHKNIGHT" then
         self.Pets:MountCheck()
     end
-end
-
-function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_SHOW(event, spellID)
-    self.RaidBuff:GlowShow(spellID)
-end
-
-function ToastyClassChores:SPELL_ACTIVATION_OVERLAY_GLOW_HIDE(event, spellID)
-    self.RaidBuff:GlowHide(spellID)
 end
 
 function ToastyClassChores:UNIT_PET()
@@ -192,6 +222,7 @@ function ToastyClassChores:SPELLS_CHANGED()
         end
         if playerClass == "DRUID" then
             self.DruidForms:CheckForms()
+            self.SymbioticRelationship:CheckSymbioticRelationshipKnown()
         end
         if playerClass == "WARLOCK" then
             self.Pets:CheckAnomaly()
@@ -202,6 +233,7 @@ function ToastyClassChores:SPELLS_CHANGED()
         end
         if playerClass == "EVOKER" then
             self.SourceOfMagic:CheckSourceOfMagicKnown()
+            self.AugAttunements:CheckAttunementsKnown()
         end
         if playerClass == "ROGUE" then
             self.RoguePoisons:CheckDoublePoison()
@@ -210,40 +242,44 @@ function ToastyClassChores:SPELLS_CHANGED()
 end
 
 function ToastyClassChores:PLAYER_IN_COMBAT_CHANGED()
-    if playerClass == "PRIEST" and self.db.profile.shadowformInCombatOnly then
+    if playerClass == "PRIEST" and self.db.profile.shadowform.combatOnly then
         self.Shadowform:Update()
     end
-    if playerClass == "DRUID" and self.db.profile.druidFormsInCombatOnly then
+    if playerClass == "DRUID" and self.db.profile.druidForms.combatOnly then
         self.DruidForms:Update()
     end
-    if playerClass == "PALADIN" and self.db.profile.paladinAurasInCombatOnly then
+    if playerClass == "PALADIN" and self.db.profile.paladinAuras.combatOnly then
         self.PaladinAuras:Update()
     end
-    if playerClass == "WARRIOR" and self.db.profile.warriorStancesInCombatOnly then
+    if playerClass == "WARRIOR" and self.db.profile.warriorStances.noCombatOnly then
         self.WarriorStances:Update()
     end
 
-    if playerClass == "ROGUE" and self.db.profile.roguePoisonsEarlyWarningNoCombat then
+    if playerClass == "ROGUE" and self.db.profile.roguePoisons.earlyWarningNoCombat then
         self.RoguePoisons:Update()
     end
-    if raidBuffClassList[playerClass] and self.db.profile.raidBuffEarlyWarningNoCombat then
+    if raidBuffClassList[playerClass] and self.db.profile.raidBuff.earlyWarningNoCombat then
         self.RaidBuff:Update()
     end
-    if playerClass == "SHAMAN" then
+    if playerClass == "SHAMAN" and self.db.profile.shamanShields.earlyWarningNoCombat then
         self.ShamanShields:Update()
     end
-    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 and self.db.profile.lightsmithRitesEarlyWarningNoCombat then
+    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 and self.db.profile.lightsmithRites.earlyWarningNoCombat then
         self.LightsmithRites:Update()
     end
-    if playerClass == "EVOKER" and self.db.profile.sourceOfMagicEarlyWarningNoCombat then
+    if playerClass == "EVOKER" and self.db.profile.sourceOfMagic.earlyWarningNoCombat then
         self.SourceOfMagic:Update()
+    end
+    if playerClass == "DRUID" and self.db.profile.symbioticRelationship.earlyWarningNoCombat then
+        self.SymbioticRelationship:Update()
+    end
+    
+    if playerClass == "EVOKER" and self.db.profile.augAttunements.noCombatOnly or self.db.profile.augAttunements.combatOnly then
+        self.AugAttunements:Update()
     end
 end
 
 function ToastyClassChores:ADDON_RESTRICTION_STATE_CHANGED()
-    if raidBuffClassList[playerClass] then
-        self.RaidBuff:Update()
-    end
     if playerClass == "SHAMAN" then
         self.ShamanShields:Update()
     end
@@ -257,41 +293,38 @@ function ToastyClassChores:UNIT_AURA(event, unitTarget, updateInfo)
     end
     if playerClass == "EVOKER" then
         if UnitIsPlayer(unitTarget) then
-            self.SourceOfMagic:VerifyBuff()
-        end
-    end
-    if unitTarget == "player" then
-        if playerClass == "ROGUE" and updateInfo.removedAuraInstanceIDs then
-            self.RoguePoisons:Update()
-        end
-        if playerClass == "SHAMAN" and (updateInfo.addedAuras or updateInfo.removedAuraInstanceIDs) then
-            self.ShamanShields:Update()
-        end
-        if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
-            self.LightsmithRites:Update()
+            self.SourceOfMagic:Update()
         end
     end
 end
 
-function ToastyClassChores:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
-    if unitTarget == "player" then
-        if playerClass == "ROGUE" then
-            self.RoguePoisons:PoisonCast(spellID)
-        end
-        if playerClass == "SHAMAN" then
-            self.ShamanShields:ShieldCast(spellID)
-        end
-        if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
-            RunNextFrame(function() self.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
-        end
+function playerEventFrame:UNIT_AURA()
+    if playerClass == "ROGUE" then
+        ToastyClassChores.RoguePoisons:Update()
+    end
+    if playerClass == "SHAMAN" then
+        ToastyClassChores.ShamanShields:Update()
+    end
+    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
+        ToastyClassChores.LightsmithRites:Update()
+    end
+    if playerClass == "DRUID" then
+        ToastyClassChores.SymbioticRelationship:Update()
     end
 end
 
-function ToastyClassChores:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
-    if unitTarget == "player" then
-        if playerClass == "EVOKER" then
-            self.SourceOfMagic:RegisterBuff(spellID, target)
-        end
+function playerEventFrame:UNIT_SPELLCAST_SUCCEEDED(event, unitTarget, castGUID, spellID, castBarID)
+    if playerClass == "SHAMAN" then
+        ToastyClassChores.ShamanShields:ShieldCast(spellID)
+    end
+    if playerClass == "PALADIN" and C_ClassTalents.GetActiveHeroTalentSpec() == 49 then
+        RunNextFrame(function() ToastyClassChores.LightsmithRites:RiteCast(spellID) end) -- Aura info is not immediately correct for lightsmith rites
+    end
+end
+
+function playerEventFrame:UNIT_SPELLCAST_SENT(event, unitTarget, target, castGUID, spellID)
+    if playerClass == "EVOKER" then
+        RunNextFrame(function() ToastyClassChores.SourceOfMagic:RegisterCast(spellID, target) end)
     end
 end
 
@@ -301,9 +334,9 @@ function ToastyClassChores:PLAYER_LOGOUT()
     end
 end
 
-function ToastyClassChores:PLAYER_FLAGS_CHANGED(event, unitTarget)
+--[[function ToastyClassChores:PLAYER_FLAGS_CHANGED(event, unitTarget)
     self.RaidBuff:CheckBuff(unitTarget)
-end
+end]]
 
 function ToastyClassChores:UNIT_DIED(event, unitGUID)
     if not issecretvalue(unitGUID) then
@@ -337,6 +370,8 @@ function ToastyClassChores:ToggleFrameLock()
     self.ShamanShields:ToggleFrameLock(value)
     self.LightsmithRites:ToggleFrameLock(value)
     self.SourceOfMagic:ToggleFrameLock(value)
+    self.SymbioticRelationship:ToggleFrameLock(value)
+    self.AugAttunements:ToggleFrameLock(value)
 end
 
 function ToastyClassChores:SlashCommand(msg)
@@ -360,5 +395,41 @@ end
 function ToastyClassChores:Debug(msg)
     if self.db.profile.debug then
         self:Print(msg)
+    end
+end
+
+function ToastyClassChores:ForceSecrets()
+    SetCVar("addonChatRestrictionsForced", 1)
+    SetCVar("addonChallengeModeRestrictionsForced", 1)
+    SetCVar("addonCombatRestrictionsForced", 1)
+    SetCVar("addonEncounterRestrictionsForced", 1)
+    SetCVar("addonMapRestrictionsForced", 1)
+    SetCVar("addonPvPMatchRestrictionsForced", 1)
+end
+
+function ToastyClassChores:UnForceSecrets()
+    SetCVar("addonChatRestrictionsForced", 0)
+    SetCVar("addonChallengeModeRestrictionsForced", 0)
+    SetCVar("addonCombatRestrictionsForced", 0)
+    SetCVar("addonEncounterRestrictionsForced", 0)
+    SetCVar("addonMapRestrictionsForced", 0)
+    SetCVar("addonPvPMatchRestrictionsForced", 0)
+end
+
+function ToastyClassChores:AreSecretsForced()
+    print(GetCVar("addonChatRestrictionsForced"))
+    print(GetCVar("addonChallengeModeRestrictionsForced"))
+    print(GetCVar("addonCombatRestrictionsForced"))
+    print(GetCVar("addonEncounterRestrictionsForced"))
+    print(GetCVar("addonMapRestrictionsForced"))
+    print(GetCVar("addonPvPMatchRestrictionsForced"))
+end
+
+function ToastyClassChores:CheckUpdateMessages(lastVersion)
+    if self.versionString == "@project-version@" then
+        return
+    end
+    if lastVersion < 20000 then
+        self:Print("Welcome to Toasty Class Chores version " .. self.versionString .. "! Due to some fairly significant under the hood changes, some of your settings may have been reset to default. Apologies for the inconvenience!")
     end
 end

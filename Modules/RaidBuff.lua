@@ -5,11 +5,12 @@ ToastyClassChores.RaidBuff = ToastyClassChores.RaidBuff or {}
 local RaidBuff = ToastyClassChores.RaidBuff
 
 local raidBuffFrame
-local playerClass
-local glowing = false
-local framesUnlocked = false
+local updateTimer
 
-local raidBuffTimer
+local playerClass
+local raidBuffDB
+
+local framesUnlocked = false
 
 local unitsMissingBuff = {}
 function RaidBuff:CountUnitsMissingBuff()
@@ -20,19 +21,16 @@ function RaidBuff:CountUnitsMissingBuff()
     return count
 end
 
+-- Purely a debug function, separate so as to not make debug mode unusable
+function RaidBuff:PrintUnitsMissingBuff()
+    for key, _ in pairs(unitsMissingBuff) do
+        ToastyClassChores:Debug(key)
+    end
+end
+
 local raidBuffSpellList = {
     [1126] = "DRUID",
     [364342] = "EVOKER",
-    [1459] = "MAGE",
-    [21562] = "PRIEST",
-    [462854] = "SHAMAN",
-    [6673] = "WARRIOR"
-}
-
--- Evoker has a different spellID for the aura and the spell
-local raidBuffAuraList = {
-    [1126] = "DRUID",
-    [381748] = "EVOKER",
     [1459] = "MAGE",
     [21562] = "PRIEST",
     [462854] = "SHAMAN",
@@ -72,7 +70,7 @@ local raidBuffAurasByClass = {
 }
 
 function ToastyClassChores:SetRaidBuffTracking(info, value)
-    self.db.profile.raidBuffTracking = value
+    raidBuffDB.tracking = value
     if value then
         self:Print("Enabling Raid Buff Tracking")
         RaidBuff:Initialize()
@@ -85,41 +83,40 @@ function ToastyClassChores:SetRaidBuffTracking(info, value)
 end
 
 function ToastyClassChores:SetRaidBuffIconSize(info, value)
-    self.db.profile.raidBuffIconSize = value
+    raidBuffDB.iconSize = value
     if raidBuffFrame then
         raidBuffFrame:SetSize(value, value)
     end
 end
 
 function ToastyClassChores:SetRaidBuffOpacity(info, value)
-    self.db.profile.raidBuffOpacity = value
+    raidBuffDB.opacity = value
     if raidBuffFrame then
         raidBuffFrame:SetAlpha(value)
     end
 end
 
 function ToastyClassChores:SetRaidBuffEarlyWarning(info, value)
-    self.db.profile.raidBuffEarlyWarning = value
+    raidBuffDB.earlyWarning = value
     RaidBuff:CheckBuff("player")
 end
 
 function ToastyClassChores:SetRaidBuffEarlyWarningNoCombat(info, value)
-    self.db.profile.raidBuffEarlyWarningNoCombat = value
+    raidBuffDB.earlyWarningNoCombat = value
     RaidBuff:Update()
 end
 
 function RaidBuff:Initialize()
+    raidBuffDB = ToastyClassChores.db.profile.raidBuff
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+    if not (raidBuffDB.tracking and raidBuffIconList[playerClass]) then
         return
     end
     if not raidBuffFrame then
         raidBuffFrame = CreateFrame("Frame", "Raid Buffs Reminder", UIParent)
-        raidBuffFrame:SetPoint(ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos)
-        raidBuffFrame:SetSize(ToastyClassChores.db.profile.raidBuffIconSize,
-            ToastyClassChores.db.profile.raidBuffIconSize)
+        raidBuffFrame:SetPoint(raidBuffDB.location.frameAnchorPoint, UIParent,
+            raidBuffDB.location.parentAnchorPoint, raidBuffDB.location.xPos, raidBuffDB.location.yPos)
+        raidBuffFrame:SetSize(raidBuffDB.iconSize, raidBuffDB.iconSize)
         local frameTexture = raidBuffFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(raidBuffIconList[playerClass])
         frameTexture:SetAllPoints()
@@ -130,76 +127,58 @@ function RaidBuff:Initialize()
         end)
         raidBuffFrame:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
-            ToastyClassChores.db.profile.raidBuffLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.raidBuffLocation.parentAnchorPoint, ToastyClassChores.db.profile.raidBuffLocation.xPos, ToastyClassChores.db.profile.raidBuffLocation.yPos =
+            raidBuffDB.location.frameAnchorPoint, _, raidBuffDB.location.parentAnchorPoint, raidBuffDB.location.xPos, raidBuffDB.location.yPos =
                 raidBuffFrame:GetPoint()
         end)
     end
-    raidBuffFrame:SetAlpha(ToastyClassChores.db.profile.raidBuffOpacity)
+    raidBuffFrame:SetAlpha(raidBuffDB.opacity)
     if not framesUnlocked then
         raidBuffFrame:Hide()
     end
 
     self:CheckWholeRaid()
+    -- Hard code to check every 3 seconds for the case where the player is just sitting around without throwing UNIT_AURA
+    updateTimer = ToastyClassChores:ScheduleRepeatingTimer("ForceRaidBuffUpdate", 5)
+end
+
+function ToastyClassChores:ForceRaidBuffUpdate()
+    RaidBuff:Update()
 end
 
 function RaidBuff:Update()
-    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+    if not (raidBuffDB.tracking and raidBuffIconList[playerClass]) then
         return
     end
     if not raidBuffFrame then
         self:Initialize()
     end
-    if glowing then
+    local earlyWarningThreshold = 60 * raidBuffDB.earlyWarning
+    if PlayerIsInCombat() and raidBuffDB.earlyWarningNoCombat then
+        earlyWarningThreshold = 0
+    end
+    if self:CountUnitsMissingBuff() > 0 then
         raidBuffFrame:Show()
     else
-        local earlyWarningThreshold = 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning
-        if PlayerIsInCombat() and ToastyClassChores.db.profile.raidBuffEarlyWarningNoCombat then
-            earlyWarningThreshold = 0
-        end
-        if self:CountUnitsMissingBuff() > 0 then
+        if self:GetRemainingBuffTime("player") <= earlyWarningThreshold then
             raidBuffFrame:Show()
         else
-            if self:GetRemainingBuffTime("player") <= earlyWarningThreshold then
-                raidBuffFrame:Show()
-            else
-                if not framesUnlocked then
-                    raidBuffFrame:Hide()
-                end
-                return
+            if not framesUnlocked then
+                raidBuffFrame:Hide()
             end
+            return
         end
     end
-end
-
-function RaidBuff:GlowShow(spellID)
-    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
-        return
-    end
-    if raidBuffSpellList[spellID] then
-        glowing = true
-    end
-    self:Update()
-end
-
-function RaidBuff:GlowHide(spellID)
-    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
-        return
-    end
-    if raidBuffSpellList[spellID] then
-        glowing = false
-    end
-    self:Update()
 end
 
 function RaidBuff:CheckBuff(unit)
-    if not (ToastyClassChores.db.profile.raidBuffTracking and raidBuffIconList[playerClass]) then
+    if not (raidBuffDB.tracking and raidBuffIconList[playerClass]) then
         return
     end
     if not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
         return
     end
-    local unitGUID = UnitGUID(unit)
-    --if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) or not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
+    -- NPCs in follower dungeons or delves will trip this, I'm not skipping it like I do in Source of Magic because in my testing the aura check 
+    -- didn't work properly on them, they seem to use different spellIDs for raid buffs. Regardless it's a small enough thing that I don't really care
     if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) then
         for key, token in pairs(unitsMissingBuff) do
             if issecretvalue(UnitIsUnit(token, unit)) then
@@ -224,22 +203,9 @@ function RaidBuff:CheckBuff(unit)
                 unitsMissingBuff[key] = nil
             end
         end
-        if unit == "player" then
-            if raidBuffTimer then
-                raidBuffTimer:Cancel()
-            end
-            if aura.expirationTime - GetTime() >= 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning then
-                raidBuffTimer = C_Timer.NewTimer(
-                    aura.expirationTime - GetTime() - 60 * ToastyClassChores.db.profile.raidBuffEarlyWarning,
-                    function() self:Update() end)
-            end
-        end
     else
         if unit == "player" then
             unitsMissingBuff["player"] = "player"
-            if raidBuffTimer then
-                raidBuffTimer:Cancel()
-            end
         else
             local groupType
             local groupSize
@@ -275,8 +241,8 @@ function RaidBuff:GetRemainingBuffTime(unit)
 end
 
 function RaidBuff:PlayerDeath(unitGUID)
-    self:CheckBuff("player")
     if not IsInGroup() then
+        self:CheckBuff("player")
         return
     end
     local groupType

@@ -5,13 +5,14 @@ ToastyClassChores.SacrificeGrimoire = ToastyClassChores.SacrificeGrimoire or {}
 local SacrificeGrimoire = ToastyClassChores.SacrificeGrimoire
 
 local grimoireFrame
-local grimoireCastTimestamp
 
 local framesUnlocked = false
 local playerClass
 
+local sacrificeGrimoireDB
+
 function ToastyClassChores:SetSacrificeGrimoireTracking(info, value)
-    self.db.profile.sacrificeGrimoireTracking = value
+    sacrificeGrimoireDB.tracking = value
     if value then
         self:Print("Enabling Grimoire of Sacrifice Tracking")
         SacrificeGrimoire:Initialize()
@@ -24,22 +25,23 @@ function ToastyClassChores:SetSacrificeGrimoireTracking(info, value)
 end
 
 function ToastyClassChores:SetSacrificeGrimoireIconSize(info, value)
-    self.db.profile.sacrificeGrimoireIconSize = value
+    sacrificeGrimoireDB.iconSize = value
     if grimoireFrame then
         grimoireFrame:SetSize(value, value)
     end
 end
 
 function ToastyClassChores:SetSacrificeGrimoireOpacity(info, value)
-    self.db.profile.sacrificeGrimoireOpacity = value
+    sacrificeGrimoireDB.opacity = value
     if grimoireFrame then
         grimoireFrame:SetAlpha(value)
     end
 end
 
 function SacrificeGrimoire:Initialize()
+    sacrificeGrimoireDB = ToastyClassChores.db.profile.sacrificeGrimoire
     playerClass = ToastyClassChores.cdb.profile.class
-    if not (ToastyClassChores.db.profile.sacrificeGrimoireTracking and playerClass == "WARLOCK") then
+    if not (sacrificeGrimoireDB.tracking and playerClass == "WARLOCK") then
         return
     end
     if not C_SpellBook.IsSpellInSpellBook(108503) then
@@ -47,12 +49,9 @@ function SacrificeGrimoire:Initialize()
     end
     if not grimoireFrame then
         grimoireFrame = CreateFrame("Frame", "Sacrifice Grimoire Reminder", UIParent)
-        grimoireFrame:SetPoint(ToastyClassChores.db.profile.sacrificeGrimoireLocation.frameAnchorPoint, UIParent,
-            ToastyClassChores.db.profile.sacrificeGrimoireLocation.parentAnchorPoint,
-            ToastyClassChores.db.profile.sacrificeGrimoireLocation.xPos,
-            ToastyClassChores.db.profile.sacrificeGrimoireLocation.yPos)
-        grimoireFrame:SetSize(ToastyClassChores.db.profile.sacrificeGrimoireIconSize,
-            ToastyClassChores.db.profile.sacrificeGrimoireIconSize)
+        grimoireFrame:SetPoint(sacrificeGrimoireDB.location.frameAnchorPoint, UIParent,
+            sacrificeGrimoireDB.location.parentAnchorPoint, sacrificeGrimoireDB.location.xPos, sacrificeGrimoireDB.location.yPos)
+        grimoireFrame:SetSize(sacrificeGrimoireDB.iconSize, sacrificeGrimoireDB.iconSize)
         local frameTexture = grimoireFrame:CreateTexture(nil, "BACKGROUND")
         frameTexture:SetTexture(538443)
         frameTexture:SetAllPoints()
@@ -63,11 +62,11 @@ function SacrificeGrimoire:Initialize()
         end)
         grimoireFrame:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
-            ToastyClassChores.db.profile.sacrificeGrimoireLocation.frameAnchorPoint, _, ToastyClassChores.db.profile.sacrificeGrimoireLocation.parentAnchorPoint, ToastyClassChores.db.profile.sacrificeGrimoireLocation.xPos, ToastyClassChores.db.profile.sacrificeGrimoireLocation.yPos =
+            sacrificeGrimoireDB.location.frameAnchorPoint, _, sacrificeGrimoireDB.location.parentAnchorPoint, sacrificeGrimoireDB.location.xPos, sacrificeGrimoireDB.location.yPos =
                 grimoireFrame:GetPoint()
         end)
     end
-    grimoireFrame:SetAlpha(ToastyClassChores.db.profile.sacrificeGrimoireOpacity)
+    grimoireFrame:SetAlpha(sacrificeGrimoireDB.opacity)
     if not framesUnlocked then
         grimoireFrame:Hide()
     end
@@ -75,7 +74,10 @@ function SacrificeGrimoire:Initialize()
 end
 
 function SacrificeGrimoire:Update()
-    if not (ToastyClassChores.db.profile.sacrificeGrimoireTracking and playerClass == "WARLOCK") then
+    if not (sacrificeGrimoireDB.tracking and playerClass == "WARLOCK") then
+        if grimoireFrame and not framesUnlocked then
+            grimoireFrame:Hide()
+        end
         return
     end
     if not grimoireFrame then
