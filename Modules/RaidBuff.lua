@@ -177,7 +177,11 @@ function RaidBuff:CheckBuff(unit)
     if not (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
         return
     end
-    -- NPCs in follower dungeons or delves will trip this, I'm not skipping it like I do in Source of Magic because in my testing the aura check 
+    if C_Secrets.ShouldUnitIdentityBeSecret(unit) then
+        ToastyClassChores:Debug("Secret unit detected!")
+        return
+    end
+    -- NPCs in follower dungeons or delves will trip this, I'm not skipping it like I do in Source of Magic because in my testing the aura check
     -- didn't work properly on them, they seem to use different spellIDs for raid buffs. Regardless it's a small enough thing that I don't really care
     if not UnitIsPlayer(unit) or UnitIsDead(unit) or not UnitIsVisible(unit) then
         for key, token in pairs(unitsMissingBuff) do
