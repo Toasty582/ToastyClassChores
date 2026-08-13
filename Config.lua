@@ -918,11 +918,11 @@ function Config:MigrateDB()
         instanceOnly = db.shadowformInstanceOnly or db.shadowform.instanceOnly,
         noLegacy = db.shadowformNoLegacy or db.shadowform.noLegacy,
         opacity = db.shadowformOpacity or db.shadowform.opacity,
-        location = {
-            xPos = db.shadowformLocation.xPos or db.shadowform.location.xPos,
-            yPos = db.shadowformLocation.yPos or db.shadowform.location.yPos,
-            parentAnchorPoint = db.shadowformLocation.parentAnchorPoint or db.shadowform.location.parentAnchorPoint,
-            frameAnchorPoint = db.shadowformLocation.frameAnchorPoint or db.shadowform.location.frameAnchorPoint,
+        location = db.shadowformLocation or {
+            xPos = db.shadowform.location.xPos,
+            yPos = db.shadowform.location.yPos,
+            parentAnchorPoint = db.shadowform.location.parentAnchorPoint,
+            frameAnchorPoint = db.shadowform.location.frameAnchorPoint,
         }
     }
     db.shadowformTracking, db.shadowformIconSize, db.shadowformInCombatOnly, db.shadowformInstanceOnly, db.shadowformNoLegacy, db.shadowformOpacity, db.shadowformLocation = nil
@@ -932,11 +932,11 @@ function Config:MigrateDB()
         earlyWarning = db.raidBuffEarlyWarning or db.raidBuff.earlyWarning,
         earlyWarningNoCombat = db.raidBuffEarlyWarningNoCombat or db.raidBuff.earlyWarningNoCombat,
         opacity = db.raidBuffOpacity or db.raidBuff.opacity,
-        location = {
-            xPos = db.raidBuffLocation.xPos or db.raidBuff.location.xPos,
-            yPos = db.raidBuffLocation.yPos or db.raidBuff.location.yPos,
-            parentAnchorPoint = db.raidBuffLocation.parentAnchorPoint or db.raidBuff.location.parentAnchorPoint,
-            frameAnchorPoint = db.raidBuffLocation.frameAnchorPoint or db.raidBuff.location.frameAnchorPoint,
+        location = db.raidBuffLocation or {
+            xPos = db.raidBuff.location.xPos,
+            yPos = db.raidBuff.location.yPos,
+            parentAnchorPoint = db.raidBuff.location.parentAnchorPoint,
+            frameAnchorPoint = db.raidBuff.location.frameAnchorPoint,
         }
     }
     db.raidBuffTracking, db.raidBuffIconSize, db.raidBuffEarlyWarning, db.raidBuffEarlyWarningNoCombat, db.raidBuffOpacity, db.raidBuffLocation = nil
@@ -946,11 +946,11 @@ function Config:MigrateDB()
         instanceOnly = db.petsInstanceOnly or db.pets.instanceOnly,
         noLegacy = db.petsNoLegacy or db.pets.noLegacy,
         opacity = db.petsOpacity or db.pets.opacity,
-        location = {
-            xPos = db.petsLocation.xPos or db.pets.location.xPos,
-            yPos = db.petsLocation.yPos or db.pets.location.yPos,
-            parentAnchorPoint = db.petsLocation.parentAnchorPoint or db.pets.location.parentAnchorPoint,
-            frameAnchorPoint = db.petsLocation.frameAnchorPoint or db.pets.location.frameAnchorPoint,
+        location = db.petsLocation or {
+            xPos = db.pets.location.xPos,
+            yPos = db.pets.location.yPos,
+            parentAnchorPoint = db.pets.location.parentAnchorPoint,
+            frameAnchorPoint = db.pets.location.frameAnchorPoint,
         }
     }
     db.petsTracking, db.petsIconSize, db.petsInstanceOnly, db.petsNoLegacy, db.petsOpacity, db.petsLocation = nil
@@ -963,11 +963,11 @@ function Config:MigrateDB()
         instanceOnly = db.druidFormsInstanceOnly or db.druidForms.instanceOnly,
         noLegacy = db.druidFormsNoLegacy or db.druidForms.noLegacy,
         opacity = db.druidFormsOpacity or db.druidForms.opacity,
-        location = {
-            xPos = db.druidFormsLocation.xPos or db.druidForms.location.xPos,
-            yPos = db.druidFormsLocation.yPos or db.druidForms.location.yPos,
-            parentAnchorPoint = db.druidFormsLocation.parentAnchorPoint or db.druidForms.location.parentAnchorPoint,
-            frameAnchorPoint = db.druidFormsLocation.frameAnchorPoint or db.druidForms.location.frameAnchorPoint,
+        location = db.druidFormsLocation or {
+            xPos = db.druidForms.location.xPos,
+            yPos = db.druidForms.location.yPos,
+            parentAnchorPoint = db.druidForms.location.parentAnchorPoint,
+            frameAnchorPoint = db.druidForms.location.frameAnchorPoint,
         }
     }
     db.druidFormsAlwaysShow, db.druidFormsTracking, db.druidFormsIconSize, db.druidFormsInCombatOnly, db.druidFormsIgnoreTravel, db.druidFormsInstanceOnly, db.druidFormsNoLegacy, db.druidFormsOpacity, db.druidFormsLocation = nil
@@ -979,11 +979,11 @@ function Config:MigrateDB()
         protShowsBattle = db.warriorStancesProtShowsBattle or db.warriorStances.protShowsBattle,
         protShowsDef = db.warriorStancesProtShowsDef or db.warriorStances.protShowsDef,
         opacity = db.warriorStancesOpacity or db.warriorStances.opacity,
-        location = {
-            xPos = db.warriorStancesLocation.xPos or db.warriorStances.location.xPos,
-            yPos = db.warriorStancesLocation.yPos or db.warriorStances.location.yPos,
-            parentAnchorPoint = db.warriorStancesLocation.parentAnchorPoint or db.warriorStances.location.parentAnchorPoint,
-            frameAnchorPoint = db.warriorStancesLocation.frameAnchorPoint or db.warriorStances.location.frameAnchorPoint,
+        location = db.warriorStancesLocation or {
+            xPos = db.warriorStances.location.xPos,
+            yPos = db.warriorStances.location.yPos,
+            parentAnchorPoint = db.warriorStances.location.parentAnchorPoint,
+            frameAnchorPoint = db.warriorStances.location.frameAnchorPoint,
         }
     }
     db.warriorStancesAlwaysShow, db.warriorStancesTracking, db.warriorStancesIconSize, db.warriorStancesNoCombatOnly, db.warriorStancesProtShowsBattle, db.warriorStancesProtShowsDef, db.warriorStancesOpacity, db.warriorStancesLocation = nil
@@ -995,11 +995,11 @@ function Config:MigrateDB()
         instanceOnly = db.paladinAurasInstanceOnly or db.paladinAuras.instanceOnly,
         noLegacy = db.paladinAurasNoLegacy or db.paladinAuras.noLegacy,
         opacity = db.paladinAurasOpacity or db.paladinAuras.opacity,
-        location = {
-            xPos = db.paladinAurasLocation.xPos or db.paladinAuras.location.xPos,
-            yPos = db.paladinAurasLocation.yPos or db.paladinAuras.location.yPos,
-            parentAnchorPoint = db.paladinAurasLocation.parentAnchorPoint or db.paladinAuras.location.parentAnchorPoint,
-            frameAnchorPoint = db.paladinAurasLocation.frameAnchorPoint or db.paladinAuras.location.frameAnchorPoint,
+        location = db.paladinAurasLocation or {
+            xPos = db.paladinAuras.location.xPos,
+            yPos = db.paladinAuras.location.yPos,
+            parentAnchorPoint = db.paladinAuras.location.parentAnchorPoint,
+            frameAnchorPoint = db.paladinAuras.location.frameAnchorPoint,
         }
     }
     db.paladinAurasAlwaysShow, db.paladinAurasTracking, db.paladinAurasIconSize, db.paladinAurasInCombatOnly, db.paladinAurasInstanceOnly, db.paladinAurasNoLegacy, db.paladinAurasOpacity, db.paladinAurasLocation = nil
@@ -1007,11 +1007,11 @@ function Config:MigrateDB()
         tracking = db.sacrificeGrimoireTracking or db.sacrificeGrimoire.tracking,
         iconSize = db.sacrificeGrimoireIconSize or db.sacrificeGrimoire.iconSize,
         opacity = db.sacrificeGrimoireOpacity or db.sacrificeGrimoire.opacity,
-        location = {
-            xPos = db.sacrificeGrimoireLocation.xPos or db.sacrificeGrimoire.location.xPos,
-            yPos = db.sacrificeGrimoireLocation.yPos or db.sacrificeGrimoire.location.yPos,
-            parentAnchorPoint = db.sacrificeGrimoireLocation.parentAnchorPoint or db.sacrificeGrimoire.location.parentAnchorPoint,
-            frameAnchorPoint = db.sacrificeGrimoireLocation.frameAnchorPoint or db.sacrificeGrimoire.location.frameAnchorPoint,
+        location = db.sacrificeGrimoireLocation or {
+            xPos = db.sacrificeGrimoire.location.xPos,
+            yPos = db.sacrificeGrimoire.location.yPos,
+            parentAnchorPoint = db.sacrificeGrimoire.location.parentAnchorPoint,
+            frameAnchorPoint = db.sacrificeGrimoire.location.frameAnchorPoint,
         }
     }
     db.sacrificeGrimoireTracking, db.sacrificeGrimoireIconSize, db.sacrificeGrimoireOpacity, db.sacrificeGrimoireLocation = nil
@@ -1021,11 +1021,11 @@ function Config:MigrateDB()
         earlyWarning = db.roguePoisonsEarlyWarning or db.roguePoisons.earlyWarning,
         earlyWarningNoCombat = db.roguePoisonsEarlyWarningNoCombat or db.roguePoisons.earlyWarningNoCombat,
         opacity = db.roguePoisonsOpacity or db.roguePoisons.opacity,
-        location = {
-            xPos = db.roguePoisonsLocation.xPos or db.roguePoisons.location.xPos,
-            yPos = db.roguePoisonsLocation.yPos or db.roguePoisons.location.yPos,
-            parentAnchorPoint = db.roguePoisonsLocation.parentAnchorPoint or db.roguePoisons.location.parentAnchorPoint,
-            frameAnchorPoint = db.roguePoisonsLocation.frameAnchorPoint or db.roguePoisons.location.frameAnchorPoint,
+        location = db.roguePoisonsLocation or {
+            xPos = db.roguePoisons.location.xPos,
+            yPos = db.roguePoisons.location.yPos,
+            parentAnchorPoint = db.roguePoisons.location.parentAnchorPoint,
+            frameAnchorPoint = db.roguePoisons.location.frameAnchorPoint,
         }
     }
     db.roguePoisonsTracking, db.roguePoisonsIconSize, db.roguePoisonsEarlyWarning, db.roguePoisonsEarlyWarningNoCombat, db.roguePoisonsOpacity, db.roguePoisonsLocation = nil
@@ -1035,11 +1035,11 @@ function Config:MigrateDB()
         earlyWarning = db.shamanShieldsEarlyWarning or db.shamanShields.earlyWarning,
         earlyWarningNoCombat = db.shamanShieldsEarlyWarningNoCombat or db.shamanShields.earlyWarningNoCombat,
         opacity = db.shamanShieldsOpacity or db.shamanShields.opacity,
-        location = {
-            xPos = db.shamanShieldsLocation.xPos or db.shamanShields.location.xPos,
-            yPos = db.shamanShieldsLocation.yPos or db.shamanShields.location.yPos,
-            parentAnchorPoint = db.shamanShieldsLocation.parentAnchorPoint or db.shamanShields.location.parentAnchorPoint,
-            frameAnchorPoint = db.shamanShieldsLocation.frameAnchorPoint or db.shamanShields.location.frameAnchorPoint,
+        location = db.shamanShieldsLocation or {
+            xPos = db.shamanShields.location.xPos,
+            yPos = db.shamanShields.location.yPos,
+            parentAnchorPoint = db.shamanShields.location.parentAnchorPoint,
+            frameAnchorPoint = db.shamanShields.location.frameAnchorPoint,
         }
     }
     db.shamanShieldsTracking, db.shamanShieldsIconSize, db.shamanShieldsEarlyWarning, db.shamanShieldsEarlyWarningNoCombat, db.shamanShieldsOpacity, db.shamanShieldsLocation = nil
@@ -1049,11 +1049,11 @@ function Config:MigrateDB()
         earlyWarning = db.lightsmithRitesEarlyWarning or db.lightsmithRites.earlyWarning,
         earlyWarningNoCombat = db.lightsmithRitesEarlyWarningNoCombat or db.lightsmithRites.earlyWarningNoCombat,
         opacity = db.lightsmithRitesOpacity or db.lightsmithRites.opacity,
-        location = {
-            xPos = db.lightsmithRitesLocation.xPos or db.lightsmithRites.location.xPos,
-            yPos = db.lightsmithRitesLocation.yPos or db.lightsmithRites.location.yPos,
-            parentAnchorPoint = db.lightsmithRitesLocation.parentAnchorPoint or db.lightsmithRites.location.parentAnchorPoint,
-            frameAnchorPoint = db.lightsmithRitesLocation.frameAnchorPoint or db.lightsmithRites.location.frameAnchorPoint,
+        location = db.lightsmithRitesLocation or {
+            xPos = db.lightsmithRites.location.xPos,
+            yPos = db.lightsmithRites.location.yPos,
+            parentAnchorPoint = db.lightsmithRites.location.parentAnchorPoint,
+            frameAnchorPoint = db.lightsmithRites.location.frameAnchorPoint,
         }
     }
     db.lightsmithRitesTracking, db.lightsmithRitesIconSize, db.lightsmithRitesEarlyWarning, db.lightsmithRitesEarlyWarningNoCombat, db.lightsmithRitesOpacity, db.lightsmithRitesLocation = nil
@@ -1063,11 +1063,11 @@ function Config:MigrateDB()
         earlyWarning = db.sourceOfMagicEarlyWarning or db.sourceOfMagic.earlyWarning,
         earlyWarningNoCombat = db.sourceOfMagicEarlyWarningNoCombat or db.sourceOfMagic.earlyWarningNoCombat,
         opacity = db.sourceOfMagicOpacity or db.sourceOfMagic.opacity,
-        location = {
-            xPos = db.sourceOfMagicLocation.xPos or db.sourceOfMagic.location.xPos,
-            yPos = db.sourceOfMagicLocation.yPos or db.sourceOfMagic.location.yPos,
-            parentAnchorPoint = db.sourceOfMagicLocation.parentAnchorPoint or db.sourceOfMagic.location.parentAnchorPoint,
-            frameAnchorPoint = db.sourceOfMagicLocation.frameAnchorPoint or db.sourceOfMagic.location.frameAnchorPoint,
+        location = db.sourceOfMagicLocation or {
+            xPos = db.sourceOfMagic.location.xPos,
+            yPos = db.sourceOfMagic.location.yPos,
+            parentAnchorPoint = db.sourceOfMagic.location.parentAnchorPoint,
+            frameAnchorPoint = db.sourceOfMagic.location.frameAnchorPoint,
         }
     }
     db.sourceOfMagicTracking, db.sourceOfMagicIconSize, db.sourceOfMagicEarlyWarning, db.sourceOfMagicEarlyWarningNoCombat, db.sourceOfMagicOpacity, db.sourceOfMagicLocation = nil
